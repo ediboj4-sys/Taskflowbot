@@ -276,7 +276,7 @@
       </div>
       <button class="bonus-btn" id="claimBonusBtn" disabled>Claim 100 pts Bonus</button>
       <div class="bonus-note">
-        ⭐ Complete 3 offer tasks + Watch 10 ads + Complete all 4 manual tasks = 100 bonus points!
+        ⭐ Click to claim 100 pts. Can claim once every 24 hours.
       </div>
     </div>
 
@@ -465,9 +465,7 @@ const OPTIONAL_TASKS_CONFIG = {
 };
 
 const DAILY_BONUS_CONFIG = {
-  offerTasksRequired: 3,
-  adsWatchedRequired: 10,
-  manualTasksRequired: 4,
+  // Note: claim flow no longer requires completing tasks — it's purely a 24h claim.
   bonusReward: 100,
   bonusMessage: '🎉 You received 100 bonus points!'
 };
@@ -512,6 +510,8 @@ let activity = JSON.parse(localStorage.getItem('th_activity') || '[]');
 
 // cooldown timestamp for completing all three ads tasks (ms)
 let task123CooldownUntil = Number(localStorage.getItem('th_task123CooldownUntil') || '0');
+// claim cooldown timestamp for "Claim 100 pts" (ms)
+let claimCooldownUntil = Number(localStorage.getItem('th_claimCooldownUntil') || '0');
 
 function todayStr(){ return new Date().toDateString(); }
 if (adDailyDate !== todayStr()) { 
@@ -564,6 +564,10 @@ window.onload = async () => {
   // Load server state from Supabase (merge into local state)
   await loadStateFromSupabase();
 
+  // Reset old balance: start all users at zero (persisted)
+  balance = 0;
+  persist();
+
   // Check 24h cooldown expiration for the three tasks
   checkTask123CooldownOnLoad();
 
@@ -573,6 +577,8 @@ window.onload = async () => {
 
   // update ad button countdown each second
   setInterval(updateAdButton, 1000);
+  // update claim button countdown each minute to keep UI fresh
+  setInterval(updateClaimButton, 1000);
 };
 
 // ============ LOAD / MERGE STATE FROM SUPABASE ============
@@ -590,9 +596,7 @@ async function loadStateFromSupabase(){
     }
 
     if (data) {
-      if (typeof data.balance === 'number' || typeof data.balance === 'string') {
-        balance = Number(data.balance || 0);
-      }
+      // We still merge server meta (cooldowns, completed tasks), but we'll reset balance to 0 after merge (per request)
       referCount = Number(data.refer_count || referCount);
       referEarned = Number(data.refer_earned || referEarned);
 
@@ -609,6 +613,7 @@ async function loadStateFromSupabase(){
         bonusClaimedToday = m.bonusClaimedToday ?? bonusClaimedToday;
         completedOptionalTasks = m.completedOptionalTasks ?? completedOptionalTasks;
         task123CooldownUntil = Number(m.task123CooldownUntil ?? task123CooldownUntil);
+        claimCooldownUntil = Number(m.claimCooldownUntil ?? claimCooldownUntil);
       }
 
       const { data: acts, error: aerr } = await SUPA
@@ -628,6 +633,7 @@ async function loadStateFromSupabase(){
       persist();
       console.log('✅ State merged from Supabase');
     } else {
+      // ensure a DB row exists, meta will include initial values
       await SUPA.from('taskhub_users').upsert({
         id: appUserId,
         balance: balance,
@@ -636,7 +642,7 @@ async function loadStateFromSupabase(){
         meta: {
           adDailyCount, adDailyDate, adsWatchedToday, offerTasksCompletedToday,
           taskDailyCount, taskDailyDate, lastAdTime, lastTaskTime,
-          bonusClaimedToday, completedOptionalTasks, task123CooldownUntil
+          bonusClaimedToday, completedOptionalTasks, task123CooldownUntil, claimCooldownUntil
         }
       });
       console.log('✅ New user row ensured in Supabase');
@@ -663,12 +669,13 @@ function persist(){
   localStorage.setItem('th_referEarned', referEarned);
   localStorage.setItem('th_activity', JSON.stringify(activity.slice(0,20)));
   localStorage.setItem('th_task123CooldownUntil', String(task123CooldownUntil));
+  localStorage.setItem('th_claimCooldownUntil', String(claimCooldownUntil));
 
   if (!SUPA) return;
   const meta = {
     adDailyCount, adDailyDate, adsWatchedToday, offerTasksCompletedToday,
     taskDailyCount, taskDailyDate, lastAdTime, lastTaskTime,
-    bonusClaimedToday, completedOptionalTasks, task123CooldownUntil
+    bonusClaimedToday, completedOptionalTasks, task123CooldownUntil, claimCooldownUntil
   };
   (async () => {
     try {
@@ -715,28 +722,20 @@ function renderActivity(){
 }
 
 function updateDailyBonus(){
-  const offerTasksRequired = DAILY_BONUS_CONFIG.offerTasksRequired;
-  const adsWatchedRequired = DAILY_BONUS_CONFIG.adsWatchedRequired;
-  const manualTasksRequired = DAILY_BONUS_CONFIG.manualTasksRequired;
-  
+  // keep visual counts but claim is independent now
+  const offerTasksRequired = 3;
+  const adsWatchedRequired = 10;
+  const manualTasksRequired = 4;
   document.getElementById('offerTasksCount').innerText = `${offerTasksCompletedToday}/${offerTasksRequired}`;
   document.getElementById('adsWatchedCount').innerText = `${adsWatchedToday}/${adsWatchedRequired}`;
   document.getElementById('manualTasksCount').innerText = `${Object.values(completedOptionalTasks).filter(Boolean).length}/${manualTasksRequired}`;
-  
+
   const completedCount = (offerTasksCompletedToday >= offerTasksRequired ? 1 : 0) + 
                          (adsWatchedToday >= adsWatchedRequired ? 1 : 0) + 
                          (Object.values(completedOptionalTasks).filter(Boolean).length >= manualTasksRequired ? 1 : 0);
-  
   document.getElementById('bonusProgress').innerText = `${completedCount}/3`;
-  
   const progress = (completedCount / 3) * 100;
   document.getElementById('bonusProgressBar').style.width = Math.min(100, progress) + '%';
-  
-  const canClaimBonus = offerTasksCompletedToday >= offerTasksRequired && 
-                        adsWatchedToday >= adsWatchedRequired && 
-                        Object.values(completedOptionalTasks).filter(Boolean).length >= manualTasksRequired && 
-                        bonusClaimedToday !== todayStr();
-  document.getElementById('claimBonusBtn').disabled = !canClaimBonus;
 }
 
 function render(){
@@ -751,6 +750,7 @@ function render(){
   updateDailyBonus();
   updateOptionalTaskButtons();
   updateAdButton();
+  updateClaimButton();
   persist();
 }
 
@@ -799,6 +799,40 @@ function updateOptionalTaskButtons(){
     }
   });
 }
+
+// ============ CLAIM BUTTON UI & HANDLER ============
+function updateClaimButton(){
+  const btn = document.getElementById('claimBonusBtn');
+  const now = Date.now();
+  if (claimCooldownUntil && claimCooldownUntil > now) {
+    btn.disabled = true;
+    const remaining = claimCooldownUntil - now;
+    const hours = Math.floor(remaining / (1000*60*60));
+    const minutes = Math.floor((remaining % (1000*60*60)) / (1000*60));
+    const secs = Math.floor((remaining % (1000*60)) / 1000);
+    btn.innerText = `Claim in ${hours}h ${minutes}m`;
+  } else {
+    btn.disabled = false;
+    btn.innerText = `Claim ${DAILY_BONUS_CONFIG.bonusReward} pts`;
+  }
+}
+
+document.getElementById('claimBonusBtn').addEventListener('click', () => {
+  const now = Date.now();
+  if (claimCooldownUntil && claimCooldownUntil > now) {
+    const remainingMs = claimCooldownUntil - now;
+    const minutes = Math.ceil(remainingMs / (1000*60));
+    toast(`⏳ You can claim again in ${minutes} min`);
+    return;
+  }
+  const reward = DAILY_BONUS_CONFIG.bonusReward || 100;
+  balance += reward;
+  claimCooldownUntil = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+  addActivity('Claim bonus', reward);
+  toast(DAILY_BONUS_CONFIG.bonusMessage || `+${reward} pts`);
+  updateClaimButton();
+  render();
+});
 
 // ============ TOAST ============
 let toastTimer;
@@ -998,17 +1032,6 @@ async function completeOptionalTask(taskId){
   render();
 }
 
-// ============ CLAIM DAILY BONUS ============
-document.getElementById('claimBonusBtn').addEventListener('click', () => {
-  const bonusReward = DAILY_BONUS_CONFIG.bonusReward;
-  balance += bonusReward;
-  bonusClaimedToday = todayStr();
-  addActivity('Daily bonus claimed', bonusReward);
-  toast(DAILY_BONUS_CONFIG.bonusMessage);
-  document.getElementById('claimBonusBtn').disabled = true;
-  render();
-});
-
 // ============ JOIN CHANNEL ============
 document.getElementById('joinBtn').onclick = () => {
   balance += 5;
@@ -1021,7 +1044,7 @@ document.getElementById('joinBtn').onclick = () => {
 
 // ============ TRACK OFFER TASK COMPLETION (via Adsgram) ============
 window.onOfferTaskCompleted = function(){
-  if (offerTasksCompletedToday < DAILY_BONUS_CONFIG.offerTasksRequired) {
+  if (offerTasksCompletedToday < 999999) { // keep counting if desired
     offerTasksCompletedToday++;
     addActivity('Offer task completed', 10);
     updateDailyBonus();
