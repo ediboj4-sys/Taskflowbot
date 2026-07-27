@@ -207,7 +207,7 @@
       <div class="earn-card ad">
         <div class="eyebrow">Rewarded Ad</div>
         <div class="amount">+10 pts</div>
-        <div class="cap" id="adDailyCap">Daily 0 / 300</div>
+        <div class="cap" id="adDailyCap">Daily 0 / 100</div>
         <div class="mini-progress"><div id="adProgressFill"></div></div>
         <button class="earn-btn" id="watchAdBtn">▶ Watch Ad</button>
       </div>
@@ -230,7 +230,7 @@
         <div class="col">
           <h3>REWARDED AD</h3>
           <div class="row"><span>Cooldown</span><span>30 sec</span></div>
-          <div class="row"><span>Max / day</span><span>300 pts</span></div>
+          <div class="row"><span>Max / day</span><span>100 pts</span></div>
         </div>
         <div class="col">
           <h3>OFFER TASK</h3>
@@ -285,29 +285,29 @@
       <h2>🎯 Quick Tasks (Manual - 4 Total)</h2>
       <div class="optional-task-item">
         <div>
-          <div class="t">💻 Visit Website</div>
-          <div class="s">Join our community</div>
+          <div class="t">💻 Task 1</div>
+          <div class="s">Adsgram task</div>
         </div>
         <div>
-          <button class="optional-btn" id="task-visit" onclick="completeOptionalTask('visit')">+50 pts</button>
-        </div>
-      </div>
-      <div class="optional-task-item">
-        <div>
-          <div class="t">📱 Share on Telegram</div>
-          <div class="s">Share to 5 chats</div>
-        </div>
-        <div>
-          <button class="optional-btn" id="task-share" onclick="completeOptionalTask('share')">+40 pts</button>
+          <button class="optional-btn" id="task-task1" onclick="completeOptionalTask('task1')">+20 pts</button>
         </div>
       </div>
       <div class="optional-task-item">
         <div>
-          <div class="t">📺 Join Channel</div>
-          <div class="s">Follow our updates</div>
+          <div class="t">📱 Task 2</div>
+          <div class="s">Adsgram task</div>
         </div>
         <div>
-          <button class="optional-btn" id="task-join" onclick="completeOptionalTask('join')">+30 pts</button>
+          <button class="optional-btn" id="task-task2" onclick="completeOptionalTask('task2')">+20 pts</button>
+        </div>
+      </div>
+      <div class="optional-task-item">
+        <div>
+          <div class="t">📺 Task 3</div>
+          <div class="s">Adsgram task</div>
+        </div>
+        <div>
+          <button class="optional-btn" id="task-task3" onclick="completeOptionalTask('task3')">+20 pts</button>
         </div>
       </div>
       <div class="optional-task-item">
@@ -457,34 +457,11 @@ try {
 // ============ CONFIGURATION ============
 // ✅ Admin can edit these URLs and bonus amounts
 const OPTIONAL_TASKS_CONFIG = {
-  visit: {
-    title: 'Visit Website',
-    description: 'Join our community',
-    reward: 50,
-    url: 'https://t.me/gram_piarbot?start=6910486529',
-    icon: '💻'
-  },
-  share: {
-    title: 'Share on Telegram',
-    description: 'Share to 5 chats',
-    reward: 40,
-    url: 'https://t.me/FoxiGrowbot?start=ref_6910486529',
-    icon: '📱'
-  },
-  join: {
-    title: 'Join Channel',
-    description: 'Follow our updates',
-    reward: 30,
-    url: 'https://t.me/freeupdateas',
-    icon: '📺'
-  },
-  bot: {
-    title: 'submit zip',
-    description: 'Get started with our bot',
-    reward: 25,
-    url: 'https://getafilenow.com/1904854',
-    icon: '🤖'
-  }
+  // first three are Adsgram tasks
+  task1: { title: 'Task 1', description: 'Adsgram task', reward: 20, url: '', icon: '💻' },
+  task2: { title: 'Task 2', description: 'Adsgram task', reward: 20, url: '', icon: '📱' },
+  task3: { title: 'Task 3', description: 'Adsgram task', reward: 20, url: '', icon: '📺' },
+  bot:   { title: 'submit zip', description: 'Get started with our bot', reward: 25, url: 'https://getafilenow.com/1904854', icon: '🤖' }
 };
 
 const DAILY_BONUS_CONFIG = {
@@ -495,6 +472,13 @@ const DAILY_BONUS_CONFIG = {
   bonusMessage: '🎉 You received 100 bonus points!'
 };
 
+// Adsgram task IDs for the three tasks
+const ADGRAM_TASKS = {
+  task1: 'task-45876',
+  task2: 'task-54796',
+  task3: 'task-4564'
+};
+
 const WATCH_AD_BLOCK_ID = '37622';
 const ADSGRAM_TASK_BLOCK_ID = 'task-37623';
 const JOIN_CHANNEL_AD_BLOCK_ID = '37677';
@@ -502,17 +486,17 @@ const JOIN_CHANNEL_AD_BLOCK_ID = '37677';
 const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
 const ADMIN_CHAT_ID = '23674574';
 
-// ============ COOLDOWN SETTINGS ============
+// ============ COOLDOWN & LIMIT SETTINGS ============
 const AD_COOLDOWN_MS = 30 * 1000;
 const TASK_COOLDOWN_MS = 30 * 1000;
-const AD_MAX_PER_DAY = 300;
+const AD_MAX_PER_DAY = 100; // <- changed to 100 pts daily limit for watch ad
 const TASK_MAX_PER_DAY = 300;
 const AD_REWARD = 10;
 const MIN_WITHDRAWAL = 10000;
 
 // ============ STATE ============
 let balance = Number(localStorage.getItem('th_balance') || '0');
-let adDailyCount = Number(localStorage.getItem('th_adDailyCount') || '0');
+let adDailyCount = Number(localStorage.getItem('th_adDailyCount') || '0'); // stores points earned from ads today
 let adDailyDate = localStorage.getItem('th_adDailyDate') || '';
 let taskDailyCount = Number(localStorage.getItem('th_taskDailyCount') || '0');
 let taskDailyDate = localStorage.getItem('th_taskDailyDate') || '';
@@ -525,6 +509,9 @@ let completedOptionalTasks = JSON.parse(localStorage.getItem('th_completedOption
 let referCount = Number(localStorage.getItem('th_referCount') || '0');
 let referEarned = Number(localStorage.getItem('th_referEarned') || '0');
 let activity = JSON.parse(localStorage.getItem('th_activity') || '[]');
+
+// cooldown timestamp for completing all three ads tasks (ms)
+let task123CooldownUntil = Number(localStorage.getItem('th_task123CooldownUntil') || '0');
 
 function todayStr(){ return new Date().toDateString(); }
 if (adDailyDate !== todayStr()) { 
@@ -540,10 +527,8 @@ if (taskDailyDate !== todayStr()) {
 }
 
 // ============ SUPABASE USER IDENTIFICATION ============
-// Use Telegram user id if available, otherwise persist a guest id in localStorage.
 let appUserId = (tg?.initDataUnsafe?.user?.id) ? String(tg.initDataUnsafe.user.id) : (localStorage.getItem('th_guestId') || null);
 if (!appUserId) {
-  // create a simple guest id
   appUserId = 'guest_' + Math.random().toString(36).slice(2,10);
   localStorage.setItem('th_guestId', appUserId);
 }
@@ -562,10 +547,12 @@ window.onload = async () => {
   if (typeof Adsgram !== 'undefined') {
     console.log('✅ Adsgram SDK loaded');
     try {
+      // Adsgram.init is used for watch ad block (rewardAd)
       rewardAd = Adsgram.init({ blockId: WATCH_AD_BLOCK_ID });
       console.log('✅ Watch Ad initialized');
       joinAd = Adsgram.init({ blockId: JOIN_CHANNEL_AD_BLOCK_ID });
       console.log('✅ Join Channel Ad initialized');
+      // optionally show join popup using joinAd
       joinAd.show().finally(() => {
         document.getElementById('joinPopup').style.display = 'flex';
       });
@@ -576,6 +563,9 @@ window.onload = async () => {
 
   // Load server state from Supabase (merge into local state)
   await loadStateFromSupabase();
+
+  // Check 24h cooldown expiration for the three tasks
+  checkTask123CooldownOnLoad();
 
   // initial render
   render();
@@ -595,19 +585,17 @@ async function loadStateFromSupabase(){
       .eq('id', appUserId)
       .single();
 
-    if (error && error.code !== 'PGRST116') { // ignore "No rows" style errors sometimes
+    if (error && error.code !== 'PGRST116') {
       console.warn('Supabase load user error', error);
     }
 
     if (data) {
-      // Prefer DB authoritative balance if present
       if (typeof data.balance === 'number' || typeof data.balance === 'string') {
         balance = Number(data.balance || 0);
       }
       referCount = Number(data.refer_count || referCount);
       referEarned = Number(data.refer_earned || referEarned);
 
-      // merge meta (if it contains our keys)
       if (data.meta && typeof data.meta === 'object') {
         const m = data.meta;
         adDailyCount = Number(m.adDailyCount ?? adDailyCount);
@@ -620,9 +608,9 @@ async function loadStateFromSupabase(){
         lastTaskTime = Number(m.lastTaskTime ?? lastTaskTime);
         bonusClaimedToday = m.bonusClaimedToday ?? bonusClaimedToday;
         completedOptionalTasks = m.completedOptionalTasks ?? completedOptionalTasks;
+        task123CooldownUntil = Number(m.task123CooldownUntil ?? task123CooldownUntil);
       }
 
-      // fetch recent activities from DB to show (if you want)
       const { data: acts, error: aerr } = await SUPA
         .from('taskhub_activities')
         .select('type, points, meta, created_at')
@@ -631,17 +619,15 @@ async function loadStateFromSupabase(){
         .limit(20);
 
       if (!aerr && Array.isArray(acts) && acts.length) {
-        // Map DB activities into our local `activity` shape (title, pts, when)
         activity = acts.map(a => ({
           title: (a.meta && a.meta.title) ? a.meta.title : (a.type || 'activity'),
           pts: Number(a.points || 0),
           when: new Date(a.created_at).toLocaleString()
         }));
       }
-      persist(); // save merged state locally and upsert to DB (persist handles both)
+      persist();
       console.log('✅ State merged from Supabase');
     } else {
-      // no row: create initial row for this user to make sure future upserts work
       await SUPA.from('taskhub_users').upsert({
         id: appUserId,
         balance: balance,
@@ -650,7 +636,7 @@ async function loadStateFromSupabase(){
         meta: {
           adDailyCount, adDailyDate, adsWatchedToday, offerTasksCompletedToday,
           taskDailyCount, taskDailyDate, lastAdTime, lastTaskTime,
-          bonusClaimedToday, completedOptionalTasks
+          bonusClaimedToday, completedOptionalTasks, task123CooldownUntil
         }
       });
       console.log('✅ New user row ensured in Supabase');
@@ -662,7 +648,6 @@ async function loadStateFromSupabase(){
 
 // ============ PERSIST & RENDER ============
 function persist(){
-  // always persist to localStorage (unchanged behavior)
   localStorage.setItem('th_balance', balance);
   localStorage.setItem('th_adDailyCount', adDailyCount);
   localStorage.setItem('th_adDailyDate', adDailyDate);
@@ -677,13 +662,13 @@ function persist(){
   localStorage.setItem('th_referCount', referCount);
   localStorage.setItem('th_referEarned', referEarned);
   localStorage.setItem('th_activity', JSON.stringify(activity.slice(0,20)));
+  localStorage.setItem('th_task123CooldownUntil', String(task123CooldownUntil));
 
-  // async upsert to Supabase (non-blocking)
   if (!SUPA) return;
   const meta = {
     adDailyCount, adDailyDate, adsWatchedToday, offerTasksCompletedToday,
     taskDailyCount, taskDailyDate, lastAdTime, lastTaskTime,
-    bonusClaimedToday, completedOptionalTasks
+    bonusClaimedToday, completedOptionalTasks, task123CooldownUntil
   };
   (async () => {
     try {
@@ -702,14 +687,11 @@ function persist(){
 }
 
 function addActivity(title, pts, opts = { remote: true }){
-  // add to local activity list
   activity.unshift({ title, pts, when: new Date().toLocaleString() });
-  // keep local list trimmed
   activity = activity.slice(0, 50);
   persist();
   renderActivity();
 
-  // Optionally insert into server activities table
   if (SUPA && opts.remote !== false) {
     (async () => {
       try {
@@ -792,12 +774,28 @@ function updateAdButton(){
 }
 
 function updateOptionalTaskButtons(){
-  ['visit', 'share', 'join', 'bot'].forEach(taskId => {
+  const now = Date.now();
+  const inCooldown = task123CooldownUntil && task123CooldownUntil > now;
+
+  ['task1','task2','task3','bot'].forEach(taskId => {
     const btn = document.getElementById(`task-${taskId}`);
-    if (completedOptionalTasks[taskId]){
+    if (!btn) return;
+    if (inCooldown && (taskId === 'task1' || taskId === 'task2' || taskId === 'task3')) {
+      btn.classList.remove('done');
+      btn.disabled = true;
+      const mins = Math.ceil((task123CooldownUntil - now) / (1000*60));
+      btn.innerText = `Locked ${mins}m`;
+      return;
+    }
+    if (completedOptionalTasks[taskId]) {
       btn.classList.add('done');
       btn.innerText = '✅ Done';
       btn.disabled = true;
+    } else {
+      btn.classList.remove('done');
+      btn.disabled = false;
+      const reward = OPTIONAL_TASKS_CONFIG[taskId] ? OPTIONAL_TASKS_CONFIG[taskId].reward : '';
+      btn.innerText = reward ? `+${reward} pts` : 'Do';
     }
   });
 }
@@ -812,7 +810,7 @@ function toast(msg){
   toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-// ============ WATCH AD ============
+// ============ WATCH AD (uses Adsgram.init block for rewardAd) ============
 document.getElementById('watchAdBtn').addEventListener('click', async () => {
   if (!rewardAd) {
     toast('⏳ Ad system loading...');
@@ -827,10 +825,9 @@ document.getElementById('watchAdBtn').addEventListener('click', async () => {
     const res = await rewardAd.show();
     if (res?.done) {
       balance += AD_REWARD;
-      adDailyCount += AD_REWARD;
+      adDailyCount += AD_REWARD; // adDailyCount tracks points earned from watch ads today
       lastAdTime = Date.now();
       adsWatchedToday++;
-      // record activity remotely
       addActivity('Rewarded ad watched', AD_REWARD);
       toast(`+${AD_REWARD} pts — thanks for watching!`);
       updateDailyBonus();
@@ -846,22 +843,156 @@ document.getElementById('watchAdBtn').addEventListener('click', async () => {
   }
 });
 
-// ============ OPTIONAL TASKS ============
-function completeOptionalTask(taskId){
+// ============ OPTIONAL TASKS (Adsgram tasks using <adsgram-task> element) ============
+function checkTask123CooldownOnLoad(){
+  const now = Date.now();
+  if (task123CooldownUntil && task123CooldownUntil <= now) {
+    ['task1','task2','task3'].forEach(k => { completedOptionalTasks[k] = false; });
+    task123CooldownUntil = 0;
+    persist();
+  }
+}
+
+async function showAdsgramTaskBlock(blockId){
+  return new Promise((resolve, reject) => {
+    if (typeof document === 'undefined') return reject(new Error('DOM not available'));
+    // create the element
+    const el = document.createElement('adsgram-task');
+    el.setAttribute('data-block-id', blockId);
+    // style as a centered popup so user sees it
+    el.style.position = 'fixed';
+    el.style.left = '50%';
+    el.style.top = '50%';
+    el.style.transform = 'translate(-50%,-50%)';
+    el.style.zIndex = 100000;
+    el.style.maxWidth = '92%';
+    el.style.width = '420px';
+    document.body.appendChild(el);
+
+    let settled = false;
+    const cleanup = () => {
+      try { if (el && el.parentNode) el.parentNode.removeChild(el); } catch(e){}
+      try {
+        if (originalOfferHandlerRef.wrapped) {
+          window.onOfferTaskCompleted = originalOfferHandlerRef.original || undefined;
+        }
+      } catch(e){}
+      try { el.removeEventListener('complete', onComplete); } catch(e){}
+      try { el.removeEventListener('done', onComplete); } catch(e){}
+      try { el.removeEventListener('close', onClose); } catch(e){}
+      clearTimeout(timeout);
+    };
+
+    const onComplete = (ev) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve({ done: true, detail: ev && ev.detail });
+    };
+    const onClose = (ev) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve({ done: false });
+    };
+
+    el.addEventListener('complete', onComplete);
+    el.addEventListener('done', onComplete);
+    el.addEventListener('close', onClose);
+
+    // ALSO wrap window.onOfferTaskCompleted (if present) so when SDK calls it we consider it success
+    const originalOfferHandlerRef = { wrapped: false, original: null };
+    try {
+      if (typeof window !== 'undefined') {
+        const orig = window.onOfferTaskCompleted;
+        originalOfferHandlerRef.original = orig;
+        originalOfferHandlerRef.wrapped = true;
+        window.onOfferTaskCompleted = function wrappedOfferHandler(...args){
+          try { if (typeof orig === 'function') orig.apply(this, args); } catch(e){ console.warn('orig onOfferTaskCompleted error', e); }
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve({ done: true });
+        };
+      }
+    } catch (e) {
+      console.warn('Could not wrap window.onOfferTaskCompleted', e);
+    }
+
+    // Safety timeout: if nothing happens within 5 minutes, consider it not completed
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve({ done: false });
+    }, 5 * 60 * 1000);
+
+    // If the element exposes show(), call it (some SDKs do)
+    try {
+      if (typeof el.show === 'function') {
+        const maybe = el.show();
+        if (maybe && typeof maybe.then === 'function') {
+          // ignore; events/onOfferTaskCompleted will resolve
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  });
+}
+
+async function completeOptionalTask(taskId){
+  // If the 24h cooldown for all three tasks is active, block
+  const now = Date.now();
+  if (task123CooldownUntil && task123CooldownUntil > now) {
+    const remainingMs = task123CooldownUntil - now;
+    const minutes = Math.ceil(remainingMs / (1000 * 60));
+    toast(`⏳ All tasks locked for ${minutes} more minutes`);
+    return;
+  }
+
+  // Adsgram tasks (task1, task2, task3)
+  if (taskId === 'task1' || taskId === 'task2' || taskId === 'task3') {
+    if (completedOptionalTasks[taskId]) { toast('Already completed'); return; }
+    const blockId = ADGRAM_TASKS[taskId];
+    if (!blockId) { toast('Task not configured'); return; }
+
+    try {
+      toast('⏳ Opening task...');
+      const res = await showAdsgramTaskBlock(blockId);
+      if (res?.done) {
+        const reward = OPTIONAL_TASKS_CONFIG[taskId].reward || 20;
+        balance += reward;
+        completedOptionalTasks[taskId] = true;
+        addActivity(`Task completed: ${OPTIONAL_TASKS_CONFIG[taskId].title}`, reward);
+        toast(`+${reward} pts — ${OPTIONAL_TASKS_CONFIG[taskId].title} completed!`);
+        // If all three are completed now, set 24h cooldown (prevent re-doing until it expires)
+        if (completedOptionalTasks['task1'] && completedOptionalTasks['task2'] && completedOptionalTasks['task3']) {
+          task123CooldownUntil = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+          toast('✅ All tasks done — locked for 24 hours');
+        }
+        updateDailyBonus();
+        render();
+      } else {
+        toast('⚠️ Task not completed - no reward');
+      }
+    } catch (e) {
+      console.error('Adsgram task error', e);
+      toast('⚠️ Could not open task');
+    }
+    return;
+  }
+
+  // fallback for other manual tasks (bot)
   if (completedOptionalTasks[taskId]) {
     toast('Already completed');
     return;
   }
-  
   const config = OPTIONAL_TASKS_CONFIG[taskId];
-  
-  // Open link
-  window.open(config.url, '_blank');
-  
-  // Mark as completed
+  if (config && config.url) window.open(config.url, '_blank');
   completedOptionalTasks[taskId] = true;
-  balance += config.reward;
-  addActivity(`Task completed: ${config.title}`, config.reward);
+  balance += (config.reward || 0);
+  addActivity(`Task completed: ${config.title}`, config.reward || 0);
   toast(`+${config.reward} pts — ${config.title} completed!`);
   updateDailyBonus();
   render();
@@ -884,7 +1015,7 @@ document.getElementById('joinBtn').onclick = () => {
   addActivity('Joined channel', 5);
   document.getElementById("joinPopup").style.display = "none";
   toast('✨ +5 pts for joining!');
-  window.open(OPTIONAL_TASKS_CONFIG.join.url, "_blank");
+  window.open(OPTIONAL_TASKS_CONFIG.join?.url || OPTIONAL_TASKS_CONFIG.bot.url, "_blank");
   render();
 };
 
@@ -892,8 +1023,7 @@ document.getElementById('joinBtn').onclick = () => {
 window.onOfferTaskCompleted = function(){
   if (offerTasksCompletedToday < DAILY_BONUS_CONFIG.offerTasksRequired) {
     offerTasksCompletedToday++;
-    // record an offer-task activity to server
-    addActivity('Offer task completed',  (DAILY_BONUS_CONFIG.offerTasksRequired ? 10 : 0));
+    addActivity('Offer task completed', 10);
     updateDailyBonus();
     render();
   }
@@ -916,7 +1046,6 @@ async function recordReferral(inviterId, refereeId, reward = 100) {
     });
     if (error) console.warn('Supabase referral insert error', error);
     else {
-      // Optionally refresh counts from DB
       const { data } = await SUPA.from('taskhub_users').select('refer_count, refer_earned, balance').eq('id', inviterId).single();
       if (data) {
         referCount = Number(data.refer_count || referCount);
@@ -960,7 +1089,6 @@ document.getElementById('withdrawBtn').addEventListener('click', async () => {
   };
 
   try{
-    // Insert withdrawal into Supabase first (this will create an activity in DB via trigger if you used the earlier SQL)
     if (SUPA) {
       const { data, error } = await SUPA.from('taskhub_withdrawals').insert({
         user_id: appUserId,
@@ -975,19 +1103,15 @@ document.getElementById('withdrawBtn').addEventListener('click', async () => {
         btn.innerText = 'Request Withdrawal';
         return;
       }
-      // The DB trigger inserts a negative activity and updates the user's balance server-side.
-      // To keep the UI immediate, reflect the deduction locally but avoid inserting a duplicate activity remotely.
       balance -= amount;
-      addActivity(`Withdrawal requested (${method})`, -amount, { remote: false }); // remote:false to avoid duplication
+      addActivity(`Withdrawal requested (${method})`, -amount, { remote: false });
       persist();
     } else {
-      // If Supabase unavailable, fallback to local behavior + Telegram forward
       balance -= amount;
       addActivity(`Withdrawal requested (${method})`, -amount);
       persist();
     }
 
-    // Try to notify admin via Telegram (non-blocking if it fails)
     try {
       await sendWithdrawalToTelegram(details);
     } catch (e) {
