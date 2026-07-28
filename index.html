@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Taskflow — Watch & Earn</title>
+<title>VIDEOCASH — Watch & Earn</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <!-- ✅ ADSGRAM SDK - Required for all ad features -->
 <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
@@ -70,5 +70,1092 @@
   .earn-card .amount{font-family:'Sora',sans-serif; font-size:24px; font-weight:800; margin-top:4px;}
   .earn-card .cap{font-size:11.5px; opacity:.8; margin-top:2px;}
   .mini-progress{height:6px; border-radius:10px; background:rgba(0,0,0,0.18); margin-top:12px; overflow:hidden;}
-  .mini-progress > div{height:100%; background:rgba(0,0,*
-
+  .mini-progress > div{height:100%; background:rgba(0,0,0,0.55); width:0%; transition:width .3s;}
+  .earn-btn{width:100%; margin-top:12px; padding:10px; border:none; border-radius:12px; background:rgba(0,0,0,0.82); color:#fff; font-weight:700; font-size:13px; cursor:pointer; transition:all 0.2s;}
+  .earn-btn:disabled{opacity:.55; cursor:not-allowed;}
+  .earn-btn:active:not(:disabled){transform:scale(.97);}
+
+  .disclaimer{background:var(--warn-bg); border:1px solid var(--warn-line); border-radius:14px; padding:14px 16px; margin-bottom:16px; font-size:12.5px; line-height:1.5; color:#e8d3a0;}
+  .disclaimer b{color:#f2c569;}
+
+  .section{background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:16px; margin-bottom:16px;}
+  .section h2{font-family:'Sora',sans-serif; font-size:14.5px; font-weight:700; margin-bottom:12px;}
+  .rules{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .rules .col h3{font-size:12px; color:var(--muted); font-weight:600; margin-bottom:8px;}
+  .rules .row{display:flex; justify-content:space-between; font-size:13px; padding:4px 0;}
+  .rules .row span:last-child{font-weight:700;}
+
+  .live-note{text-align:center; font-size:12px; color:var(--muted); margin:-4px 0 16px;}
+
+  .refer-box{display:flex; align-items:center; gap:12px; margin-bottom:10px;}
+  .refer-icon{width:44px;height:44px;border-radius:12px; background:linear-gradient(135deg, var(--refer), #3a54c9); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0;}
+  .refer-copy{flex:1;}
+  .refer-copy .t{font-weight:700; font-size:14px;}
+  .refer-copy .s{font-size:12px; color:var(--muted); margin-top:2px;}
+  .refer-link-row{display:flex; gap:8px; margin-top:10px;}
+  .refer-link-row input{flex:1; background:var(--panel-2); border:1px solid var(--line); color:var(--muted); padding:10px 12px; border-radius:10px; font-size:12px;}
+  .refer-link-row button{background:var(--refer); color:#fff; border:none; padding:0 16px; border-radius:10px; font-weight:700; font-size:12.5px; cursor:pointer;}
+
+  .wallet-hero{background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:20px; text-align:center; margin-bottom:16px;}
+  .wallet-hero .lbl{font-size:12px; color:var(--muted);}
+  .wallet-hero .num{font-family:'Sora',sans-serif; font-size:38px; font-weight:800; margin-top:6px;}
+  .wallet-hero .conv{font-size:11.5px; color:var(--muted); margin-top:6px;}
+
+  .form-field{margin-top:10px;}
+  .form-field label{font-size:11.5px; color:var(--muted); display:block; margin-bottom:6px;}
+  .form-field select, .form-field input{
+    width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text);
+    padding:11px 12px; border-radius:10px; font-size:13px;
+  }
+  .withdraw-btn{width:100%; margin-top:14px; padding:12px; border:none; border-radius:12px; background:linear-gradient(90deg,var(--refer),#3a54c9); color:#fff; font-weight:700; font-size:13.5px; cursor:pointer;}
+  .withdraw-btn:disabled{opacity:.5; cursor:not-allowed;}
+  .withdraw-note{font-size:11.5px; color:var(--muted); margin-top:10px; line-height:1.5;}
+
+  .txn{display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--line); font-size:13px;}
+  .txn:last-child{border-bottom:none;}
+  .txn .t{font-weight:600;}
+  .txn .d{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .txn .amt{color:var(--task); font-weight:700;}
+  .txn .amt.neg{color:#ff6b6b;}
+
+  .task-item{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line);}
+  .task-item:last-child{border-bottom:none;}
+  .task-item .t{font-size:13.5px; font-weight:600;}
+  .task-item .s{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .task-chip{background:var(--task); color:#04211c; font-weight:700; font-size:12px; padding:7px 14px; border-radius:10px; border:none; cursor:pointer; white-space:nowrap;}
+  .task-chip.done{background:#2a3542; color:var(--muted); cursor:default;}
+  .task-chip:disabled{opacity:.6; cursor:not-allowed;}
+
+  .page{display:none;}
+  .page.active{display:block;}
+
+  .nav{position:fixed; left:0; right:0; bottom:0; background:rgba(11,15,20,0.92); backdrop-filter:blur(10px); border-top:1px solid var(--line); display:flex; justify-content:space-around; padding:10px 6px 14px;}
+  .nav button{background:none; border:none; color:var(--muted); font-size:11px; font-weight:600; display:flex; flex-direction:column; align-items:center; gap:4px; cursor:pointer;}
+  .nav button .ic{font-size:19px;}
+  .nav button.active{color:var(--text);}
+  .nav button.active .ic{filter:drop-shadow(0 0 6px rgba(109,140,255,0.6));}
+
+  .toast{position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(20px); background:#1a2230; border:1px solid var(--line); color:var(--text); padding:12px 18px; border-radius:12px; font-size:13px; font-weight:600; opacity:0; pointer-events:none; transition:all .25s ease; z-index:999; box-shadow:0 10px 30px rgba(0,0,0,0.4); max-width:88%; text-align:center;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* JOIN POPUP */
+  #joinPopup{
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.85); display:none; justify-content:center; align-items:center;
+    z-index:10000; flex-direction:column; gap:20px; padding:20px;
+  }
+  #joinPopup h2{color:#00e0ff; font-size:24px;}
+  #joinPopup button{padding:14px 20px; border:none; border-radius:12px; background:linear-gradient(90deg,var(--refer),#3a54c9); color:#fff; font-weight:bold; cursor:pointer; font-size:16px;}
+  #joinPopup button:active{transform:scale(0.96);}
+
+  /* DAILY BONUS SECTION */
+  .daily-bonus-section{background:linear-gradient(135deg, rgba(242,169,59,0.15), rgba(34,195,166,0.15)); border:1px solid var(--warn-line); border-radius:16px; padding:16px; margin-bottom:16px;}
+  .daily-bonus-section h3{color:#f2a93b; margin-bottom:12px; font-size:14px;}
+  .bonus-progress{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin-bottom:12px;}
+  .bonus-stat{background:var(--panel); padding:10px; border-radius:10px; text-align:center;}
+  .bonus-stat .label{font-size:10px; color:var(--muted);}
+  .bonus-stat .value{font-size:16px; font-weight:700; color:#22c3a6; margin-top:4px;}
+  .bonus-progress-bar{width:100%; height:8px; background:#1b2a40; border-radius:20px; overflow:hidden; margin-bottom:10px;}
+  .bonus-progress-bar > div{height:100%; width:0%; background:linear-gradient(90deg, #f2a93b, #22c3a6); transition:width .3s;}
+  .bonus-btn{width:100%; padding:12px; border:none; border-radius:10px; background:linear-gradient(90deg, #f2a93b, #22c3a6); color:#000; font-weight:700; cursor:pointer;}
+  .bonus-btn:disabled{opacity:.5; cursor:not-allowed; background:#8a96a3;}
+  .bonus-note{font-size:11px; color:var(--muted); margin-top:10px; line-height:1.4;}
+
+  /* OPTIONAL TASKS */
+  .optional-task-item{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line);}
+  .optional-task-item:last-child{border-bottom:none;}
+  .optional-task-item .t{font-size:13.5px; font-weight:600;}
+  .optional-task-item .s{font-size:11.5px; color:var(--muted); margin-top:2px;}
+  .optional-task-item .reward{font-size:12px; color:#22c3a6; font-weight:700;}
+  .optional-btn{background:#22c3a6; color:#000; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;}
+  .optional-btn.done{background:#2a3542; color:var(--muted); cursor:default;}
+  .optional-btn:disabled{opacity:.6;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="topline">
+    <div class="brand">
+      <div class="brand-icon">📨</div>
+      <div><div class="brand-name">TaskHub</div><div class="brand-sub">Mini App</div></div>
+    </div>
+    <div class="userchip"><div class="av"></div><span id="userIdChip">Guest</span></div>
+  </div>
+
+  <div class="info-badge">🕓 Withdrawal requests are reviewed and paid out manually — they are not instant. Minimum withdrawal is 10,000 pts.</div>
+
+  <!-- ============ HOME PAGE ============ -->
+  <div id="home-page" class="page active">
+    <div class="hero">
+      <h1>Earn More</h1>
+      <p>Tap a card to start earning. Nothing here is required.</p>
+    </div>
+
+    <div class="balance-row">
+      <div class="balance-num" id="balanceNum">0</div>
+      <div class="balance-unit">pts</div>
+      <div class="balance-side">Min withdrawal: 10,000 pts</div>
+    </div>
+
+    <div class="grid2">
+      <div class="earn-card ad">
+        <div class="eyebrow">Rewarded Ad</div>
+        <div class="amount">+10 pts</div>
+        <div class="cap" id="adDailyCap">Daily 0 / 100</div>
+        <div class="mini-progress"><div id="adProgressFill"></div></div>
+        <button class="earn-btn" id="watchAdBtn">▶ Watch Ad</button>
+      </div>
+      <div class="earn-card task">
+        <div class="eyebrow">Tasks</div>
+        <div class="amount">+30 pts</div>
+        <div class="cap" id="taskDailyCap">Daily 0 / 300</div>
+        <div class="mini-progress"><div id="taskProgressFill"></div></div>
+        <button class="earn-btn" id="goTasksBtn">Go →</button>
+      </div>
+    </div>
+
+    <div class="disclaimer">
+      <b>Optional, always.</b> Watching ads and completing tasks is 100% optional. You are never required to watch an ad or finish a task to use TaskHub, and no content or feature is locked behind an ad view.
+    </div>
+
+    <div class="section">
+      <h2>Earning rules</h2>
+      <div class="rules">
+        <div class="col">
+          <h3>REWARDED AD</h3>
+          <div class="row"><span>Cooldown</span><span>30 sec</span></div>
+          <div class="row"><span>Max / day</span><span>100 pts</span></div>
+        </div>
+        <div class="col">
+          <h3>OFFER TASK</h3>
+          <div class="row"><span>Cooldown</span><span>30 sec</span></div>
+          <div class="row"><span>Max / day</span><span>300 pts</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="live-note" id="liveNote">Unlimited earning opportunities · watch ads &amp; earn</div>
+  </div>
+
+  <!-- ============ TASKS PAGE ============ -->
+  <div id="tasks-page" class="page">
+    <div class="hero">
+      <h1>Tasks</h1>
+      <p>Optional actions. Complete any of these when you feel like it.</p>
+    </div>
+
+    <!-- ============ DAILY BONUS SECTION ============ -->
+    <div class="daily-bonus-section">
+      <h3>🎁 Daily Bonus Challenge</h3>
+      <div class="bonus-progress">
+        <div class="bonus-stat">
+          <div class="label">Offer Tasks</div>
+          <div class="value" id="offerTasksCount">0/3</div>
+        </div>
+        <div class="bonus-stat">
+          <div class="label">Ads Watched</div>
+          <div class="value" id="adsWatchedCount">0/10</div>
+        </div>
+        <div class="bonus-stat">
+          <div class="label">Manual Tasks</div>
+          <div class="value" id="manualTasksCount">0/4</div>
+        </div>
+        <div class="bonus-stat">
+          <div class="label">Progress</div>
+          <div class="value" id="bonusProgress">0/3</div>
+        </div>
+      </div>
+      <div class="bonus-progress-bar">
+        <div id="bonusProgressBar"></div>
+      </div>
+      <button class="bonus-btn" id="claimBonusBtn" disabled>Claim 100 pts Bonus</button>
+      <div class="bonus-note">
+        ⭐ Click to claim 100 pts. Can claim once every 24 hours.
+      </div>
+    </div>
+
+    <!-- ============ OPTIONAL TASKS SECTION ============ -->
+    <div class="section">
+      <h2>🎯 Quick Tasks (Manual - 4 Total)</h2>
+      <div class="optional-task-item">
+        <div>
+          <div class="t">💻 Task 1</div>
+          <div class="s">Adsgram task</div>
+        </div>
+        <div>
+          <button class="optional-btn" id="task-task1" onclick="completeOptionalTask('task1')">+20 pts</button>
+        </div>
+      </div>
+      <div class="optional-task-item">
+        <div>
+          <div class="t">📱 Task 2</div>
+          <div class="s">Adsgram task</div>
+        </div>
+        <div>
+          <button class="optional-btn" id="task-task2" onclick="completeOptionalTask('task2')">+20 pts</button>
+        </div>
+      </div>
+      <div class="optional-task-item">
+        <div>
+          <div class="t">📺 Task 3</div>
+          <div class="s">Adsgram task</div>
+        </div>
+        <div>
+          <button class="optional-btn" id="task-task3" onclick="completeOptionalTask('task3')">+20 pts</button>
+        </div>
+      </div>
+      <div class="optional-task-item">
+        <div>
+          <div class="t">🤖 Join Bot</div>
+          <div class="s">Get started with our bot</div>
+        </div>
+        <div>
+          <button class="optional-btn" id="task-bot" onclick="completeOptionalTask('bot')">+25 pts</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ ADSGRAM TASK BLOCK - ALWAYS VISIBLE ============ -->
+    <div class="adsgram-section">
+      <h2>🎁 Offer Tasks - Complete Unlimited!</h2>
+      <div class="adsgram-cap">
+        <div style="margin-bottom:8px;">📊 Daily 0 / 300 pts | ⏱️ Cooldown: 30 sec</div>
+        <div>Complete as many offers as you want with 30-second cooldown between tasks!</div>
+      </div>
+      <!-- ✅ TASK BLOCK - Always visible, always available -->
+      <adsgram-task id="adsgramBlock" data-block-id="task-37623"></adsgram-task>
+      <p style="font-size:11px; color:var(--muted); margin-top:10px;">📋 Block ID: task-37623</p>
+    </div>
+
+    <div class="disclaimer">
+      <b>No pressure.</b> Skipping every task on this page has zero effect on your account, balance, or access to any part of the app.
+    </div>
+  </div>
+
+  <!-- ============ REFERRAL PAGE ============ -->
+  <div id="refer-page" class="page">
+    <div class="hero">
+      <h1>Refer friends</h1>
+      <p>Share your link — earn points for every friend who joins.</p>
+    </div>
+
+    <div class="section">
+      <div class="refer-box">
+        <div class="refer-icon">🤝</div>
+        <div class="refer-copy">
+          <div class="t">+20 pts per referral</div>
+          <div class="s">Credited once your friend opens the app</div>
+        </div>
+      </div>
+      <div class="refer-link-row">
+        <input id="referLinkInput" readonly value="https://t.me/Watchvideosebot?start=ref_000000" />
+        <button id="copyReferBtn">Copy</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Your referrals</h2>
+      <div class="task-item">
+        <div><div class="t" id="referCount">0 friends joined</div><div class="s">Track your invites here</div></div>
+        <div class="amt" style="color:var(--refer); font-weight:700;" id="referEarned">+0 pts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ WALLET PAGE ============ -->
+  <div id="wallet-page" class="page">
+    <div class="hero">
+      <h1>Wallet</h1>
+      <p>Your points balance and withdrawal requests.</p>
+    </div>
+
+    <div class="wallet-hero">
+      <div class="lbl">Total balance</div>
+      <div class="num"><span id="walletBalance">0</span> pts</div>
+      <div class="conv">Minimum withdrawal: 10,000 pts</div>
+    </div>
+
+    <div class="section">
+      <h2>💳 Withdraw</h2>
+      <div class="form-field">
+        <label>Payment method</label>
+        <select id="withdrawMethod">
+          <option>Litecoin</option>
+          <option>Binance Pay</option>
+          <option>FaucetPay</option>
+          <option>USDT</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>Wallet / account address</label>
+        <input id="withdrawAddress" placeholder="Paste your address" />
+      </div>
+      <div class="form-field">
+        <label>Amount (pts)</label>
+        <input id="withdrawAmount" type="number" min="10000" step="1" placeholder="Minimum 10,000" />
+      </div>
+      <button class="withdraw-btn" id="withdrawBtn">Request Withdrawal</button>
+      <div class="withdraw-note">
+        Requests are sent for manual review. You'll be notified once it's processed — this isn't instant.
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>📝 Activity</h2>
+      <div id="txnList">
+        <div class="txn"><div><div class="t">No activity yet</div><div class="d">Watch an ad or complete a task to get started</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ JOIN POPUP ============ -->
+<div id="joinPopup">
+  <h2>Join Our Channel</h2>
+  <button id="joinBtn">Join Channel +5 pts</button>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="nav">
+  <button class="nav-btn active" id="nav-home" onclick="showPage('home')"><span class="ic">🏠</span>Home</button>
+  <button class="nav-btn" id="nav-tasks" onclick="showPage('tasks')"><span class="ic">✅</span>Tasks</button>
+  <button class="nav-btn" id="nav-refer" onclick="showPage('refer')"><span class="ic">🤝</span>Refer</button>
+  <button class="nav-btn" id="nav-wallet" onclick="showPage('wallet')"><span class="ic">💰</span>Wallet</button>
+</div>
+
+<script>
+const tg = window.Telegram?.WebApp;
+try{ tg?.expand?.(); }catch(e){}
+
+// =================== SUPABASE CONFIG (you provided) ===================
+// Replace these only if you want to change them later.
+const SUPABASE_URL = 'https://bedlwbnkrwcqldjkmjtn.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_TCI6fZmtCn0wHU8A9PrQBQ_1jNtnESC';
+
+// Create supabase client (UMD exposes `supabase` on window)
+let SUPA = null;
+try {
+  if (window.supabase && typeof window.supabase.createClient === 'function') {
+    SUPA = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase client initialized');
+  } else {
+    console.warn('⚠️ Supabase JS not available');
+  }
+} catch (e) {
+  console.error('Supabase init error', e);
+  SUPA = null;
+}
+// =====================================================================
+
+// ============ CONFIGURATION ============
+// ✅ Admin can edit these URLs and bonus amounts
+const OPTIONAL_TASKS_CONFIG = {
+  // first three are Adsgram tasks
+  task1: { title: 'Task 1', description: 'Adsgram task', reward: 20, url: '', icon: '💻' },
+  task2: { title: 'Task 2', description: 'Adsgram task', reward: 20, url: '', icon: '📱' },
+  task3: { title: 'Task 3', description: 'Adsgram task', reward: 20, url: '', icon: '📺' },
+  bot:   { title: 'submit zip', description: 'Get started with our bot', reward: 25, url: 'https://getafilenow.com/1904854', icon: '🤖' }
+};
+
+const DAILY_BONUS_CONFIG = {
+  // Claim flow is independent and awards this on click, subject to 24h cooldown
+  bonusReward: 100,
+  bonusMessage: '🎉 You received 100 bonus points!'
+};
+
+// Adsgram task IDs for the three tasks
+const ADGRAM_TASKS = {
+  task1: 'task-45876',
+  task2: 'task-54796',
+  task3: 'task-4564'
+};
+
+const WATCH_AD_BLOCK_ID = '37622';
+const ADSGRAM_TASK_BLOCK_ID = 'task-37623';
+const JOIN_CHANNEL_AD_BLOCK_ID = '37677';
+
+const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
+const ADMIN_CHAT_ID = '23674574';
+
+// ============ COOLDOWN & LIMIT SETTINGS ============
+const AD_COOLDOWN_MS = 30 * 1000;
+const TASK_COOLDOWN_MS = 30 * 1000;
+const AD_MAX_PER_DAY = 100; // changed to 100 pts daily limit for watch ad
+const TASK_MAX_PER_DAY = 300;
+const AD_REWARD = 10;
+const MIN_WITHDRAWAL = 10000;
+
+// ============ STATE ============
+let balance = Number(localStorage.getItem('th_balance') || '0');
+let adDailyCount = Number(localStorage.getItem('th_adDailyCount') || '0'); // stores points earned from ads today
+let adDailyDate = localStorage.getItem('th_adDailyDate') || '';
+let taskDailyCount = Number(localStorage.getItem('th_taskDailyCount') || '0');
+let taskDailyDate = localStorage.getItem('th_taskDailyDate') || '';
+let lastAdTime = Number(localStorage.getItem('th_lastAdTime') || '0');
+let lastTaskTime = Number(localStorage.getItem('th_lastTaskTime') || '0');
+let adsWatchedToday = Number(localStorage.getItem('th_adsWatchedToday') || '0');
+let offerTasksCompletedToday = Number(localStorage.getItem('th_offerTasksCompletedToday') || '0');
+let bonusClaimedToday = localStorage.getItem('th_bonusClaimedToday') || '';
+let completedOptionalTasks = JSON.parse(localStorage.getItem('th_completedOptionalTasks') || '{}');
+let referCount = Number(localStorage.getItem('th_referCount') || '0');
+let referEarned = Number(localStorage.getItem('th_referEarned') || '0');
+let activity = JSON.parse(localStorage.getItem('th_activity') || '[]');
+
+// cooldown timestamp for completing all three ads tasks (ms)
+let task123CooldownUntil = Number(localStorage.getItem('th_task123CooldownUntil') || '0');
+// claim cooldown timestamp for "Claim 100 pts" (ms)
+let claimCooldownUntil = Number(localStorage.getItem('th_claimCooldownUntil') || '0');
+
+function todayStr(){ return new Date().toDateString(); }
+if (adDailyDate !== todayStr()) { 
+  adDailyCount = 0; 
+  adDailyDate = todayStr();
+  adsWatchedToday = 0;
+  offerTasksCompletedToday = 0;
+  bonusClaimedToday = '';
+}
+if (taskDailyDate !== todayStr()) {
+  taskDailyCount = 0;
+  taskDailyDate = todayStr();
+}
+
+// ============ SUPABASE USER IDENTIFICATION ============
+let appUserId = (tg?.initDataUnsafe?.user?.id) ? String(tg.initDataUnsafe.user.id) : (localStorage.getItem('th_guestId') || null);
+if (!appUserId) {
+  appUserId = 'guest_' + Math.random().toString(36).slice(2,10);
+  localStorage.setItem('th_guestId', appUserId);
+}
+if (tg?.initDataUnsafe?.user?.id) {
+  document.getElementById('userIdChip').innerText = 'id ' + tg.initDataUnsafe.user.id;
+} else {
+  document.getElementById('userIdChip').innerText = appUserId;
+}
+
+// ============ ADSGRAM SDK INIT ============
+let rewardAd = null;
+let joinAd = null;
+
+window.onload = async () => {
+  // Init Adsgram (if available)
+  if (typeof Adsgram !== 'undefined') {
+    console.log('✅ Adsgram SDK loaded');
+    try {
+      // Adsgram.init is used for watch ad block (rewardAd)
+      rewardAd = Adsgram.init({ blockId: WATCH_AD_BLOCK_ID });
+      console.log('✅ Watch Ad initialized');
+      joinAd = Adsgram.init({ blockId: JOIN_CHANNEL_AD_BLOCK_ID });
+      console.log('✅ Join Channel Ad initialized');
+      // optionally show join popup using joinAd
+      joinAd.show().finally(() => {
+        document.getElementById('joinPopup').style.display = 'flex';
+      });
+    } catch (e) { console.error('Adsgram init error', e); }
+  } else {
+    console.error('❌ Adsgram SDK not loaded');
+  }
+
+  // Load server state from Supabase (merge into local state)
+  await loadStateFromSupabase();
+
+  // Check 24h cooldown expiration for the three tasks
+  checkTask123CooldownOnLoad();
+
+  // initial render
+  render();
+  renderActivity();
+
+  // update ad button countdown each second
+  setInterval(updateAdButton, 1000);
+  // update claim button countdown each second to keep UI fresh
+  setInterval(updateClaimButton, 1000);
+};
+
+// ============ LOAD / MERGE STATE FROM SUPABASE ============
+async function loadStateFromSupabase(){
+  if (!SUPA) return;
+  try {
+    const { data, error } = await SUPA
+      .from('taskhub_users')
+      .select('id, balance, refer_count, refer_earned, meta')
+      .eq('id', appUserId)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      console.warn('Supabase load user error', error);
+    }
+
+    if (data) {
+      // Preserve DB balance if present; local balance remains if DB not authoritative
+      if (typeof data.balance === 'number' || typeof data.balance === 'string') {
+        balance = Number(data.balance || balance);
+      }
+      referCount = Number(data.refer_count || referCount);
+      referEarned = Number(data.refer_earned || referEarned);
+
+      if (data.meta && typeof data.meta === 'object') {
+        const m = data.meta;
+        adDailyCount = Number(m.adDailyCount ?? adDailyCount);
+        adDailyDate = m.adDailyDate ?? adDailyDate;
+        adsWatchedToday = Number(m.adsWatchedToday ?? adsWatchedToday);
+        offerTasksCompletedToday = Number(m.offerTasksCompletedToday ?? offerTasksCompletedToday);
+        taskDailyCount = Number(m.taskDailyCount ?? taskDailyCount);
+        taskDailyDate = m.taskDailyDate ?? taskDailyDate;
+        lastAdTime = Number(m.lastAdTime ?? lastAdTime);
+        lastTaskTime = Number(m.lastTaskTime ?? lastTaskTime);
+        bonusClaimedToday = m.bonusClaimedToday ?? bonusClaimedToday;
+        completedOptionalTasks = m.completedOptionalTasks ?? completedOptionalTasks;
+        task123CooldownUntil = Number(m.task123CooldownUntil ?? task123CooldownUntil);
+        claimCooldownUntil = Number(m.claimCooldownUntil ?? claimCooldownUntil);
+      }
+
+      const { data: acts, error: aerr } = await SUPA
+        .from('taskhub_activities')
+        .select('type, points, meta, created_at')
+        .eq('user_id', appUserId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (!aerr && Array.isArray(acts) && acts.length) {
+        activity = acts.map(a => ({
+          title: (a.meta && a.meta.title) ? a.meta.title : (a.type || 'activity'),
+          pts: Number(a.points || 0),
+          when: new Date(a.created_at).toLocaleString()
+        }));
+      }
+      persist();
+      console.log('✅ State merged from Supabase');
+    } else {
+      // ensure a DB row exists, meta will include initial values
+      await SUPA.from('taskhub_users').upsert({
+        id: appUserId,
+        balance: balance,
+        refer_count: referCount,
+        refer_earned: referEarned,
+        meta: {
+          adDailyCount, adDailyDate, adsWatchedToday, offerTasksCompletedToday,
+          taskDailyCount, taskDailyDate, lastAdTime, lastTaskTime,
+          bonusClaimedToday, completedOptionalTasks, task123CooldownUntil, claimCooldownUntil
+        }
+      });
+      console.log('✅ New user row ensured in Supabase');
+    }
+  } catch (e) {
+    console.error('Error loading state from Supabase', e);
+  }
+}
+
+// ============ PERSIST & RENDER ============
+function persist(){
+  localStorage.setItem('th_balance', balance);
+  localStorage.setItem('th_adDailyCount', adDailyCount);
+  localStorage.setItem('th_adDailyDate', adDailyDate);
+  localStorage.setItem('th_taskDailyCount', taskDailyCount);
+  localStorage.setItem('th_taskDailyDate', taskDailyDate);
+  localStorage.setItem('th_lastAdTime', lastAdTime);
+  localStorage.setItem('th_lastTaskTime', lastTaskTime);
+  localStorage.setItem('th_adsWatchedToday', adsWatchedToday);
+  localStorage.setItem('th_offerTasksCompletedToday', offerTasksCompletedToday);
+  localStorage.setItem('th_bonusClaimedToday', bonusClaimedToday);
+  localStorage.setItem('th_completedOptionalTasks', JSON.stringify(completedOptionalTasks));
+  localStorage.setItem('th_referCount', referCount);
+  localStorage.setItem('th_referEarned', referEarned);
+  localStorage.setItem('th_activity', JSON.stringify(activity.slice(0,20)));
+  localStorage.setItem('th_task123CooldownUntil', String(task123CooldownUntil));
+  localStorage.setItem('th_claimCooldownUntil', String(claimCooldownUntil));
+
+  if (!SUPA) return;
+  const meta = {
+    adDailyCount, adDailyDate, adsWatchedToday, offerTasksCompletedToday,
+    taskDailyCount, taskDailyDate, lastAdTime, lastTaskTime,
+    bonusClaimedToday, completedOptionalTasks, task123CooldownUntil, claimCooldownUntil
+  };
+  (async () => {
+    try {
+      const { error } = await SUPA.from('taskhub_users').upsert({
+        id: appUserId,
+        balance: balance,
+        refer_count: referCount,
+        refer_earned: referEarned,
+        meta
+      }, { onConflict: 'id' });
+      if (error) console.warn('Supabase upsert user error', error);
+    } catch (e) {
+      console.error('Supabase persist error', e);
+    }
+  })();
+}
+
+function addActivity(title, pts, opts = { remote: true }){
+  activity.unshift({ title, pts, when: new Date().toLocaleString() });
+  activity = activity.slice(0, 50);
+  persist();
+  renderActivity();
+
+  if (SUPA && opts.remote !== false) {
+    (async () => {
+      try {
+        const meta = { title };
+        const { error } = await SUPA.from('taskhub_activities').insert({ user_id: appUserId, type: 'app', points: pts, meta });
+        if (error) console.warn('Supabase insert activity error', error);
+      } catch (e) {
+        console.error('Supabase activity insert error', e);
+      }
+    })();
+  }
+}
+
+function renderActivity(){
+  const list = document.getElementById('txnList');
+  if (!activity.length){
+    list.innerHTML = '<div class="txn"><div><div class="t">No activity yet</div><div class="d">Watch an ad or complete a task to get started</div></div></div>';
+    return;
+  }
+  list.innerHTML = activity.slice(0,10).map(a => `<div class="txn"><div><div class="t">${a.title}</div><div class="d">${a.when}</div></div><div class="amt ${a.pts < 0 ? 'neg' : ''}">${a.pts > 0 ? '+' : ''}${a.pts} pts</div></div>`).join('');
+}
+
+function updateDailyBonus(){
+  // Keep visual counts but claim is independent now
+  const offerTasksRequired = 3;
+  const adsWatchedRequired = 10;
+  const manualTasksRequired = 4;
+  document.getElementById('offerTasksCount').innerText = `${offerTasksCompletedToday}/${offerTasksRequired}`;
+  document.getElementById('adsWatchedCount').innerText = `${adsWatchedToday}/${adsWatchedRequired}`;
+  document.getElementById('manualTasksCount').innerText = `${Object.values(completedOptionalTasks).filter(Boolean).length}/${manualTasksRequired}`;
+
+  const completedCount = (offerTasksCompletedToday >= offerTasksRequired ? 1 : 0) + 
+                         (adsWatchedToday >= adsWatchedRequired ? 1 : 0) + 
+                         (Object.values(completedOptionalTasks).filter(Boolean).length >= manualTasksRequired ? 1 : 0);
+  document.getElementById('bonusProgress').innerText = `${completedCount}/3`;
+  const progress = (completedCount / 3) * 100;
+  document.getElementById('bonusProgressBar').style.width = Math.min(100, progress) + '%';
+}
+
+function render(){
+  document.getElementById('balanceNum').innerText = balance;
+  document.getElementById('walletBalance').innerText = balance;
+  document.getElementById('adDailyCap').innerText = `Daily ${adDailyCount} / ${AD_MAX_PER_DAY}`;
+  document.getElementById('adProgressFill').style.width = Math.min(100, (adDailyCount/AD_MAX_PER_DAY)*100) + '%';
+  document.getElementById('taskDailyCap').innerText = `Daily ${taskDailyCount} / ${TASK_MAX_PER_DAY}`;
+  document.getElementById('taskProgressFill').style.width = Math.min(100, (taskDailyCount/TASK_MAX_PER_DAY)*100) + '%';
+  document.getElementById('referCount').innerText = `${referCount} friends joined`;
+  document.getElementById('referEarned').innerText = `+${referEarned} pts`;
+  updateDailyBonus();
+  updateOptionalTaskButtons();
+  updateAdButton();
+  updateClaimButton();
+  persist();
+}
+
+function updateAdButton(){
+  const btn = document.getElementById('watchAdBtn');
+  const now = Date.now();
+  const sinceLast = now - lastAdTime;
+  const capped = adDailyCount >= AD_MAX_PER_DAY;
+
+  if (capped){
+    btn.disabled = true;
+    btn.innerText = 'Daily cap reached';
+  } else if (sinceLast < AD_COOLDOWN_MS){
+    btn.disabled = true;
+    const secs = Math.ceil((AD_COOLDOWN_MS - sinceLast)/1000);
+    btn.innerText = `Next ad in ${secs}s`;
+  } else {
+    btn.disabled = false;
+    btn.innerText = '▶ Watch Ad';
+  }
+}
+
+function updateOptionalTaskButtons(){
+  const now = Date.now();
+  const inCooldown = task123CooldownUntil && task123CooldownUntil > now;
+
+  ['task1','task2','task3','bot'].forEach(taskId => {
+    const btn = document.getElementById(`task-${taskId}`);
+    if (!btn) return;
+    if (inCooldown && (taskId === 'task1' || taskId === 'task2' || taskId === 'task3')) {
+      btn.classList.remove('done');
+      btn.disabled = true;
+      const mins = Math.ceil((task123CooldownUntil - now) / (1000*60));
+      btn.innerText = `Locked ${mins}m`;
+      return;
+    }
+    if (completedOptionalTasks[taskId]) {
+      btn.classList.add('done');
+      btn.innerText = '✅ Done';
+      btn.disabled = true;
+    } else {
+      btn.classList.remove('done');
+      btn.disabled = false;
+      const reward = OPTIONAL_TASKS_CONFIG[taskId] ? OPTIONAL_TASKS_CONFIG[taskId].reward : '';
+      btn.innerText = reward ? `+${reward} pts` : 'Do';
+    }
+  });
+}
+
+// ============ CLAIM BUTTON UI & HANDLER ============
+function updateClaimButton(){
+  const btn = document.getElementById('claimBonusBtn');
+  const now = Date.now();
+  if (claimCooldownUntil && claimCooldownUntil > now) {
+    btn.disabled = true;
+    const remaining = claimCooldownUntil - now;
+    const hours = Math.floor(remaining / (1000*60*60));
+    const minutes = Math.floor((remaining % (1000*60*60)) / (1000*60));
+    btn.innerText = `Claim in ${hours}h ${minutes}m`;
+  } else {
+    btn.disabled = false;
+    btn.innerText = `Claim ${DAILY_BONUS_CONFIG.bonusReward} pts`;
+  }
+}
+
+document.getElementById('claimBonusBtn').addEventListener('click', () => {
+  const now = Date.now();
+  if (claimCooldownUntil && claimCooldownUntil > now) {
+    const remainingMs = claimCooldownUntil - now;
+    const minutes = Math.ceil(remainingMs / (1000*60));
+    toast(`⏳ You can claim again in ${minutes} min`);
+    return;
+  }
+  const reward = DAILY_BONUS_CONFIG.bonusReward || 100;
+  balance += reward;
+  claimCooldownUntil = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+  addActivity('Claim bonus', reward);
+  toast(DAILY_BONUS_CONFIG.bonusMessage || `+${reward} pts`);
+  updateClaimButton();
+  render();
+});
+
+// ============ TOAST ============
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.innerText = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+}
+
+// ============ WATCH AD (uses Adsgram.init block for rewardAd) ============
+document.getElementById('watchAdBtn').addEventListener('click', async () => {
+  if (!rewardAd) {
+    toast('⏳ Ad system loading...');
+    return;
+  }
+  
+  const btn = document.getElementById('watchAdBtn');
+  btn.disabled = true;
+  btn.innerText = '⏳ Loading Ad...';
+  
+  try {
+    const res = await rewardAd.show();
+    if (res?.done) {
+      balance += AD_REWARD;
+      adDailyCount += AD_REWARD; // adDailyCount tracks points earned from watch ads today
+      lastAdTime = Date.now();
+      adsWatchedToday++;
+      addActivity('Rewarded ad watched', AD_REWARD);
+      toast(`+${AD_REWARD} pts — thanks for watching!`);
+      updateDailyBonus();
+      render();
+    } else {
+      toast('⚠️ Ad skipped - no reward');
+    }
+  } catch (error) {
+    console.error('Ad error:', error);
+    toast('⚠️ Ad closed - no reward');
+  } finally {
+    updateAdButton();
+  }
+});
+
+// ============ OPTIONAL TASKS (Adsgram tasks using <adsgram-task> element) ============
+function checkTask123CooldownOnLoad(){
+  const now = Date.now();
+  if (task123CooldownUntil && task123CooldownUntil <= now) {
+    ['task1','task2','task3'].forEach(k => { completedOptionalTasks[k] = false; });
+    task123CooldownUntil = 0;
+    persist();
+  }
+}
+
+async function showAdsgramTaskBlock(blockId){
+  return new Promise((resolve, reject) => {
+    if (typeof document === 'undefined') return reject(new Error('DOM not available'));
+    // create the element
+    const el = document.createElement('adsgram-task');
+    el.setAttribute('data-block-id', blockId);
+    // style as a centered popup so user sees it
+    el.style.position = 'fixed';
+    el.style.left = '50%';
+    el.style.top = '50%';
+    el.style.transform = 'translate(-50%,-50%)';
+    el.style.zIndex = 100000;
+    el.style.maxWidth = '92%';
+    el.style.width = '420px';
+    document.body.appendChild(el);
+
+    let settled = false;
+    const cleanup = () => {
+      try { if (el && el.parentNode) el.parentNode.removeChild(el); } catch(e){}
+      try {
+        if (originalOfferHandlerRef.wrapped) {
+          window.onOfferTaskCompleted = originalOfferHandlerRef.original || undefined;
+        }
+      } catch(e){}
+      try { el.removeEventListener('complete', onComplete); } catch(e){}
+      try { el.removeEventListener('done', onComplete); } catch(e){}
+      try { el.removeEventListener('close', onClose); } catch(e){}
+      clearTimeout(timeout);
+    };
+
+    const onComplete = (ev) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve({ done: true, detail: ev && ev.detail });
+    };
+    const onClose = (ev) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve({ done: false });
+    };
+
+    el.addEventListener('complete', onComplete);
+    el.addEventListener('done', onComplete);
+    el.addEventListener('close', onClose);
+
+    // ALSO wrap window.onOfferTaskCompleted (if present) so when SDK calls it we consider it success
+    const originalOfferHandlerRef = { wrapped: false, original: null };
+    try {
+      if (typeof window !== 'undefined') {
+        const orig = window.onOfferTaskCompleted;
+        originalOfferHandlerRef.original = orig;
+        originalOfferHandlerRef.wrapped = true;
+        window.onOfferTaskCompleted = function wrappedOfferHandler(...args){
+          try { if (typeof orig === 'function') orig.apply(this, args); } catch(e){ console.warn('orig onOfferTaskCompleted error', e); }
+          if (settled) return;
+          settled = true;
+          cleanup();
+          resolve({ done: true });
+        };
+      }
+    } catch (e) {
+      console.warn('Could not wrap window.onOfferTaskCompleted', e);
+    }
+
+    // Safety timeout: if nothing happens within 5 minutes, consider it not completed
+    const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve({ done: false });
+    }, 5 * 60 * 1000);
+
+    // If the element exposes show(), call it (some SDKs do)
+    try {
+      if (typeof el.show === 'function') {
+        const maybe = el.show();
+        if (maybe && typeof maybe.then === 'function') {
+          // ignore; events/onOfferTaskCompleted will resolve
+        }
+      }
+    } catch (e) {
+      // ignore
+    }
+  });
+}
+
+async function completeOptionalTask(taskId){
+  // If the 24h cooldown for all three tasks is active, block
+  const now = Date.now();
+  if (task123CooldownUntil && task123CooldownUntil > now) {
+    const remainingMs = task123CooldownUntil - now;
+    const minutes = Math.ceil(remainingMs / (1000 * 60));
+    toast(`⏳ All tasks locked for ${minutes} more minutes`);
+    return;
+  }
+
+  // Adsgram tasks (task1, task2, task3)
+  if (taskId === 'task1' || taskId === 'task2' || taskId === 'task3') {
+    if (completedOptionalTasks[taskId]) { toast('Already completed'); return; }
+    const blockId = ADGRAM_TASKS[taskId];
+    if (!blockId) { toast('Task not configured'); return; }
+
+    try {
+      toast('⏳ Opening task...');
+      const res = await showAdsgramTaskBlock(blockId);
+      if (res?.done) {
+        const reward = OPTIONAL_TASKS_CONFIG[taskId].reward || 20;
+        balance += reward;
+        completedOptionalTasks[taskId] = true;
+        addActivity(`Task completed: ${OPTIONAL_TASKS_CONFIG[taskId].title}`, reward);
+        toast(`+${reward} pts — ${OPTIONAL_TASKS_CONFIG[taskId].title} completed!`);
+        // If all three are completed now, set 24h cooldown (prevent re-doing until it expires)
+        if (completedOptionalTasks['task1'] && completedOptionalTasks['task2'] && completedOptionalTasks['task3']) {
+          task123CooldownUntil = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
+          toast('✅ All tasks done — locked for 24 hours');
+        }
+        updateDailyBonus();
+        render();
+      } else {
+        toast('⚠️ Task not completed - no reward');
+      }
+    } catch (e) {
+      console.error('Adsgram task error', e);
+      toast('⚠️ Could not open task');
+    }
+    return;
+  }
+
+  // fallback for other manual tasks (bot)
+  if (completedOptionalTasks[taskId]) {
+    toast('Already completed');
+    return;
+  }
+  const config = OPTIONAL_TASKS_CONFIG[taskId];
+  if (config && config.url) window.open(config.url, '_blank');
+  completedOptionalTasks[taskId] = true;
+  balance += (config.reward || 0);
+  addActivity(`Task completed: ${config.title}`, config.reward || 0);
+  toast(`+${config.reward} pts — ${config.title} completed!`);
+  updateDailyBonus();
+  render();
+}
+
+// ============ JOIN CHANNEL ============
+document.getElementById('joinBtn').onclick = () => {
+  balance += 5;
+  addActivity('Joined channel', 5);
+  document.getElementById("joinPopup").style.display = "none";
+  toast('✨ +5 pts for joining!');
+  window.open(OPTIONAL_TASKS_CONFIG.join?.url || OPTIONAL_TASKS_CONFIG.bot.url, "_blank");
+  render();
+};
+
+// ============ TRACK OFFER TASK COMPLETION (via Adsgram) ============
+window.onOfferTaskCompleted = function(){
+  if (offerTasksCompletedToday < 999999) { // keep counting if desired
+    offerTasksCompletedToday++;
+    addActivity('Offer task completed', 10);
+    updateDailyBonus();
+    render();
+  }
+};
+
+// ============ REFERRAL (local UI actions) ============
+document.getElementById('copyReferBtn').addEventListener('click', () => {
+  const input = document.getElementById('referLinkInput');
+  navigator.clipboard?.writeText(input.value).then(() => toast('📋 Referral link copied!'));
+});
+
+// If you implement server-side referral creation, call this function to record referral
+async function recordReferral(inviterId, refereeId, reward = 100) {
+  if (!SUPA) return;
+  try {
+    const { error } = await SUPA.from('taskhub_referrals').insert({
+      inviter_id: inviterId,
+      referee_id: refereeId,
+      reward
+    });
+    if (error) console.warn('Supabase referral insert error', error);
+    else {
+      const { data } = await SUPA.from('taskhub_users').select('refer_count, refer_earned, balance').eq('id', inviterId).single();
+      if (data) {
+        referCount = Number(data.refer_count || referCount);
+        referEarned = Number(data.refer_earned || referEarned);
+        balance = Number(data.balance || balance);
+        persist();
+        render();
+      }
+    }
+  } catch (e) {
+    console.error('recordReferral error', e);
+  }
+}
+
+// ============ WITHDRAWAL ============
+async function sendWithdrawalToTelegram(details){
+  const text = `💸 New withdrawal request\nUser: ${details.userId}\nMethod: ${details.method}\nAddress: ${details.address}\nAmount: ${details.amount} pts\nRequested: ${details.when}`;
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text }) });
+  if (!res.ok) throw new Error('Telegram forward failed');
+  return res.json();
+}
+
+document.getElementById('withdrawBtn').addEventListener('click', async () => {
+  const method = document.getElementById('withdrawMethod').value;
+  const address = document.getElementById('withdrawAddress').value.trim();
+  const amount = parseInt(document.getElementById('withdrawAmount').value, 10);
+
+  if (!address) { toast('⚠️ Enter wallet address'); return; }
+  if (!amount || amount < MIN_WITHDRAWAL) { toast(`⚠️ Minimum ${MIN_WITHDRAWAL} pts`); return; }
+  if (amount > balance) { toast('⚠️ Not enough points'); return; }
+
+  const btn = document.getElementById('withdrawBtn');
+  btn.disabled = true;
+  btn.innerText = 'Sending request…';
+
+  const details = {
+    userId: appUserId,
+    method, address, amount,
+    when: new Date().toLocaleString()
+  };
+
+  try{
+    if (SUPA) {
+      const { data, error } = await SUPA.from('taskhub_withdrawals').insert({
+        user_id: appUserId,
+        method,
+        address,
+        amount
+      }).select();
+      if (error) {
+        console.error('Supabase withdrawal insert error', error);
+        toast('⚠️ Error creating withdrawal');
+        btn.disabled = false;
+        btn.innerText = 'Request Withdrawal';
+        return;
+      }
+      balance -= amount;
+      addActivity(`Withdrawal requested (${method})`, -amount, { remote: false });
+      persist();
+    } else {
+      balance -= amount;
+      addActivity(`Withdrawal requested (${method})`, -amount);
+      persist();
+    }
+
+    try {
+      await sendWithdrawalToTelegram(details);
+    } catch (e) {
+      console.warn('Telegram notify failed', e);
+    }
+
+    toast('✅ Withdrawal sent for review!');
+    document.getElementById('withdrawAddress').value = '';
+    document.getElementById('withdrawAmount').value = '';
+    render();
+  } catch(e){
+    toast('⚠️ Error sending request');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+    btn.innerText = 'Request Withdrawal';
+  }
+});
+
+// ============ NAVIGATION ============
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(`${name}-page`).classList.add('active');
+  document.getElementById(`nav-${name}`).classList.add('active');
+}
+
+</script>
+
+</body>
+</html>
