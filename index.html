@@ -148,28 +148,12 @@
   #joinPopup button{padding:14px 20px; border:none; border-radius:12px; background:linear-gradient(90deg,var(--refer),#3a54c9); color:#fff; font-weight:bold; cursor:pointer; font-size:16px;}
   #joinPopup button:active{transform:scale(0.96);}
 
-  /* DAILY BONUS SECTION */
-  .daily-bonus-section{background:linear-gradient(135deg, rgba(242,169,59,0.15), rgba(34,195,166,0.15)); border:1px solid var(--warn-line); border-radius:16px; padding:16px; margin-bottom:16px;}
-  .daily-bonus-section h3{color:#f2a93b; margin-bottom:12px; font-size:14px;}
-  .bonus-progress{display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:8px; margin-bottom:12px;}
-  .bonus-stat{background:var(--panel); padding:10px; border-radius:10px; text-align:center;}
-  .bonus-stat .label{font-size:10px; color:var(--muted);}
-  .bonus-stat .value{font-size:16px; font-weight:700; color:#22c3a6; margin-top:4px;}
-  .bonus-progress-bar{width:100%; height:8px; background:#1b2a40; border-radius:20px; overflow:hidden; margin-bottom:10px;}
-  .bonus-progress-bar > div{height:100%; width:0%; background:linear-gradient(90deg, #f2a93b, #22c3a6); transition:width .3s;}
-  .bonus-btn{width:100%; padding:12px; border:none; border-radius:10px; background:linear-gradient(90deg, #f2a93b, #22c3a6); color:#000; font-weight:700; cursor:pointer;}
-  .bonus-btn:disabled{opacity:.5; cursor:not-allowed; background:#8a96a3;}
-  .bonus-note{font-size:11px; color:var(--muted); margin-top:10px; line-height:1.4;}
-
-  /* OPTIONAL TASKS */
-  .optional-task-item{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line);}
-  .optional-task-item:last-child{border-bottom:none;}
-  .optional-task-item .t{font-size:13.5px; font-weight:600;}
-  .optional-task-item .s{font-size:11.5px; color:var(--muted); margin-top:2px;}
-  .optional-task-item .reward{font-size:12px; color:#22c3a6; font-weight:700;}
-  .optional-btn{background:#22c3a6; color:#000; border:none; padding:8px 14px; border-radius:8px; font-weight:700; font-size:12px; cursor:pointer;}
-  .optional-btn.done{background:#2a3542; color:var(--muted); cursor:default;}
-  .optional-btn:disabled{opacity:.6;}
+  /* DAILY BONUS SECTION (simplified) */
+  .daily-bonus-section{background:linear-gradient(135deg, rgba(242,169,59,0.08), rgba(34,195,166,0.06)); border:1px solid var(--warn-line); border-radius:16px; padding:12px; margin-bottom:16px; display:flex; flex-direction:column; gap:10px;}
+  .daily-bonus-section h3{color:#f2a93b; margin:0; font-size:14px;}
+  .daily-bonus-actions{display:flex; gap:10px; align-items:center;}
+  .bonus-btn{padding:10px 14px; border:none; border-radius:10px; background:linear-gradient(90deg, #f2a93b, #22c3a6); color:#000; font-weight:700; cursor:pointer;}
+  .bonus-note{font-size:12px; color:var(--muted); margin:0;}
 </style>
 </head>
 <body>
@@ -245,33 +229,12 @@
       <p>Optional actions. Complete any of these when you feel like it.</p>
     </div>
 
-    <!-- ============ DAILY BONUS SECTION ============ -->
+    <!-- ============ DAILY BONUS SECTION (simplified; requirements removed) ============ -->
     <div class="daily-bonus-section">
-      <h3>🎁 Daily Bonus Challenge</h3>
-      <div class="bonus-progress">
-        <div class="bonus-stat">
-          <div class="label">Offer Tasks</div>
-          <div class="value" id="offerTasksCount">0/3</div>
-        </div>
-        <div class="bonus-stat">
-          <div class="label">Ads Watched</div>
-          <div class="value" id="adsWatchedCount">0/10</div>
-        </div>
-        <div class="bonus-stat">
-          <div class="label">Manual Tasks</div>
-          <div class="value" id="manualTasksCount">0/4</div>
-        </div>
-        <div class="bonus-stat">
-          <div class="label">Progress</div>
-          <div class="value" id="bonusProgress">0/3</div>
-        </div>
-      </div>
-      <div class="bonus-progress-bar">
-        <div id="bonusProgressBar"></div>
-      </div>
-      <button class="bonus-btn" id="claimBonusBtn" disabled>Claim 100 pts Bonus</button>
-      <div class="bonus-note">
-        ⭐ Click to claim 100 pts. Can claim once every 24 hours.
+      <h3>🎁 Daily Bonus</h3>
+      <div class="daily-bonus-actions">
+        <button class="bonus-btn" id="claimBonusBtn" disabled>Claim 100 pts</button>
+        <div class="bonus-note">You can claim this bonus once every 24 hours. No extra requirements.</div>
       </div>
     </div>
 
@@ -315,8 +278,6 @@
         </div>
       </div>
     </div>
-
-    <!-- NOTE: Offer Tasks block removed to disable the always-visible offer-task button -->
 
     <div class="disclaimer">
       <b>No pressure.</b> Skipping every task on this page has zero effect on your account, balance, or access to any part of the app.
@@ -696,21 +657,9 @@ function renderActivity(){
   list.innerHTML = activity.slice(0,10).map(a => `<div class="txn"><div><div class="t">${a.title}</div><div class="d">${a.when}</div></div><div class="amt ${a.pts < 0 ? 'neg' : ''}">${a.pts > 0 ? '+' : ''}${a.pts} pts</div></div>`).join('');
 }
 
+// simplified: daily bonus no longer requires tasks/ads to be completed
 function updateDailyBonus(){
-  // Keep visual counts but claim is independent now
-  const offerTasksRequired = 3;
-  const adsWatchedRequired = 10;
-  const manualTasksRequired = 4;
-  document.getElementById('offerTasksCount').innerText = `${offerTasksCompletedToday}/${offerTasksRequired}`;
-  document.getElementById('adsWatchedCount').innerText = `${adsWatchedToday}/${adsWatchedRequired}`;
-  document.getElementById('manualTasksCount').innerText = `${Object.values(completedOptionalTasks).filter(Boolean).length}/${manualTasksRequired}`;
-
-  const completedCount = (offerTasksCompletedToday >= offerTasksRequired ? 1 : 0) + 
-                         (adsWatchedToday >= adsWatchedRequired ? 1 : 0) + 
-                         (Object.values(completedOptionalTasks).filter(Boolean).length >= manualTasksRequired ? 1 : 0);
-  document.getElementById('bonusProgress').innerText = `${completedCount}/3`;
-  const progress = (completedCount / 3) * 100;
-  document.getElementById('bonusProgressBar').style.width = Math.min(100, progress) + '%';
+  // intentionally empty — requirements removed; UI only shows claim and note
 }
 
 function render(){
@@ -952,7 +901,7 @@ async function showAdsgramTaskBlock(blockId){
 async function completeOptionalTask(taskId){
   // If the 24h cooldown for all three tasks is active, block
   const now = Date.now();
-  if (task123CooldownUntil && task123CooldownUntil > now) {
+  if (task123CooldownUntil && task123CooldownUntil > now && (taskId === 'task1' || taskId === 'task2' || taskId === 'task3')) {
     const remainingMs = task123CooldownUntil - now;
     const minutes = Math.ceil(remainingMs / (1000 * 60));
     toast(`⏳ All tasks locked for ${minutes} more minutes`);
@@ -1005,6 +954,37 @@ async function completeOptionalTask(taskId){
   updateDailyBonus();
   render();
 }
+
+// ============ GO → button: open a random manual task ============
+document.getElementById('goTasksBtn').addEventListener('click', async () => {
+  const manualKeys = Object.keys(OPTIONAL_TASKS_CONFIG); // e.g. ['task1','task2','task3','bot']
+  const now = Date.now();
+
+  // Prefer tasks that are available: not completed and not locked by the 24h task123 cooldown
+  const available = manualKeys.filter(k => {
+    if (completedOptionalTasks[k]) return false;
+    if ((k === 'task1' || k === 'task2' || k === 'task3') && task123CooldownUntil && task123CooldownUntil > now) return false;
+    return true;
+  });
+
+  let chosen;
+  if (available.length) {
+    chosen = available[Math.floor(Math.random() * available.length)];
+  } else {
+    // fallback: pick any (even if completed or locked) so user always gets a task shown
+    chosen = manualKeys[Math.floor(Math.random() * manualKeys.length)];
+  }
+
+  // Execute the same flow as tapping the specific task button
+  try {
+    await completeOptionalTask(chosen);
+  } catch (e) {
+    console.error('Error opening random task', e);
+    toast('⚠️ Could not open task');
+    // as fallback, navigate to tasks page
+    showPage('tasks');
+  }
+});
 
 // ============ JOIN CHANNEL ============
 /* Join popup and its handler removed per request */
