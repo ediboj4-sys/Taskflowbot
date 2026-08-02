@@ -316,17 +316,7 @@
       </div>
     </div>
 
-    <!-- ============ ADSGRAM TASK BLOCK - ALWAYS VISIBLE ============ -->
-    <div class="adsgram-section">
-      <h2>🎁 Offer Tasks - Complete Unlimited!</h2>
-      <div class="adsgram-cap">
-        <div style="margin-bottom:8px;">📊 Daily 0 / 300 pts | ⏱️ Cooldown: 30 sec</div>
-        <div>Complete as many offers as you want with 30-second cooldown between tasks!</div>
-      </div>
-      <!-- ✅ TASK BLOCK - Always visible, always available -->
-      <adsgram-task id="adsgramBlock" data-block-id="task-37623"></adsgram-task>
-      <p style="font-size:11px; color:var(--muted); margin-top:10px;">📋 Block ID: task-37623</p>
-    </div>
+    <!-- NOTE: Offer Tasks block removed to disable the always-visible offer-task button -->
 
     <div class="disclaimer">
       <b>No pressure.</b> Skipping every task on this page has zero effect on your account, balance, or access to any part of the app.
@@ -410,11 +400,7 @@
   </div>
 </div>
 
-<!-- ============ JOIN POPUP ============ -->
-<div id="joinPopup">
-  <h2>Join Our Channel</h2>
-  <button id="joinBtn">Join Channel +5 pts</button>
-</div>
+<!-- JOIN POPUP removed -->
 
 <div class="toast" id="toast"></div>
 
@@ -474,7 +460,7 @@ const ADGRAM_TASKS = {
 
 const WATCH_AD_BLOCK_ID = '40081';
 const ADSGRAM_TASK_BLOCK_ID = 'task-40082';
-const JOIN_CHANNEL_AD_BLOCK_ID = '40081';
+// JOIN_CHANNEL_AD_BLOCK_ID removed
 
 const TELEGRAM_BOT_TOKEN = 'YOUR_BOT_TOKEN';
 const ADMIN_CHAT_ID = '23674574';
@@ -535,7 +521,7 @@ if (tg?.initDataUnsafe?.user?.id) {
 
 // ============ ADSGRAM SDK INIT ============
 let rewardAd = null;
-let joinAd = null;
+// joinAd removed (pre-load join popup removed)
 
 window.onload = async () => {
   // Init Adsgram (if available)
@@ -545,12 +531,7 @@ window.onload = async () => {
       // Adsgram.init is used for watch ad block (rewardAd)
       rewardAd = Adsgram.init({ blockId: WATCH_AD_BLOCK_ID });
       console.log('✅ Watch Ad initialized');
-      joinAd = Adsgram.init({ blockId: JOIN_CHANNEL_AD_BLOCK_ID });
-      console.log('✅ Join Channel Ad initialized');
-      // optionally show join popup using joinAd
-      joinAd.show().finally(() => {
-        document.getElementById('joinPopup').style.display = 'flex';
-      });
+      // NOTE: pre-load join-channel popup / joinAd was intentionally removed
     } catch (e) { console.error('Adsgram init error', e); }
   } else {
     console.error('❌ Adsgram SDK not loaded');
@@ -1026,24 +1007,10 @@ async function completeOptionalTask(taskId){
 }
 
 // ============ JOIN CHANNEL ============
-document.getElementById('joinBtn').onclick = () => {
-  balance += 5;
-  addActivity('Joined channel', 5);
-  document.getElementById("joinPopup").style.display = "none";
-  toast('✨ +5 pts for joining!');
-  window.open(OPTIONAL_TASKS_CONFIG.join?.url || OPTIONAL_TASKS_CONFIG.bot.url, "_blank");
-  render();
-};
+/* Join popup and its handler removed per request */
 
 // ============ TRACK OFFER TASK COMPLETION (via Adsgram) ============
-window.onOfferTaskCompleted = function(){
-  if (offerTasksCompletedToday < 999999) { // keep counting if desired
-    offerTasksCompletedToday++;
-    addActivity('Offer task completed', 10);
-    updateDailyBonus();
-    render();
-  }
-};
+/* window.onOfferTaskCompleted removed - offer task block has been removed */
 
 // ============ REFERRAL (local UI actions) ============
 document.getElementById('copyReferBtn').addEventListener('click', () => {
