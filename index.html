@@ -3,18 +3,24 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Monopoly Farm - Demo</title>
+<title>Monopoly Farm - Dark Demo</title>
 <style>
   :root{
-    --bg:#dff6e6;
-    --primary:#2d7a3e;
-    --accent:#ff6b4a;
+    /* dark theme palette */
+    --bg-1: #041219; /* page background */
+    --bg-2: #07202b;
+    --panel:#0d2430;
+    --muted:#95a5a6;
+    --accent:#ff8533;
     --gold:#ffd27a;
-    --tile:#fffdf6;
-    --muted:#6b7b6b;
-    --panel:#ffffff;
-    --shadow: 0 10px 30px rgba(22,50,22,0.08);
-    --chat-bg: rgba(8,8,8,0.45);
+    --tile:#0f2a2a;
+    --tile-border:#164b41;
+    --hud-bg: rgba(255,255,255,0.03);
+    --shadow: 0 10px 30px rgba(0,0,0,0.6);
+    --chat-bg: rgba(0,0,0,0.55);
+    --glass: rgba(255,255,255,0.03);
+    --text: #d6f6ea;
+    --mutedText: #9fbfb4;
   }
 
   html,body{
@@ -23,8 +29,8 @@
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    background: linear-gradient(180deg,#dff6e6 0%, #eefdf0 40%, #ffffff 100%);
-    color:#14321a;
+    background: linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 60%);
+    color:var(--text);
     display:flex;
     justify-content:center;
     padding:18px;
@@ -39,72 +45,85 @@
   /* HUD */
   .hud {
     display:flex; justify-content:space-between; align-items:center; padding:10px 12px;
-    background:var(--panel); border-radius:14px; box-shadow:var(--shadow); border:1px solid rgba(0,0,0,0.04);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);
   }
   .hud-left{display:flex;gap:10px;align-items:center}
-  .logo {display:flex;align-items:center;gap:8px;font-weight:800;color:var(--primary);font-size:16px}
-  .stats {display:flex;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
-  .stat {background:linear-gradient(180deg,#ffffff,#f7fff7);padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);font-weight:700}
+  .logo {display:flex;align-items:center;gap:8px;font-weight:800;color:var(--accent);font-size:16px}
+  .stats {display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mutedText)}
+  .stat {background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);font-weight:700}
 
   .hud-right{display:flex;gap:12px;align-items:center}
-  .level{background:#f3fff3;padding:6px 10px;border-radius:999px;color:var(--primary);font-weight:800}
-  .progressWrap{width:120px;height:18px;background:linear-gradient(180deg,#fff,#f0fff0);border-radius:999px;padding:3px;border:1px solid rgba(0,0,0,0.03);display:flex;align-items:center}
+  .level{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:999px;color:var(--text);font-weight:800;border:1px solid rgba(255,255,255,0.03)}
+  .progressWrap{width:120px;height:18px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:999px;padding:3px;border:1px solid rgba(255,255,255,0.02);display:flex;align-items:center}
   .progressInner{height:100%;width:32%;background:linear-gradient(90deg,#00e0ff,#0077ff);border-radius:999px;transition:width 400ms ease}
 
   /* Board area */
   .board-wrap{
-    background: linear-gradient(180deg,#f7fff7,#ecfbea);
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
     border-radius:18px; padding:12px; box-shadow:var(--shadow); position:relative; overflow:hidden;
   }
 
   .board { width:100%; aspect-ratio:1 / 1; display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(7,1fr); gap:6px; position:relative; }
 
   .cell{background:transparent;display:flex;align-items:center;justify-content:center}
-  .tile{ width:100%; height:100%; background:var(--tile); border-radius:8px; border:3px solid rgba(240,211,169,0.9); display:flex; align-items:center; justify-content:center; font-size:13px; color:#3b2a12; box-shadow: 0 6px 14px rgba(20,40,20,0.06); position:relative; }
-  .tile.q { background:linear-gradient(180deg,#fff8e6,#fff6e0); color:#6b4a1f; font-weight:800 }
-  .tile.corner { border-radius:12px; font-weight:900; font-size:14px; background:linear-gradient(180deg,#fffdf6,#fff6d7) }
+  .tile{ width:100%; height:100%; background:var(--tile); border-radius:8px; border:3px solid var(--tile-border); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--mutedText); box-shadow: 0 6px 14px rgba(0,0,0,0.5); position:relative; }
+  .tile.q { background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); color:var(--gold); font-weight:800 }
+  .tile.corner { border-radius:12px; font-weight:900; font-size:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:var(--gold) }
 
-  .center { grid-column: 3 / span 3; grid-row: 3 / span 3; background: #f6fff6; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-direction:column; border:2px dashed rgba(0,0,0,0.03); position:relative; }
-  .boss { width:92px;height:92px;border-radius:14px; background:linear-gradient(180deg,#e6eaf7,#cfd6ff); display:flex;align-items:center;justify-content:center;flex-direction:column; box-shadow:0 10px 30px rgba(50,40,90,0.12), inset 0 -6px 12px rgba(0,0,0,0.04); border:4px solid rgba(0,0,0,0.04); cursor:pointer }
+  .center { grid-column: 3 / span 3; grid-row: 3 / span 3; background: rgba(255,255,255,0.02); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-direction:column; border:2px dashed rgba(255,255,255,0.02); position:relative; }
+  .boss { width:92px;height:92px;border-radius:14px; background:linear-gradient(180deg,#2e3145,#45486b); display:flex;align-items:center;justify-content:center;flex-direction:column; box-shadow:0 10px 30px rgba(0,0,0,0.6); border:4px solid rgba(255,255,255,0.02); cursor:pointer }
   .boss .skull{font-size:34px}
-  .boss .lv{font-size:11px;color:#4a4a4a;margin-top:6px}
+  .boss .lv{font-size:11px;color:var(--mutedText);margin-top:6px}
   .center .avatarRow{display:flex;gap:18px;margin-top:12px;align-items:flex-start}
 
-  /* right-side menu */
+  /* right-side menu (labeled buttons) */
   .menu {
-    position:absolute; right:12px; top:38%; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:40;
+    position:absolute; right:12px; top:30%; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:40;
   }
-  .menu button { width:56px; height:56px; border-radius:12px; border:none; background:linear-gradient(180deg,#ffffff,#f7fff7); box-shadow:0 8px 20px rgba(20,40,20,0.06); display:flex; align-items:center; justify-content:center; font-weight:700; cursor:pointer; border:1px solid rgba(0,0,0,0.05) }
-  .menu button.small{ width:46px;height:46px;border-radius:10px }
+  .menu button {
+    height:48px; padding:8px 12px; border-radius:12px; border:none; color:var(--text);
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    box-shadow:0 8px 20px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:flex-start; gap:10px; min-width:120px;
+    font-weight:700; cursor:pointer; border:1px solid rgba(255,255,255,0.03);
+  }
+  .menu button span.icon{ width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); color:var(--gold); font-weight:900 }
 
-  /* harvest callout at top-center, like the image */
+  /* farm callout at top-center */
   .farmCall {
-    position:absolute; left:50%; top:6%; transform:translateX(-50%); background:linear-gradient(180deg,#ffffff,#f0fff0); padding:8px 14px; border-radius:999px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); border:1px solid rgba(0,0,0,0.04);
+    position:absolute; left:50%; top:6%; transform:translateX(-50%); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:8px 14px; border-radius:999px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);
   }
-  .farmCall .harvestBtn { background:linear-gradient(180deg,#3be06f,#26b14a); color:#04260a; padding:8px 12px; border-radius:10px; font-weight:800; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(20,100,40,0.12) }
+  .farmCall .harvestBtn { background:linear-gradient(180deg,#2dd06a,#1e9b48); color:#03160a; padding:8px 12px; border-radius:10px; font-weight:800; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.5) }
 
   /* controls bottom-right: big GO */
   .controls { position:absolute; right:12px; bottom:12px; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:30; }
-  .go-btn { width:118px;height:118px;border-radius:60px;background:linear-gradient(180deg,#ff6b4a,#e84f2f); color:white;font-size:28px;font-weight:800; display:flex;align-items:center;justify-content:center; box-shadow:0 12px 30px rgba(232,80,45,0.28), inset 0 -6px 16px rgba(255,255,255,0.12); border:6px solid rgba(255,255,255,0.18); cursor:pointer }
-  .mult-btn { width:62px;height:40px;border-radius:10px;background:#ffd27a;color:#2b2b2b;font-weight:800;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.04); cursor:pointer }
+  .go-btn { width:118px;height:118px;border-radius:60px;background:linear-gradient(180deg,#ff6b4a,#e84f2f); color:white;font-size:28px;font-weight:800; display:flex;align-items:center;justify-content:center; box-shadow:0 12px 30px rgba(232,80,45,0.28), inset 0 -6px 16px rgba(255,255,255,0.12); border:6px solid rgba(255,255,255,0.06); cursor:pointer }
+  .mult-btn { width:62px;height:40px;border-radius:10px;background:#ffd27a;color:#2b2b2b;font-weight:800;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03); cursor:pointer }
 
-  /* chat overlay bottom-left */
-  .chat { position:absolute; left:14px; bottom:12px; width:64%; max-width:68%; background:var(--chat-bg); backdrop-filter: blur(6px); color:white; padding:10px 12px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.35); font-size:14px; z-index:50 }
+  /* chat overlay bottom-left (no username text) */
+  .chat { position:absolute; left:14px; bottom:12px; width:64%; max-width:68%; background:var(--chat-bg); backdrop-filter: blur(6px); color:var(--text); padding:10px 12px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.6); font-size:14px; z-index:50 }
   .chat .entry{ display:flex; gap:10px; align-items:flex-start }
   .chat .avatar-dot{ width:36px; height:36px; border-radius:50%; background:#7b45ff; display:flex; align-items:center; justify-content:center; font-weight:700; color:white }
-  .chat .msg{ flex:1 }
+  .chat .msg{ flex:1; color:var(--text) }
+  .chat .hint{ margin-top:6px; color:var(--mutedText) }
 
-  /* floating +xp effect */
-  .float-xp {
-    position:absolute; left:50%; transform:translateX(-50%); top:10%; color:#083a15; font-weight:800; font-size:18px; opacity:0; transition: transform 800ms ease, opacity 800ms ease;
+  /* referral modal */
+  .modal-backdrop {
+    position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000;
   }
+  .modal {
+    background:linear-gradient(180deg,#0b2b2a,#073f3c); color:var(--text); padding:18px; border-radius:12px; min-width:300px; box-shadow:0 18px 50px rgba(0,0,0,0.8);
+    border:1px solid rgba(255,255,255,0.02);
+  }
+  .modal input { width:100%; padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:var(--text); margin-top:8px }
+  .modal .row { display:flex; gap:8px; margin-top:12px }
 
-  /* toast */
-  #toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:22px; background:#0f2436; color:#fff; padding:10px 14px; border-radius:10px; display:none; z-index:6000; box-shadow:0 12px 30px rgba(0,0,0,0.32) }
+  /* toast & floating xp */
+  #toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:22px; background:#071423; color:#fff; padding:10px 14px; border-radius:10px; display:none; z-index:6000; box-shadow:0 12px 30px rgba(0,0,0,0.6) }
+  .float-xp { position:absolute; left:50%; transform:translateX(-50%); top:10%; color:#b4ffd8; font-weight:800; font-size:18px; opacity:0; transition: transform 800ms ease, opacity 800ms ease; }
 
-  /* bottom row */
   .bottom-row{ display:flex; align-items:center; gap:8px; padding:8px 6px; }
-  .input-like{ flex:1; background:rgba(255,255,255,0.9); padding:10px; border-radius:999px; color:#2b5f2f; font-weight:700; border:1px solid rgba(0,0,0,0.06) }
+  .input-like{ flex:1; background:rgba(255,255,255,0.03); padding:10px; border-radius:999px; color:var(--mutedText); font-weight:700; border:1px solid rgba(255,255,255,0.02) }
 
   @media (max-width:430px){
     .app{width:100%;}
@@ -113,13 +132,13 @@
 </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Monopoly Farm demo">
+  <div class="app" role="application" aria-label="Monopoly Farm - Dark demo">
 
     <div class="hud" aria-hidden="false">
       <div class="hud-left">
-        <div class="logo">🌳 Farm</div>
+        <div class="logo">🌲 Farm</div>
         <div class="stats" aria-hidden="false">
-          <div class="stat" id="coins">32.7K</div>
+          <div class="stat" id="coins">0</div>
           <div class="stat" id="gem">4455</div>
         </div>
       </div>
@@ -134,32 +153,30 @@
 
     <div class="board-wrap" role="region" aria-label="Game board">
       <div class="farmCall" role="region" aria-label="Farm controls">
-        <div style="font-weight:800;color:var(--primary)">Farm</div>
+        <div style="font-weight:800;color:var(--text)">Farm</div>
         <button class="harvestBtn" id="harvestBtn">Harvest</button>
-        <div style="font-weight:700;color:#2b5f2f" id="harvestCount">0</div>
+        <div style="font-weight:700;color:var(--mutedText)" id="harvestCount">0</div>
       </div>
 
       <div class="board" id="board"></div>
 
-      <!-- center overlays: boss + avatars -->
+      <!-- center overlays: boss + avatars (no names shown) -->
       <div style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none">
         <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:60%;display:flex;align-items:center;justify-content:center;pointer-events:auto">
           <div class="center" aria-hidden="false">
             <div class="boss" id="boss" title="Boss - click to challenge">
               <div class="skull">💀</div>
               <div class="lv">Lv.41 • 268.3K</div>
-              <div style="font-size:12px;color:#8a3b3b;margin-top:6px">×75</div>
+              <div style="font-size:12px;color:var(--mutedText);margin-top:6px">×75</div>
             </div>
 
             <div class="avatarRow" style="pointer-events:auto">
-              <div class="avatar" id="player1" title="Player 1">
-                <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white">J</div>
-                <div class="name" style="font-size:12px;color:#2d5f33">Joelly</div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px">
+                <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white; font-weight:800">J</div>
               </div>
 
-              <div class="avatar" id="player2" title="Player 2">
-                <div class="bubble" style="background:linear-gradient(180deg,#58b368,#2fa84a);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white">C</div>
-                <div class="name" style="font-size:12px;color:#2d5f33">Captain John</div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px">
+                <div class="bubble" style="background:linear-gradient(180deg,#58b368,#2fa84a);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800">C</div>
               </div>
             </div>
 
@@ -167,12 +184,12 @@
         </div>
       </div>
 
-      <!-- right-side menu -->
+      <!-- right-side labeled menu -->
       <div class="menu" role="navigation" aria-label="Quick menu">
-        <button id="taskBtn" title="Task">🏷️</button>
-        <button id="dailyBtn" title="Daily Pack">🎁</button>
-        <button id="refBtn" title="Referral">👥</button>
-        <button id="withdrawBtn" title="Withdraw">💳</button>
+        <button id="taskBtn" title="Task"><span class="icon">🏷️</span> <span>Task</span></button>
+        <button id="watchBtn" title="Watch Video"><span class="icon">🎬</span> <span>Watch</span></button>
+        <button id="withdrawBtn" title="Withdraw"><span class="icon">💳</span> <span>Withdraw</span></button>
+        <button id="refBtn" title="Referral"><span class="icon">👥</span> <span>Referral</span></button>
       </div>
 
       <!-- bottom-right controls -->
@@ -181,13 +198,13 @@
         <button class="go-btn" id="goBtn" aria-label="Go button">GO</button>
       </div>
 
-      <!-- chat overlay -->
+      <!-- chat overlay (no username text) -->
       <div class="chat" role="status" aria-live="polite">
         <div class="entry">
           <div class="avatar-dot">J</div>
           <div class="msg">
-            <div style="font-weight:700">Joelly Matthew Edibo <span style="color:#cfe8cf;font-weight:600">entered the room</span></div>
-            <div style="margin-top:6px">@Joelly Matthew Edibo click on Go to play your dice 🎲 and also try to challenge boss to get rewards buy daily pack to get rewards</div>
+            <div style="font-weight:700">entered the room</div>
+            <div class="hint">@click on Go to play your dice 🎲 and try to challenge boss to get rewards. Buy daily pack to get rewards.</div>
           </div>
         </div>
       </div>
@@ -200,19 +217,30 @@
 
     <div class="bottom-row">
       <div class="input-like">Type in Monopoly</div>
-      <div style="width:44px;height:44px;border-radius:10px;background:#ffffff;border:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center">🎤</div>
-      <div style="width:44px;height:44px;border-radius:10px;background:#ffffff;border:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center">🎁</div>
+      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">🎤</div>
+      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">🎁</div>
     </div>
 
+  </div>
+
+  <!-- referral modal -->
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
+    <div class="modal" role="document" aria-label="Referral link dialog">
+      <div style="font-weight:900;font-size:16px">Referral Link</div>
+      <div style="margin-top:8px;color:var(--mutedText)">Share this link to invite friends:</div>
+      <input id="refLink" readonly value="https://t.me/@Profitvablebot?start=12345" aria-label="Referral link">
+      <div class="row">
+        <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Link</button>
+        <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);margin-left:6px;cursor:pointer">Close</button>
+      </div>
+    </div>
   </div>
 
 <script>
 (function(){
   'use strict';
 
-  // localStorage namespace
-  const ns = 'monopoly_farm_';
-
+  const ns = 'monopoly_farm_dark_';
   // state
   let xp = Number(localStorage.getItem(ns+'xp') || 0);
   let taps = Number(localStorage.getItem(ns+'taps') || 0);
@@ -231,6 +259,16 @@
   const progressInner = document.getElementById('progressInner');
   const coinsEl = document.getElementById('coins');
   const gemEl = document.getElementById('gem');
+  const taskBtn = document.getElementById('taskBtn');
+  const watchBtn = document.getElementById('watchBtn');
+  const withdrawBtn = document.getElementById('withdrawBtn');
+  const refBtn = document.getElementById('refBtn');
+
+  // modal refs
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const copyRef = document.getElementById('copyRef');
+  const closeModal = document.getElementById('closeModal');
+  const refLinkInput = document.getElementById('refLink');
 
   function showToast(msg, timeout=2000){
     toast.textContent = msg;
@@ -250,7 +288,6 @@
     }, 900);
   }
 
-  // update UI & persist
   function updateUI(){
     level = Math.max(1, Math.floor(xp / 500) + 1);
     levelDisplay.textContent = 'Lv ' + level;
@@ -265,7 +302,7 @@
     localStorage.setItem(ns+'level', String(level));
   }
 
-  // construct board (7x7) and keep path indexes
+  // build board
   const size = 7;
   const total = size*size;
   for(let i=0;i<total;i++){
@@ -276,7 +313,6 @@
       if((r===0&&c===0)||(r===0&&c===size-1)||(r===size-1&&c===0)||(r===size-1&&c===size-1)){
         tile.classList.add('corner'); tile.textContent = '★';
       } else {
-        // alternate q and gold
         const odd = ((r+c)%2===0);
         if(odd){ tile.classList.add('q'); tile.textContent = '?'; } else { tile.classList.add('gold'); tile.textContent='□' }
       }
@@ -288,7 +324,7 @@
     board.appendChild(cell);
   }
 
-  // compute border path indices (top row left->right, right col 1..5, bottom row right->left, left col 5..1)
+  // path indices and tile elements
   function getPathIndices(){
     const path = [];
     for(let c=0;c<size;c++) path.push({r:0,c});
@@ -303,13 +339,13 @@
     return el || null;
   });
 
-  // token indicator & movement
+  // token & movement
   let tokenIndex = 0;
   function placeTokenAt(index){
     tokenIndex = index % tileElems.length;
     tileElems.forEach((t,idx)=> {
       if(!t) return;
-      t.style.boxShadow = (idx===tokenIndex) ? '0 12px 30px rgba(0,0,0,0.25), 0 0 0 6px rgba(255,215,120,0.08)' : '0 6px 14px rgba(20,40,20,0.06)';
+      t.style.boxShadow = (idx===tokenIndex) ? '0 14px 34px rgba(0,0,0,0.6), 0 0 0 6px rgba(255,215,120,0.03)' : '0 6px 14px rgba(0,0,0,0.45)';
       t.style.transform = (idx===tokenIndex) ? 'translateY(-6px) scale(1.03)' : 'translateY(0) scale(1)';
       t.style.transition = 'transform 220ms ease, box-shadow 220ms ease';
     });
@@ -343,10 +379,8 @@
     const steps = dice * mult;
     showToast('You rolled ' + dice + ' • ' + steps + ' steps', 1400);
     await animateSteps(steps, 100);
-    // land effect & small reward for landing
-    const landed = tokenIndex;
+    // landing reward
     taps += 1;
-    // random small xp
     const reward = Math.floor(5 + Math.random()*15);
     xp += reward;
     showFloat('+' + reward + ' XP');
@@ -354,10 +388,9 @@
     updateUI();
   });
 
-  // HARVEST logic (center farm action)
+  // harvest logic
   harvestBtn.addEventListener('click', ()=> {
-    // simple harvest: give XP and increment harvest count; show small animation
-    const reward = 50 + Math.floor(Math.random()*51); // 50-100 XP
+    const reward = 50 + Math.floor(Math.random()*51); // 50-100
     xp += reward;
     harvestCount += 1;
     showFloat('+' + reward + ' XP');
@@ -365,36 +398,56 @@
     updateUI();
   });
 
-  // quick menu buttons
-  document.getElementById('taskBtn').addEventListener('click', ()=> {
+  // menu actions
+  taskBtn.addEventListener('click', ()=> {
     const reward = 25;
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Task completed! +' + reward + ' XP', 1600);
+    showToast('Task complete! +' + reward + ' XP', 1400);
     updateUI();
   });
-  document.getElementById('dailyBtn').addEventListener('click', ()=> {
-    const reward = 120;
+
+  watchBtn.addEventListener('click', async ()=> {
+    // demo: simulate video watch delay then reward
+    showToast('Watching ad...', 1200);
+    await new Promise(r=>setTimeout(r, 1400));
+    const reward = 60;
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Daily pack claimed! +' + reward + ' XP', 1600);
+    showToast('Ad complete! +' + reward + ' XP', 1500);
     updateUI();
   });
-  document.getElementById('refBtn').addEventListener('click', ()=> {
-    const reward = 40;
-    xp += reward;
-    showFloat('+' + reward + ' XP');
-    showToast('Referral reward! +' + reward + ' XP', 1400);
-    updateUI();
-  });
-  document.getElementById('withdrawBtn').addEventListener('click', ()=> {
-    // demo withdraw: only show toast
+
+  withdrawBtn.addEventListener('click', ()=> {
     showToast('Withdraw requested (demo)', 1600);
+  });
+
+  // referral modal logic
+  refBtn.addEventListener('click', ()=> {
+    modalBackdrop.style.display = 'flex';
+    refLinkInput.select();
+  });
+  copyRef.addEventListener('click', async ()=> {
+    const text = refLinkInput.value || '';
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast('Referral link copied');
+    } catch(e){
+      // fallback
+      refLinkInput.select();
+      document.execCommand('copy');
+      showToast('Referral link copied (fallback)');
+    }
+  });
+  closeModal.addEventListener('click', ()=> {
+    modalBackdrop.style.display = 'none';
+  });
+  modalBackdrop.addEventListener('click', (e)=> {
+    if(e.target === modalBackdrop) modalBackdrop.style.display = 'none';
   });
 
   // boss click
   document.getElementById('boss').addEventListener('click', ()=> {
-    // pretend to challenge boss and get large reward
     const reward = 300;
     xp += reward;
     showFloat('+' + reward + ' XP');
@@ -402,16 +455,14 @@
     updateUI();
   });
 
-  // small accessibility: Enter triggers GO
+  // keyboard Enter triggers GO
   document.addEventListener('keydown', (e)=> { if(e.key === 'Enter') goBtn.click(); });
 
-  // init UI from localStorage
+  // init UI
   updateUI();
 
-  // expose small debug API
-  window._monopolyFarm = {
-    getState: ()=>({xp,taps,harvestCount,level})
-  };
+  // expose debug
+  window._monopolyFarmDark = { getState: ()=>({xp,taps,harvestCount,level}) };
 
 })();
 </script>
