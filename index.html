@@ -3,11 +3,10 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Monopoly Farm - Dark Demo</title>
+<title>Monopoly Farm - Dark demo (Optional Ads)</title>
 <style>
   :root{
-    /* dark theme palette */
-    --bg-1: #041219; /* page background */
+    --bg-1: #041219;
     --bg-2: #07202b;
     --panel:#0d2430;
     --muted:#95a5a6;
@@ -22,50 +21,30 @@
     --text: #d6f6ea;
     --mutedText: #9fbfb4;
   }
-
   html,body{
-    height:100%;
-    margin:0;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    background: linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 60%);
-    color:var(--text);
-    display:flex;
-    justify-content:center;
-    padding:18px;
-    box-sizing:border-box;
+    height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    background: linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 60%); color:var(--text);
+    display:flex; justify-content:center; padding:18px; box-sizing:border-box;
   }
-
-  .app {
-    width:412px; max-width:100%;
-    display:flex; flex-direction:column; gap:12px; position:relative;
-  }
+  .app { width:412px; max-width:100%; display:flex; flex-direction:column; gap:12px; position:relative; }
 
   /* HUD */
-  .hud {
-    display:flex; justify-content:space-between; align-items:center; padding:10px 12px;
+  .hud { display:flex; justify-content:space-between; align-items:center; padding:10px 12px;
     background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);
-  }
+    border-radius:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); }
   .hud-left{display:flex;gap:10px;align-items:center}
-  .logo {display:flex;align-items:center;gap:8px;font-weight:800;color:var(--accent);font-size:16px}
-  .stats {display:flex;gap:8px;align-items:center;font-size:13px;color:var(--mutedText)}
-  .stat {background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:6px 10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);font-weight:700}
-
+  .logo { display:flex; align-items:center; gap:8px; font-weight:800; color:var(--accent); font-size:16px }
+  .stats { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--mutedText) }
+  .stat { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); font-weight:700 }
   .hud-right{display:flex;gap:12px;align-items:center}
   .level{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:999px;color:var(--text);font-weight:800;border:1px solid rgba(255,255,255,0.03)}
   .progressWrap{width:120px;height:18px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:999px;padding:3px;border:1px solid rgba(255,255,255,0.02);display:flex;align-items:center}
   .progressInner{height:100%;width:32%;background:linear-gradient(90deg,#00e0ff,#0077ff);border-radius:999px;transition:width 400ms ease}
 
   /* Board area */
-  .board-wrap{
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:18px; padding:12px; box-shadow:var(--shadow); position:relative; overflow:hidden;
-  }
-
+  .board-wrap{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:18px; padding:12px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
   .board { width:100%; aspect-ratio:1 / 1; display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(7,1fr); gap:6px; position:relative; }
-
   .cell{background:transparent;display:flex;align-items:center;justify-content:center}
   .tile{ width:100%; height:100%; background:var(--tile); border-radius:8px; border:3px solid var(--tile-border); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--mutedText); box-shadow: 0 6px 14px rgba(0,0,0,0.5); position:relative; }
   .tile.q { background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); color:var(--gold); font-weight:800 }
@@ -77,67 +56,44 @@
   .boss .lv{font-size:11px;color:var(--mutedText);margin-top:6px}
   .center .avatarRow{display:flex;gap:18px;margin-top:12px;align-items:flex-start}
 
-  /* right-side menu (labeled buttons) */
-  .menu {
-    position:absolute; right:12px; top:30%; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:40;
-  }
-  .menu button {
-    height:48px; padding:8px 12px; border-radius:12px; border:none; color:var(--text);
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    box-shadow:0 8px 20px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:flex-start; gap:10px; min-width:120px;
-    font-weight:700; cursor:pointer; border:1px solid rgba(255,255,255,0.03);
-  }
-  .menu button span.icon{ width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); color:var(--gold); font-weight:900 }
-
-  /* farm callout at top-center */
-  .farmCall {
-    position:absolute; left:50%; top:6%; transform:translateX(-50%); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:8px 14px; border-radius:999px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03);
-  }
+  /* farm callout */
+  .farmCall { position:absolute; left:50%; top:6%; transform:translateX(-50%); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:8px 14px; border-radius:999px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); }
   .farmCall .harvestBtn { background:linear-gradient(180deg,#2dd06a,#1e9b48); color:#03160a; padding:8px 12px; border-radius:10px; font-weight:800; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.5) }
 
-  /* controls bottom-right: big GO */
-  .controls { position:absolute; right:12px; bottom:12px; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:30; }
+  /* disclaimer and bottom toolbar */
+  .disclaimer { position:absolute; left:12px; right:12px; bottom:76px; text-align:center; font-size:12px; color:var(--mutedText); z-index:65; pointer-events:none }
+  .bottom-toolbar { position: absolute; left: 12px; right: 12px; bottom: 12px; display:flex; gap:8px; justify-content:space-between; align-items:center; z-index:60; pointer-events:auto }
+  .toolbar-btn { flex:1; min-width:0; height:46px; border-radius:12px; border:none; color:var(--text); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 8px 20px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.03) }
+  .toolbar-btn.small { flex:0 0 86px }
+
+  /* controls bottom-right: GO kept above toolbar */
+  .controls { position:absolute; right:12px; bottom:150px; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:70; }
   .go-btn { width:118px;height:118px;border-radius:60px;background:linear-gradient(180deg,#ff6b4a,#e84f2f); color:white;font-size:28px;font-weight:800; display:flex;align-items:center;justify-content:center; box-shadow:0 12px 30px rgba(232,80,45,0.28), inset 0 -6px 16px rgba(255,255,255,0.12); border:6px solid rgba(255,255,255,0.06); cursor:pointer }
   .mult-btn { width:62px;height:40px;border-radius:10px;background:#ffd27a;color:#2b2b2b;font-weight:800;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03); cursor:pointer }
 
-  /* chat overlay bottom-left (no username text) */
-  .chat { position:absolute; left:14px; bottom:12px; width:64%; max-width:68%; background:var(--chat-bg); backdrop-filter: blur(6px); color:var(--text); padding:10px 12px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.6); font-size:14px; z-index:50 }
-  .chat .entry{ display:flex; gap:10px; align-items:flex-start }
+  /* small avatar-only chat (no text) */
+  .chat { position:absolute; left:14px; bottom:150px; width:18%; max-width:68px; background:transparent; padding:6px 8px; border-radius:12px; font-size:12px; z-index:55; pointer-events:none }
   .chat .avatar-dot{ width:36px; height:36px; border-radius:50%; background:#7b45ff; display:flex; align-items:center; justify-content:center; font-weight:700; color:white }
-  .chat .msg{ flex:1; color:var(--text) }
-  .chat .hint{ margin-top:6px; color:var(--mutedText) }
 
-  /* referral modal */
-  .modal-backdrop {
-    position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000;
-  }
-  .modal {
-    background:linear-gradient(180deg,#0b2b2a,#073f3c); color:var(--text); padding:18px; border-radius:12px; min-width:300px; box-shadow:0 18px 50px rgba(0,0,0,0.8);
-    border:1px solid rgba(255,255,255,0.02);
-  }
-  .modal input { width:100%; padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:var(--text); margin-top:8px }
-  .modal .row { display:flex; gap:8px; margin-top:12px }
+  /* modal */
+  .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000; }
+  .modal { background:linear-gradient(180deg,#0b2b2a,#073f3c); color:var(--text); padding:18px; border-radius:12px; min-width:300px; box-shadow:0 18px 50px rgba(0,0,0,0.8); border:1px solid rgba(255,255,255,0.02); }
+  .modal input, .modal select { width:100%; padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:var(--text); margin-top:8px }
 
   /* toast & floating xp */
   #toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:22px; background:#071423; color:#fff; padding:10px 14px; border-radius:10px; display:none; z-index:6000; box-shadow:0 12px 30px rgba(0,0,0,0.6) }
   .float-xp { position:absolute; left:50%; transform:translateX(-50%); top:10%; color:#b4ffd8; font-weight:800; font-size:18px; opacity:0; transition: transform 800ms ease, opacity 800ms ease; }
 
-  .bottom-row{ display:flex; align-items:center; gap:8px; padding:8px 6px; }
-  .input-like{ flex:1; background:rgba(255,255,255,0.03); padding:10px; border-radius:999px; color:var(--mutedText); font-weight:700; border:1px solid rgba(255,255,255,0.02) }
-
-  @media (max-width:430px){
-    .app{width:100%;}
-    .chat{width:72%}
-  }
+  @media (max-width:430px){ .app{width:100%;} .chat{width:72%} }
 </style>
 </head>
 <body>
   <div class="app" role="application" aria-label="Monopoly Farm - Dark demo">
 
-    <div class="hud" aria-hidden="false">
+    <div class="hud">
       <div class="hud-left">
         <div class="logo">🌲 Farm</div>
-        <div class="stats" aria-hidden="false">
+        <div class="stats">
           <div class="stat" id="coins">0</div>
           <div class="stat" id="gem">4455</div>
         </div>
@@ -160,10 +116,9 @@
 
       <div class="board" id="board"></div>
 
-      <!-- center overlays: boss + avatars (no names shown) -->
       <div style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none">
         <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:60%;display:flex;align-items:center;justify-content:center;pointer-events:auto">
-          <div class="center" aria-hidden="false">
+          <div class="center">
             <div class="boss" id="boss" title="Boss - click to challenge">
               <div class="skull">💀</div>
               <div class="lv">Lv.41 • 268.3K</div>
@@ -172,67 +127,48 @@
 
             <div class="avatarRow" style="pointer-events:auto">
               <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px">
-                <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white; font-weight:800">J</div>
+                <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800">J</div>
               </div>
 
               <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px">
                 <div class="bubble" style="background:linear-gradient(180deg,#58b368,#2fa84a);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800">C</div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
 
-      <!-- right-side labeled menu -->
-      <div class="menu" role="navigation" aria-label="Quick menu">
-        <button id="taskBtn" title="Task"><span class="icon">🏷️</span> <span>Task</span></button>
-        <button id="watchBtn" title="Watch Video"><span class="icon">🎬</span> <span>Watch</span></button>
-        <button id="withdrawBtn" title="Withdraw"><span class="icon">💳</span> <span>Withdraw</span></button>
-        <button id="refBtn" title="Referral"><span class="icon">👥</span> <span>Referral</span></button>
+      <div class="chat" aria-hidden="true">
+        <div class="avatar-dot">J</div>
       </div>
 
-      <!-- bottom-right controls -->
       <div class="controls">
         <div class="mult-btn" id="mult">x1</div>
         <button class="go-btn" id="goBtn" aria-label="Go button">GO</button>
       </div>
 
-      <!-- chat overlay (no username text) -->
-      <div class="chat" role="status" aria-live="polite">
-        <div class="entry">
-          <div class="avatar-dot">J</div>
-          <div class="msg">
-            <div style="font-weight:700">entered the room</div>
-            <div class="hint">@click on Go to play your dice 🎲 and try to challenge boss to get rewards. Buy daily pack to get rewards.</div>
-          </div>
-        </div>
+      <div class="disclaimer">
+        Ads are optional. Optional Task and Optional Watch Ad may show ads when you integrate Adsgram — ads are not required.
+      </div>
+
+      <div class="bottom-toolbar" id="bottomToolbar" aria-label="Bottom menu">
+        <button class="toolbar-btn small" id="taskBtn"><span style="font-size:18px">🏷️</span> Optional Task</button>
+        <button class="toolbar-btn" id="watchBtn"><span style="font-size:18px">🎬</span> Optional Watch Ad</button>
+        <button class="toolbar-btn" id="withdrawBtn"><span style="font-size:18px">💳</span> Withdraw</button>
+        <button class="toolbar-btn small" id="refBtn"><span style="font-size:18px">👥</span> Referral</button>
       </div>
 
       <div class="float-xp" id="floatXp">+0 XP</div>
-
     </div>
 
     <div id="toast" role="status" aria-live="polite"></div>
 
-    <div class="bottom-row">
-      <div class="input-like">Type in Monopoly</div>
-      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">🎤</div>
-      <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center">🎁</div>
-    </div>
-
   </div>
 
-  <!-- referral modal -->
+  <!-- Modal -->
   <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
-    <div class="modal" role="document" aria-label="Referral link dialog">
-      <div style="font-weight:900;font-size:16px">Referral Link</div>
-      <div style="margin-top:8px;color:var(--mutedText)">Share this link to invite friends:</div>
-      <input id="refLink" readonly value="https://t.me/@Profitvablebot?start=12345" aria-label="Referral link">
-      <div class="row">
-        <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Link</button>
-        <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);margin-left:6px;cursor:pointer">Close</button>
-      </div>
+    <div class="modal" role="document" aria-label="Dialog">
+      <div id="modalContent"></div>
     </div>
   </div>
 
@@ -240,7 +176,12 @@
 (function(){
   'use strict';
 
+  // === CONFIG ===
+  const ADMIN_CHAT_ID = ''; // set admin chat id if you want to send to Telegram WebApp
+  const MIN_WITHDRAW = 50000; // minimum withdraw
+
   const ns = 'monopoly_farm_dark_';
+
   // state
   let xp = Number(localStorage.getItem(ns+'xp') || 0);
   let taps = Number(localStorage.getItem(ns+'taps') || 0);
@@ -263,20 +204,14 @@
   const watchBtn = document.getElementById('watchBtn');
   const withdrawBtn = document.getElementById('withdrawBtn');
   const refBtn = document.getElementById('refBtn');
-
-  // modal refs
   const modalBackdrop = document.getElementById('modalBackdrop');
-  const copyRef = document.getElementById('copyRef');
-  const closeModal = document.getElementById('closeModal');
-  const refLinkInput = document.getElementById('refLink');
+  const modalContent = document.getElementById('modalContent');
 
   function showToast(msg, timeout=2000){
-    toast.textContent = msg;
-    toast.style.display = 'block';
+    toast.textContent = msg; toast.style.display = 'block';
     clearTimeout(showToast.timer);
     showToast.timer = setTimeout(()=> toast.style.display = 'none', timeout);
   }
-
   function showFloat(msg){
     floatXp.textContent = msg;
     floatXp.style.opacity = '1';
@@ -324,7 +259,6 @@
     board.appendChild(cell);
   }
 
-  // path indices and tile elements
   function getPathIndices(){
     const path = [];
     for(let c=0;c<size;c++) path.push({r:0,c});
@@ -334,10 +268,7 @@
     return path.map(p=> p.r*size + p.c);
   }
   const pathIdx = getPathIndices();
-  const tileElems = pathIdx.map(i => {
-    const el = board.children[i].querySelector('.tile');
-    return el || null;
-  });
+  const tileElems = pathIdx.map(i => board.children[i].querySelector('.tile'));
 
   // token & movement
   let tokenIndex = 0;
@@ -379,7 +310,6 @@
     const steps = dice * mult;
     showToast('You rolled ' + dice + ' • ' + steps + ' steps', 1400);
     await animateSteps(steps, 100);
-    // landing reward
     taps += 1;
     const reward = Math.floor(5 + Math.random()*15);
     xp += reward;
@@ -388,9 +318,9 @@
     updateUI();
   });
 
-  // harvest logic
+  // Harvest
   harvestBtn.addEventListener('click', ()=> {
-    const reward = 50 + Math.floor(Math.random()*51); // 50-100
+    const reward = 50 + Math.floor(Math.random()*51);
     xp += reward;
     harvestCount += 1;
     showFloat('+' + reward + ' XP');
@@ -398,55 +328,152 @@
     updateUI();
   });
 
-  // menu actions
+  // Optional Task: +200 XP
   taskBtn.addEventListener('click', ()=> {
-    const reward = 25;
+    const reward = 200;
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Task complete! +' + reward + ' XP', 1400);
+    showToast('Task completed! +' + reward + ' XP', 1600);
     updateUI();
   });
 
+  // Optional Watch Ad: +100 XP (simulated)
   watchBtn.addEventListener('click', async ()=> {
-    // demo: simulate video watch delay then reward
-    showToast('Watching ad...', 1200);
-    await new Promise(r=>setTimeout(r, 1400));
-    const reward = 60;
+    showToast('Optional ad playing...', 1200);
+    await new Promise(r=>setTimeout(r, 1400)); // simulate ad time
+    const reward = 100;
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Ad complete! +' + reward + ' XP', 1500);
+    showToast('Ad finished! +' + reward + ' XP', 1500);
     updateUI();
   });
 
-  withdrawBtn.addEventListener('click', ()=> {
-    showToast('Withdraw requested (demo)', 1600);
-  });
+  // Withdraw & Referral as before
+  withdrawBtn.addEventListener('click', ()=> openWithdrawModal());
+  refBtn.addEventListener('click', ()=> openReferralModal());
 
-  // referral modal logic
-  refBtn.addEventListener('click', ()=> {
+  // open referral modal
+  function openReferralModal(){
+    modalContent.innerHTML = `
+      <div style="font-weight:900;font-size:16px">Referral Link</div>
+      <div style="margin-top:8px;color:var(--mutedText)">Share this link to invite friends:</div>
+      <input id="refLink" readonly value="https://t.me/@Profitvablebot?start=12345" aria-label="Referral link">
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Link</button>
+        <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Close</button>
+      </div>
+      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">${ADMIN_CHAT_ID ? 'Admin chat id: ' + ADMIN_CHAT_ID : 'No admin id configured'}</div>
+    `;
     modalBackdrop.style.display = 'flex';
-    refLinkInput.select();
-  });
-  copyRef.addEventListener('click', async ()=> {
-    const text = refLinkInput.value || '';
-    try {
-      await navigator.clipboard.writeText(text);
-      showToast('Referral link copied');
-    } catch(e){
-      // fallback
-      refLinkInput.select();
-      document.execCommand('copy');
-      showToast('Referral link copied (fallback)');
-    }
-  });
-  closeModal.addEventListener('click', ()=> {
-    modalBackdrop.style.display = 'none';
-  });
-  modalBackdrop.addEventListener('click', (e)=> {
-    if(e.target === modalBackdrop) modalBackdrop.style.display = 'none';
-  });
+    document.getElementById('copyRef').addEventListener('click', async ()=>{
+      const refLinkInput = document.getElementById('refLink');
+      try { await navigator.clipboard.writeText(refLinkInput.value); showToast('Referral link copied'); }
+      catch(e){ refLinkInput.select(); document.execCommand('copy'); showToast('Referral link copied (fallback)'); }
+    });
+    document.getElementById('closeModal').addEventListener('click', ()=> modalBackdrop.style.display='none');
+    modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) modalBackdrop.style.display='none'; }, { once:false });
+  }
 
-  // boss click
+  // withdraw modal
+  function openWithdrawModal(){
+    modalContent.innerHTML = `
+      <div style="font-weight:900;font-size:16px">Withdraw Request</div>
+      <div style="margin-top:8px;color:var(--mutedText)">Minimum withdraw: ${MIN_WITHDRAW.toLocaleString()} XP</div>
+      <label style="margin-top:10px;color:var(--mutedText);font-size:13px">Amount (XP)</label>
+      <input id="wdAmount" type="number" placeholder="${MIN_WITHDRAW}" />
+      <label style="margin-top:8px;color:var(--mutedText);font-size:13px">Method</label>
+      <select id="wdMethod">
+        <option value="binance">Binance</option>
+        <option value="litecoin">Litecoin</option>
+      </select>
+      <label style="margin-top:8px;color:var(--mutedText);font-size:13px">Wallet / Account Details</label>
+      <input id="wdDetails" placeholder="Enter wallet address or account ID" />
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button id="submitWd" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Submit</button>
+        <button id="cancelWd" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Cancel</button>
+      </div>
+      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">Admin chat id: ${ADMIN_CHAT_ID || '<not configured>'}</div>
+    `;
+    modalBackdrop.style.display = 'flex';
+
+    document.getElementById('cancelWd').addEventListener('click', ()=> modalBackdrop.style.display='none');
+
+    document.getElementById('submitWd').addEventListener('click', async ()=>{
+      const amt = Number(document.getElementById('wdAmount').value || 0);
+      const method = document.getElementById('wdMethod').value;
+      const details = document.getElementById('wdDetails').value.trim();
+
+      if(!Number.isFinite(amt) || amt <= 0){
+        showToast('Enter a valid amount');
+        return;
+      }
+      if(amt < MIN_WITHDRAW){
+        showToast(`Minimum withdraw is ${MIN_WITHDRAW.toLocaleString()} XP`);
+        return;
+      }
+      if(amt > xp){
+        showToast('Not enough XP');
+        return;
+      }
+      if(!details){
+        showToast('Enter wallet/account details');
+        return;
+      }
+
+      const request = {
+        type: 'withdraw',
+        amount: amt,
+        method,
+        details,
+        player: 'local',
+        xpBalance: xp,
+        ts: new Date().toISOString()
+      };
+
+      const saved = JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]');
+      saved.push(request);
+      localStorage.setItem(ns+'withdrawRequests', JSON.stringify(saved));
+
+      xp -= amt;
+      updateUI();
+
+      const tg = window?.Telegram?.WebApp;
+      if(tg && typeof tg.sendData === 'function'){
+        try{
+          tg.sendData(JSON.stringify({ admin: ADMIN_CHAT_ID || null, payload: request }));
+          showToast('Withdraw request sent to admin (via WebApp)');
+        }catch(e){
+          console.warn('tg.sendData failed', e);
+          showToast('Saved — unable to send via WebApp');
+        }
+      } else {
+        modalContent.innerHTML = `
+          <div style="font-weight:900;font-size:16px">Request Saved</div>
+          <div style="margin-top:8px;color:var(--mutedText)">Your withdraw request has been saved locally.</div>
+          <div style="margin-top:10px;color:var(--mutedText);font-size:13px">Copy this message and send to the admin chat${ADMIN_CHAT_ID ? ' ('+ADMIN_CHAT_ID+')' : ''}:</div>
+          <textarea id="adminMsg" style="width:100%;height:120px;margin-top:8px;border-radius:8px;padding:10px;background:rgba(255,255,255,0.03);color:var(--text);border:none;resize:none">
+WITHDRAW REQUEST
+Amount: ${request.amount} XP
+Method: ${request.method}
+Details: ${request.details}
+Player: ${request.player}
+Time: ${request.ts}
+          </textarea>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button id="copyAdmin" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Message</button>
+            <button id="closeOk" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Close</button>
+          </div>
+        `;
+        document.getElementById('copyAdmin').addEventListener('click', async ()=>{
+          const text = document.getElementById('adminMsg').value;
+          try{ await navigator.clipboard.writeText(text); showToast('Request copied to clipboard'); }
+          catch(e){ document.getElementById('adminMsg').select(); document.execCommand('copy'); showToast('Copied (fallback)'); }
+        });
+        document.getElementById('closeOk').addEventListener('click', ()=> modalBackdrop.style.display='none');
+      }
+    });
+  }
+
   document.getElementById('boss').addEventListener('click', ()=> {
     const reward = 300;
     xp += reward;
@@ -455,14 +482,13 @@
     updateUI();
   });
 
-  // keyboard Enter triggers GO
   document.addEventListener('keydown', (e)=> { if(e.key === 'Enter') goBtn.click(); });
 
-  // init UI
   updateUI();
 
-  // expose debug
-  window._monopolyFarmDark = { getState: ()=>({xp,taps,harvestCount,level}) };
+  window._monopolyFarmDark = {
+    getState: ()=>({xp,taps,harvestCount,level,requests: JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]')})
+  };
 
 })();
 </script>
