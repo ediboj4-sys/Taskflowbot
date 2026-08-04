@@ -3,477 +3,415 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tap & Earn X</title>
-
-<!-- Telegram Web App + Adsgram (kept as in your original) -->
-<script src="https://telegram.org/js/telegram-web-app.js" defer></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js" defer></script>
-
+<title>Monopoly Mini - Demo</title>
 <style>
-:root{
-  --bg:#07111f;
-  --card:#101b2d;
-  --muted:rgba(255,255,255,0.8);
-  --accent1:#00e0ff;
-  --accent2:#0077ff;
-  --border:#1f2d44;
-  --glass:rgba(255,255,255,0.03);
-  --success:#58b368;
-  --danger:#e74c3c;
-}
+  :root{
+    --bg:#cfeecf; /* soft green sky */
+    --panel:#eaf7ef;
+    --muted:#7b8b7b;
+    --accent:#ff6b4a; /* GO button */
+    --accent-2:#ffd27a; /* tile highlight */
+    --tile:#fff;
+    --tile-border:#f0d3a9;
+    --hud-bg:rgba(255,255,255,0.9);
+    --shadow: 0 8px 30px rgba(0,0,0,0.18);
+    --glass: rgba(255,255,255,0.6);
+    --primary:#2d7a3e;
+    --card:#f7fff7;
+    --chat-bg: rgba(10,10,10,0.45);
+  }
 
-*{box-sizing:border-box;margin:0;padding:0}
-html,body,#root{height:100%}
-body{
-  background:var(--bg);
-  color:#fff;
-  font-family:Inter,Arial,sans-serif;
-  padding:18px;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  line-height:1.25;
-}
+  html,body{
+    height:100%;
+    margin:0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    background: linear-gradient(180deg,#cfeecf 0%, #e6f8e6 30%, #ffffff 100%);
+    color:#132513;
+    display:flex;
+    justify-content:center;
+    padding:18px;
+    box-sizing:border-box;
+  }
 
-/* header */
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.logo{font-size:22px;font-weight:700;color:var(--accent1);display:flex;align-items:center;gap:10px}
-.level{background:#132033;padding:8px 14px;border-radius:30px;font-size:14px}
+  .app {
+    width:412px; /* typical mobile width preview */
+    max-width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    position:relative;
+  }
 
-/* balance */
-.balance-box{
-  background:linear-gradient(135deg,var(--accent1),var(--accent2));
-  border-radius:20px;padding:22px 18px;color:#000;margin-bottom:20px;
-  box-shadow:0 6px 20px rgba(0,0,0,0.45);
-}
-.balance-box p{opacity:0.9}
-.balance-box h2{font-size:46px;margin-top:8px}
+  /* HUD */
+  .hud {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 12px;
+    background:var(--hud-bg);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    border:1px solid rgba(0,0,0,0.04);
+  }
+  .hud-left{display:flex;gap:10px;align-items:center}
+  .logo {
+    display:flex;align-items:center;gap:8px;font-weight:700;color:var(--primary);
+  }
+  .stats {display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+  .stat {background:linear-gradient(180deg,#ffffff,#f2fff2);padding:6px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.04);font-weight:600}
+  .level{background:#ffffff;padding:6px 10px;border-radius:999px;color:#0a6b2d;font-weight:700}
 
-/* progress bars */
-.progress{width:100%;height:10px;background:rgba(255,255,255,0.12);border-radius:999px;overflow:hidden;margin-top:12px}
-.progress div{width:0;height:100%;background:#fff;transition:width 400ms ease}
+  /* Board area */
+  .board-wrap{
+    background: linear-gradient(180deg,#f7fff7,#ecfbea);
+    border-radius:18px;
+    padding:12px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
 
-/* grid cards */
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
-.card{background:var(--card);padding:14px;border-radius:14px;border:1px solid var(--border)}
-.card h3{font-size:15px;margin-bottom:8px}
-.card p{font-size:13px;color:var(--muted)}
+  /* create a 7x7 grid, we'll fill only border cells for the track */
+  .board {
+    width:100%;
+    aspect-ratio:1 / 1;
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    grid-template-rows:repeat(7,1fr);
+    gap:6px;
+    position:relative;
+  }
 
-/* section + controls */
-.section{background:var(--card);padding:16px;border-radius:14px;margin-bottom:14px;border:1px solid var(--border)}
-.section h2{font-size:16px;margin-bottom:10px}
+  .cell{background:transparent;display:flex;align-items:center;justify-content:center}
+  .tile{
+    width:100%;
+    height:100%;
+    background:var(--tile);
+    border-radius:8px;
+    border:3px solid var(--tile-border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    color:#2b4a2b;
+    box-shadow: 0 6px 14px rgba(20,40,20,0.06);
+    position:relative;
+  }
+  .tile.q { background:linear-gradient(180deg,#fff8e6,#fff6e0); color:#6b4a1f; font-weight:700 }
+  .tile.gold { background:linear-gradient(180deg,#fffdf6,#fff3d9); color:#3b2a12; font-weight:700 }
+  .tile.corner { border-radius:12px; font-weight:800; font-size:13px }
 
-.btn{
-  display:inline-block;width:100%;padding:12px;border-radius:12px;border:none;
-  background:linear-gradient(45deg,var(--accent1),var(--accent2));color:#000;font-weight:700;
-  font-size:15px;cursor:pointer;
-}
-.btn:active{transform:scale(0.99)}
-.btn[disabled]{opacity:0.55;cursor:not-allowed;transform:none}
+  /* center area */
+  .center {
+    grid-column: 3 / span 3;
+    grid-row: 3 / span 3;
+    background: #f6fff6;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    border:2px dashed rgba(0,0,0,0.03);
+  }
 
-/* daily bar */
-#dailyProgressBar{width:100%;height:8px;background:#1b2a40;border-radius:20px;overflow:hidden;margin-top:10px}
-#dailyProgressBar div{height:100%;width:0;background:var(--accent1);transition:width 320ms ease}
+  .boss {
+    width:92px;height:92px;border-radius:14px;
+    background:linear-gradient(180deg,#e6eaf7,#cfd6ff);
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    box-shadow:0 10px 30px rgba(50,40,90,0.12), inset 0 -6px 12px rgba(0,0,0,0.04);
+    border:4px solid rgba(0,0,0,0.04);
+  }
+  .boss .skull{font-size:34px}
+  .boss .lv{font-size:11px;color:#4a4a4a;margin-top:6px}
 
-/* join popup */
-#joinPopup{
-  position:fixed;inset:0;background:rgba(0,0,0,0.85);display:none;place-items:center;
-  z-index:9999;padding:20px;
-}
-#joinPopup .card{max-width:420px;text-align:center}
-#joinPopup button{padding:12px 18px;border-radius:10px;background:var(--accent1);border:none;color:#000;font-weight:700}
+  /* avatars on center */
+  .avatar {
+    display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px;
+    transform:translateY(6px);
+  }
+  .avatar .bubble{
+    width:40px;height:40px;border-radius:8px;background:linear-gradient(180deg,#ffd;,#fff);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
+    background:linear-gradient(180deg,#ffd27a,#ffc66a);box-shadow:0 6px 18px rgba(0,0,0,0.12)
+  }
+  .avatar .name{font-size:12px;color:#2d5f33}
 
-/* preview helpers */
-.preview-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:12px}
-.big-go{font-size:28px;background:var(--danger);color:white;width:108px;height:108px;border-radius:54px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.wheel{background:linear-gradient(180deg,#ffd27a,#ffc66a);width:108px;height:108px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer}
-.harvestBtn{background:var(--success);padding:16px 20px;border-radius:12px;color:#000;font-weight:700;cursor:pointer}
+  /* bottom right controls */
+  .controls {
+    position:absolute;right:12px;bottom:12px;display:flex;flex-direction:column;gap:10px;align-items:flex-end;
+  }
+  .go-btn {
+    width:118px;height:118px;border-radius:60px;background:linear-gradient(180deg,#ff6b4a,#e84f2f);
+    color:white;font-size:28px;font-weight:800;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 12px 30px rgba(232,80,45,0.28), inset 0 -6px 16px rgba(255,255,255,0.12);
+    border:6px solid rgba(255,255,255,0.18);cursor:pointer;
+  }
+  .mult-btn {
+    width:62px;height:40px;border-radius:10px;background:#ffd27a;color:#2b2b2b;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,0,0,0.04);
+  }
 
-/* inputs */
-input,select{width:100%;padding:10px;border-radius:10px;border:none;background:#18263b;color:white;margin-top:8px}
+  /* chat overlay bottom-left */
+  .chat {
+    position:absolute;left:14px;bottom:12px;width:68%;max-width:68%;
+    background:var(--chat-bg);backdrop-filter: blur(6px);color:white;padding:10px 12px;border-radius:12px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    font-size:14px;
+  }
+  .chat .entry{display:flex;gap:10px;align-items:flex-start}
+  .chat .avatar-dot{width:36px;height:36px;border-radius:50%;background:#7b45ff;display:flex;align-items:center;justify-content:center;font-weight:700;color:white}
+  .chat .msg{flex:1}
+  .chat .hint{margin-top:8px;font-size:13px;color:rgba(255,255,255,0.9)}
 
-/* toast */
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;background:#0f2436;color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:2000;box-shadow:0 6px 20px rgba(0,0,0,0.5)}
-@media (max-width:700px){
-  .grid{grid-template-columns:1fr}
-  .leftCol{width:100%}
-}
+  /* energy bar */
+  .energy {
+    width:140px; height:30px;background:linear-gradient(180deg,#ffffff,#f0fff0);border-radius:999px;padding:4px;border:1px solid rgba(0,0,0,0.04);display:flex;align-items:center;gap:8px;
+  }
+  .energy .bar{flex:1;height:14px;background:#e8f7e8;border-radius:8px;overflow:hidden}
+  .energy .bar-inner{height:100%;width:50%;background:linear-gradient(90deg,#00e0ff,#0077ff);transition:width:420ms ease}
+  .energy .label{font-weight:700;color:#2b5f2f;font-size:12px}
+
+  /* toast */
+  #toast{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:22px;background:#0f2436;color:#fff;padding:10px 14px;border-radius:10px;display:none;z-index:6000;box-shadow:0 12px 30px rgba(0,0,0,0.32)
+  }
+
+  /* helper small HUD bottom input row */
+  .bottom-row{
+    display:flex;align-items:center;gap:8px;padding:8px 6px;
+  }
+  .input-like{
+    flex:1;background:rgba(255,255,255,0.9);padding:10px;border-radius:999px;color:#2b5f2f;font-weight:600;border:1px solid rgba(0,0,0,0.04)
+  }
+
+  /* responsive */
+  @media (max-width:430px){
+    .app{width:100%;}
+    .chat{width:72%}
+  }
 </style>
 </head>
 <body>
-<div class="header">
-  <div class="logo">⚡ Tap & Earn X</div>
-  <div class="level" aria-live="polite">Level <span id="level">1</span></div>
-</div>
+  <div class="app" role="application" aria-label="Monopoly mini demo">
 
-<div class="balance-box" role="region" aria-label="Total experience">
-  <p>Total XP</p>
-  <h2 id="points">0</h2>
-  <div class="progress" aria-hidden="true"><div id="bar" style="width:0%"></div></div>
-</div>
+    <div class="hud" aria-hidden="false">
+      <div class="hud-left">
+        <div class="logo">🌳 Farm</div>
+        <div class="stats">
+          <div class="stat">32.7K</div>
+          <div class="stat">EXP Lv.8</div>
+          <div class="stat">4455</div>
+        </div>
+      </div>
 
-<div class="grid">
-  <div class="card">
-    <h3>👆 Total Taps</h3>
-    <p id="taps">0</p>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="level" aria-live="polite">Lv 8</div>
+        <div class="energy" title="Energy">
+          <div class="label">232 / 105</div>
+          <div class="bar"><div class="bar-inner" id="energyInner" style="width:70%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="board-wrap" role="region" aria-label="Game board">
+      <div class="board" id="board">
+        <!-- grid cells: JS will fill border cells with tiles -->
+        <!-- create 7x7 empty cells -->
+        <script>
+          // small inline script to render the 7x7 cells quickly and place tiles
+        </script>
+      </div>
+
+      <!-- bottom-right controls -->
+      <div class="controls">
+        <div class="mult-btn" id="mult">x1</div>
+        <button class="go-btn" id="goBtn" aria-label="Go button">GO</button>
+      </div>
+
+      <!-- center overlays: boss + avatars -->
+      <div style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none">
+        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:60%;display:flex;align-items:center;justify-content:center;pointer-events:auto">
+          <div class="center" aria-hidden="false">
+            <div class="boss" id="boss">
+              <div class="skull">💀</div>
+              <div class="lv">Lv.41 • 268.3K</div>
+              <div style="font-size:12px;color:#8a3b3b;margin-top:6px">×75</div>
+            </div>
+
+            <div style="display:flex;gap:18px;margin-top:12px">
+              <div class="avatar" id="player1" title="Player 1" style="pointer-events:auto">
+                <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white">J</div>
+                <div class="name">Joelly Matthew Edibo</div>
+              </div>
+
+              <div class="avatar" id="player2" title="Player 2" style="pointer-events:auto">
+                <div class="bubble" style="background:linear-gradient(180deg,#58b368,#2fa84a);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white">C</div>
+                <div class="name">Co Captain John</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- chat overlay -->
+      <div class="chat" role="status" aria-live="polite">
+        <div class="entry">
+          <div class="avatar-dot">J</div>
+          <div class="msg">
+            <div style="font-weight:700">Joelly Matthew Edibo <span style="color:#cfe8cf;font-weight:600">entered the room</span></div>
+            <div class="hint" style="margin-top:6px">@Joelly Matthew Edibo click on Go to play your dice 🎲 and also try to challenge boss to get rewards buy daily pack to get rewards</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="toast" role="status" aria-live="polite"></div>
+
+    <div class="bottom-row" aria-hidden="false">
+      <div class="input-like">Type in Monopoly</div>
+      <div style="width:44px;height:44px;border-radius:10px;background:#ffffff;border:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center">🎤</div>
+      <div style="width:44px;height:44px;border-radius:10px;background:#ffffff;border:1px solid rgba(0,0,0,0.06);display:flex;align-items:center;justify-content:center">🎁</div>
+    </div>
+
   </div>
-
-  <div class="card">
-    <h3>🏆 Rank</h3>
-    <p id="rank">Starter</p>
-  </div>
-</div>
-
-<div class="section" aria-labelledby="tap-section">
-  <h2 id="tap-section">🎮 Tap System</h2>
-  <button class="btn" id="tapBtn" type="button" aria-pressed="false">Tap +1 XP</button>
-</div>
-
-<div class="section" aria-labelledby="reward-section">
-  <h2 id="reward-section">📺 Reward Ad</h2>
-  <button class="btn" id="rewardBtn" type="button">Watch Ad +10 XP</button>
-</div>
-
-<div class="section" aria-labelledby="task-section">
-  <h2 id="task-section">🎯 Task Center</h2>
-  <button class="btn" id="taskBtn" type="button">Complete Task +10 XP</button>
-</div>
-
-<div class="section" aria-labelledby="daily-section">
-  <h2 id="daily-section">🎁 Daily Reward</h2>
-  <button class="btn" id="dailyBtn" type="button">Start Daily Bonus</button>
-  <div id="dailyProgressBar"><div style="width:0%"></div></div>
-</div>
-
-<div class="section" aria-labelledby="ref-section">
-  <h2 id="ref-section">👥 Referral</h2>
-  <input id="refInput" readonly value="https://t.me/@Profitvablebot?start=12345" aria-label="Referral link">
-  <button class="btn" id="copyBtn" type="button">Copy Referral Link</button>
-</div>
-
-<div class="section" aria-labelledby="withdraw-section">
-  <h2 id="withdraw-section">💳 Withdraw</h2>
-  <label class="sr-only" for="method">Method</label>
-  <select id="method" aria-label="Withdraw method">
-    <option>USDT</option>
-    <option>Litecoin</option>
-    <option>Payeer</option>
-    <option>Bank</option>
-  </select>
-
-  <input id="wallet" placeholder="Wallet Address" aria-label="Wallet address">
-  <input id="amount" type="number" placeholder="Amount" aria-label="Amount to withdraw">
-
-  <button class="btn" id="withdrawBtn" type="button">Withdraw XP</button>
-</div>
-
-<!-- JOIN POPUP -->
-<div id="joinPopup" role="dialog" aria-modal="true" aria-labelledby="joinTitle">
-  <div class="card">
-    <h2 id="joinTitle" style="margin-bottom:12px">Join Our Channel</h2>
-    <p style="color:var(--muted);margin-bottom:14px">Join our channel to earn +5 XP</p>
-    <button id="joinBtn" type="button">Join Channel +5 XP</button>
-  </div>
-</div>
-
-<div id="toast" role="status" aria-live="polite"></div>
 
 <script>
-/*
-  Updated index.html
-  - Improved checks around Adsgram and Telegram API
-  - Modern clipboard usage
-  - Daily reward uses date-based reset (per-calendar-day)
-  - Small toast system for better UX
-  - localStorage keys namespaced to avoid collisions
-*/
-
-(function(){
-  'use strict';
-
-  const ns = 'tapearnx_'; // localStorage namespace
-  const MIN_WITHDRAW = 10000;
-
-  // Telegram WebApp (optional)
-  const tg = window?.Telegram?.WebApp;
-  try { tg?.expand?.(); } catch (e) { /* ignore if not available */ }
-
-  // State (load from localStorage)
-  let xp = Number(localStorage.getItem(ns + 'xp') || 0);
-  let taps = Number(localStorage.getItem(ns + 'taps') || 0);
-  // dailyProgress: 0..3 steps, dailyDate: 'YYYY-MM-DD' when completed the full set
-  let dailyProgress = Number(localStorage.getItem(ns + 'dailyProgress') || 0);
-  let dailyDate = localStorage.getItem(ns + 'dailyDate') || null;
-
-  // Adsgram placeholders
-  let rewardAd = null;
-  let taskAd = null;
-
-  // daily task blocks (kept from your code)
-  const DAILY_BLOCKS = ["task-29806","task-29807","task-29808","task-29809"];
-
-  // DOM refs
-  const ptsEl = document.getElementById('points');
-  const tapsEl = document.getElementById('taps');
-  const levelEl = document.getElementById('level');
-  const barEl = document.getElementById('bar');
-  const dailyBarInner = document.querySelector('#dailyProgressBar div');
-  const rewardBtn = document.getElementById('rewardBtn');
-  const taskBtn = document.getElementById('taskBtn');
-  const dailyBtn = document.getElementById('dailyBtn');
-  const tapBtn = document.getElementById('tapBtn');
-  const copyBtn = document.getElementById('copyBtn');
-  const refInput = document.getElementById('refInput');
-  const withdrawBtn = document.getElementById('withdrawBtn');
-  const joinPopup = document.getElementById('joinPopup');
-  const joinBtn = document.getElementById('joinBtn');
-  const toastEl = document.getElementById('toast');
-
-  // small toast helper
-  let toastTimer = null;
-  function showToast(msg, timeout = 2500){
-    if(toastTimer) clearTimeout(toastTimer);
-    toastEl.textContent = msg;
-    toastEl.style.display = 'block';
-    toastTimer = setTimeout(()=> { toastEl.style.display = 'none'; toastTimer = null; }, timeout);
-  }
-
-  // format
-  function fmt(n){ return Number(n).toLocaleString(); }
-
-  // update UI and persist
-  function updateUI(){
-    ptsEl.innerText = fmt(xp);
-    tapsEl.innerText = fmt(taps);
-    const level = Math.floor(xp / 500) + 1;
-    levelEl.innerText = level;
-    const progressPercent = ((xp % 500) / 500) * 100;
-    barEl.style.width = progressPercent + '%';
-
-    localStorage.setItem(ns + 'xp', String(xp));
-    localStorage.setItem(ns + 'taps', String(taps));
-    localStorage.setItem(ns + 'dailyProgress', String(dailyProgress));
-    if(dailyDate) localStorage.setItem(ns + 'dailyDate', dailyDate);
-    updateDailyBar();
-  }
-
-  function updateDailyBar(){
-    // if dailyDate is today and progress reset, show complete; otherwise show progress of 4 steps
-    const percent = (dailyProgress / 4) * 100;
-    dailyBarInner.style.width = percent + '%';
-  }
-
-  // day utilities (YYYY-MM-DD)
-  function todayKey(){
-    const d = new Date();
-    return d.getUTCFullYear() + '-' + String(d.getUTCMonth()+1).padStart(2,'0') + '-' + String(d.getUTCDate()).padStart(2,'0');
-  }
-  function isSameDay(key){
-    return key === todayKey();
-  }
-
-  // init Adsgram safely (if present). Ads are optional; we guard calls.
-  window.addEventListener('load', () => {
-    if(typeof Adsgram !== 'undefined'){
-      try{
-        rewardAd = Adsgram.init({ blockId: '29779' });
-        taskAd = Adsgram.init({ blockId: '29780' });
-
-        // attempt to preload an optional join ad; show popup on completion or after timeout fallback
-        const joinAd = Adsgram.init({ blockId: '35248' });
-        const joinTimeout = setTimeout(() => { showJoinPopup(); }, 2200);
-        if(joinAd && typeof joinAd.show === 'function'){
-          // we won't display the ad visually now, but call show and then show popup; if show rejects, still show popup
-          joinAd.show().finally(() => { clearTimeout(joinTimeout); showJoinPopup(); });
+  (function(){
+    // Build board: 7x7 cells; fill border with tiles
+    const board = document.getElementById('board');
+    const size = 7;
+    const total = size * size;
+    const tileTypes = ['gold','gold','gold','q']; // rotate a bit
+    for(let i=0;i<total;i++){
+      const r = Math.floor(i/size);
+      const c = i % size;
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      // border condition
+      if(r === 0 || r === size-1 || c === 0 || c === size-1){
+        const tile = document.createElement('div');
+        tile.className = 'tile';
+        // corners
+        if((r===0 && c===0) || (r===0 && c===size-1) || (r===size-1 && c===0) || (r===size-1 && c===size-1)){
+          tile.classList.add('corner');
+          tile.textContent = '★';
         } else {
-          clearTimeout(joinTimeout);
-          showJoinPopup();
+          // alternate q tiles
+          const idx = Math.abs((r*size + c) % tileTypes.length);
+          if(tileTypes[idx]==='q'){ tile.classList.add('q'); tile.innerHTML='?'; }
+          else { tile.classList.add('gold'); tile.innerHTML='□'; }
         }
-      }catch(err){
-        // fail silently and show popup fallback
-        showJoinPopup();
-      }
-    } else {
-      // Adsgram not available -> show join popup after slight delay
-      setTimeout(showJoinPopup, 700);
-    }
-    updateUI();
-  });
-
-  function showJoinPopup(){
-    if(!joinPopup) return;
-    // only show popup if not already joined today (basic guard)
-    const joinedKey = localStorage.getItem(ns + 'joined') === '1';
-    if(!joinedKey){ joinPopup.style.display = 'grid'; }
-  }
-
-  // actions
-  tapBtn.addEventListener('click', () => {
-    xp += 1; taps += 1; updateUI();
-  });
-
-  rewardBtn.addEventListener('click', async () => {
-    if(!rewardAd || typeof rewardAd.show !== 'function'){
-      showToast('Ad not available');
-      return;
-    }
-    rewardBtn.disabled = true;
-    try{
-      const r = await rewardAd.show();
-      if(r?.done){ xp += 10; updateUI(); showToast('+10 XP'); }
-    }catch(e){
-      console.warn('reward ad failed', e);
-      showToast('Ad failed');
-    } finally { rewardBtn.disabled = false; }
-  });
-
-  taskBtn.addEventListener('click', async () => {
-    if(!taskAd || typeof taskAd.show !== 'function'){
-      showToast('Task ad not available');
-      return;
-    }
-    taskBtn.disabled = true;
-    try{
-      const r = await taskAd.show();
-      if(r?.done){ xp += 10; updateUI(); showToast('Task complete +10 XP'); }
-    }catch(e){
-      console.warn('task ad failed', e);
-      showToast('Ad failed');
-    } finally { taskBtn.disabled = false; }
-  });
-
-  // DAILY: use blocks; after 4 steps grant big reward and mark dailyDate
-  dailyBtn.addEventListener('click', async () => {
-    // if already completed today, don't allow
-    if(dailyDate && isSameDay(dailyDate)){
-      showToast('Daily bonus already claimed today');
-      return;
-    }
-
-    // create an adsgram task element if Adsgram available
-    if(typeof Adsgram === 'undefined'){
-      showToast('Daily tasks currently unavailable (ads not loaded)');
-      return;
-    }
-
-    if(dailyProgress >= 4){
-      showToast('All daily steps complete — claim pending');
-      return;
-    }
-
-    // pick the block id for current progress
-    const blockId = DAILY_BLOCKS[dailyProgress] || DAILY_BLOCKS[DAILY_BLOCKS.length - 1];
-    const taskEl = document.createElement('adsgram-task');
-    taskEl.setAttribute('data-block-id', blockId);
-    // append task into DOM so Adsgram can mount
-    document.body.appendChild(taskEl);
-
-    // listen for reward event (your original pattern)
-    const onReward = () => {
-      dailyProgress = Math.min(4, dailyProgress + 1);
-      taskEl.removeEventListener('reward', onReward);
-      if(taskEl.parentNode) taskEl.parentNode.removeChild(taskEl);
-
-      if(dailyProgress >= 4){
-        // full daily completed: grant big XP and set dailyDate to today
-        xp += 900;
-        dailyDate = todayKey();
-        dailyProgress = 0; // reset visible steps for the next day
-        localStorage.setItem(ns + 'dailyDate', dailyDate);
-        showToast('🎉 Daily bonus completed! +900 XP', 3500);
+        cell.appendChild(tile);
       } else {
-        showToast(`Step ${dailyProgress} completed!`);
+        // center empty
+        const empty = document.createElement('div');
+        empty.style.width='100%'; empty.style.height='100%';
+        empty.style.background='transparent';
+        cell.appendChild(empty);
       }
-      updateUI();
-    };
+      board.appendChild(cell);
+    }
 
-    taskEl.addEventListener('reward', onReward, { once: true });
+    // simple movement demo when GO pressed: highlight successive border tiles
+    const goBtn = document.getElementById('goBtn');
+    const toast = document.getElementById('toast');
+    const multBtn = document.getElementById('mult');
+    let rolling = false;
+    let mult = 1;
 
-    // Adsgram: call load if available
-    try { if(typeof taskEl.load === 'function') taskEl.load(); } catch(e){ console.warn('task load error', e); }
-  });
+    multBtn.addEventListener('click', ()=>{
+      if(mult === 1) mult = 2, multBtn.textContent='x2';
+      else if(mult === 2) mult = 5, multBtn.textContent='x5';
+      else mult = 1, multBtn.textContent='x1';
+      showToast('Multiplier set: ' + mult);
+    });
 
-  // join popup button
-  joinBtn.addEventListener('click', () => {
-    xp += 5;
-    localStorage.setItem(ns + 'joined', '1'); // do not re-show popup
-    updateUI();
-    joinPopup.style.display = 'none';
-    // open channel link in new tab (safe)
-    window.open('https://saveapp.store/sl/65pk5', '_blank', 'noopener');
-    showToast('+5 XP for joining');
-  });
+    function showToast(msg, timeout=2000){
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(()=>{ toast.style.display = 'none'; }, timeout);
+    }
 
-  // referral copy — use modern clipboard when possible
-  copyBtn.addEventListener('click', async () => {
-    const text = refInput.value || '';
-    if(navigator.clipboard && navigator.clipboard.writeText){
-      try{
-        await navigator.clipboard.writeText(text);
-        showToast('Referral link copied');
-      }catch(err){
-        fallbackCopy(text);
+    // collect border tiles list (in board DOM order). We'll just animate a highlight to simulate a token moving.
+    const tiles = Array.from(document.querySelectorAll('.board .tile'));
+    // make a path in order: top row left->right, right col top->bottom, bottom row right->left, left col bottom->top
+    // but our tile list is in DOM order; instead build the path programmatically
+    function getBorderPath(){
+      const path = [];
+      // top row (0,0..6)
+      for(let c=0;c<size;c++) path.push({r:0,c});
+      // right col (1..5)
+      for(let r=1;r<size-1;r++) path.push({r,c:size-1});
+      // bottom row (6,6..0)
+      for(let c=size-1;c>=0;c--) path.push({r:size-1,c});
+      // left col (5..1)
+      for(let r=size-2;r>=1;r--) path.push({r,c:0});
+      // map to index in board children
+      return path.map(p => p.r*size + p.c);
+    }
+    const pathIdx = getBorderPath();
+    const tileElems = pathIdx.map(i => board.children[i].querySelector('.tile'));
+
+    // place a simple token indicator on one tile (start)
+    let tokenIndex = 0;
+    function placeTokenAt(index){
+      tokenIndex = index % tileElems.length;
+      // remove extras
+      tileElems.forEach((t,idx)=> {
+        if(!t) return;
+        t.style.boxShadow = (idx===tokenIndex) ? '0 12px 30px rgba(0,0,0,0.25), 0 0 0 6px rgba(255,215,120,0.08)' : '0 6px 14px rgba(20,40,20,0.06)';
+        t.style.transform = (idx===tokenIndex) ? 'translateY(-6px) scale(1.03)' : 'translateY(0) scale(1)';
+        if(idx===tokenIndex){
+          t.style.transition = 'transform 250ms ease, box-shadow 250ms ease';
+        } else {
+          t.style.transition = 'transform 250ms ease, box-shadow 250ms ease';
+        }
+      });
+    }
+    placeTokenAt(0);
+
+    async function animateSteps(steps, speed=120){
+      if(rolling) return;
+      rolling = true;
+      let start = tokenIndex;
+      for(let i=1;i<=steps;i++){
+        const idx = (start + i) % tileElems.length;
+        placeTokenAt(idx);
+        await new Promise(r => setTimeout(r, speed));
       }
-    } else {
-      fallbackCopy(text);
+      rolling = false;
     }
-  });
 
-  function fallbackCopy(text){
-    try{
-      refInput.select();
-      document.execCommand('copy');
-      window.getSelection()?.removeAllRanges?.();
-      showToast('Referral link copied');
-    }catch(e){
-      showToast('Copy failed');
-    }
-  }
+    goBtn.addEventListener('click', async ()=>{
+      if(rolling) return;
+      // simple dice roll demo
+      const dice = Math.floor(Math.random()*6) + 1;
+      const steps = dice * mult;
+      showToast('You rolled ' + dice + ' → ' + steps + ' steps', 1600);
+      await animateSteps(steps, 110);
+      // if lands near boss quadrant, show reward hint
+      const landed = tokenIndex;
+      if(landed % 5 === 0){
+        showToast('Challenge boss available!', 2200);
+      } else {
+        showToast('You landed on a tile', 1400);
+      }
+    });
 
-  // withdraw
-  withdrawBtn.addEventListener('click', () => {
-    const amount = Number(document.getElementById('amount').value || 0);
-    if(!Number.isFinite(amount) || amount <= 0){
-      showToast('Enter a valid amount');
-      return;
-    }
-    if(amount < MIN_WITHDRAW){
-      showToast(`Minimum ${MIN_WITHDRAW.toLocaleString()} XP`);
-      return;
-    }
-    if(amount > xp){
-      showToast('Not enough XP');
-      return;
-    }
-    // simple withdrawal flow (demo)
-    xp -= amount;
-    updateUI();
-    showToast('Withdraw request submitted');
-  });
+    // small demo: click boss to award XP (visual only)
+    document.getElementById('boss').addEventListener('click', ()=>{
+      showToast('Boss challenged! Claim rewards.', 1800);
+    });
 
-  // init UI
-  // If dailyDate is not today and dailyProgress is 0, keep as-is. If dailyDate is different day, allow new progress.
-  if(dailyDate && isSameDay(dailyDate)){
-    // user already completed daily today => ensure progress reset and prevent re-grant
-    dailyProgress = 0;
-  } else if(dailyDate && !isSameDay(dailyDate)) {
-    // not same day => reset stored daily date and progress
-    dailyDate = null;
-    dailyProgress = Number(localStorage.getItem(ns + 'dailyProgress') || 0);
-  }
+    // keyboard support (Enter triggers GO) for desktop
+    document.addEventListener('keydown', (e)=> {
+      if(e.key === 'Enter') goBtn.click();
+    });
 
-  updateUI();
-
-  // small accessibility: keyboard Enter on inputs triggers corresponding buttons
-  document.getElementById('amount').addEventListener('keydown', (e) => {
-    if(e.key === 'Enter') withdrawBtn.click();
-  });
-
-  // Expose for debugging temporarily
-  window._tapEarn = {
-    getState: () => ({ xp, taps, dailyProgress, dailyDate })
-  };
-
-})();
+  })();
 </script>
 </body>
 </html>
