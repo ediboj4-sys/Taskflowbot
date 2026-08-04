@@ -357,12 +357,12 @@
     modalContent.innerHTML = `
       <div style="font-weight:900;font-size:16px">Referral Link</div>
       <div style="margin-top:8px;color:var(--mutedText)">Share this link to invite friends:</div>
-      <input id="refLink" readonly value="https://t.me/@Profitvablebot?start=12345" aria-label="Referral link">
+      <input id="refLink" readonly value="https://t.me/@Taskflowbot?start=12345" aria-label="Referral link">
       <div style="margin-top:12px;display:flex;gap:8px">
         <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Link</button>
         <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Close</button>
       </div>
-      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">${ADMIN_CHAT_ID ? 'Admin chat id: ' + ADMIN_CHAT_ID : 'No admin id configured'}</div>
+      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">${ADMIN_CHAT_ID ? 'Admin chat id: ' + ADMIN_CHAT_ID : 'Refer an earn 1000 XP'}</div>
     `;
     modalBackdrop.style.display = 'flex';
     document.getElementById('copyRef').addEventListener('click', async ()=>{
