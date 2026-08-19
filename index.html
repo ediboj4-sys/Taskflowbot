@@ -25,72 +25,81 @@
     height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
     -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     background: linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 60%); color:var(--text);
-    display:flex; justify-content:center; padding:18px; box-sizing:border-box;
+    display:flex; justify-content:center; padding:12px; box-sizing:border-box;
   }
-  .app { width:412px; max-width:100%; display:flex; flex-direction:column; gap:12px; position:relative; }
+  .app { width:412px; max-width:100%; display:flex; flex-direction:column; gap:8px; position:relative; height:100vh; }
 
   /* HUD */
-  .hud { display:flex; justify-content:space-between; align-items:center; padding:10px 12px;
+  .hud { display:flex; justify-content:space-between; align-items:center; padding:8px 10px;
     background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:14px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); }
-  .hud-left{display:flex;gap:10px;align-items:center}
-  .logo { display:flex; align-items:center; gap:8px; font-weight:800; color:var(--accent); font-size:16px }
-  .stats { display:flex; gap:8px; align-items:center; font-size:13px; color:var(--mutedText) }
-  .stat { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:6px 10px; border-radius:10px; border:1px solid rgba(255,255,255,0.02); font-weight:700 }
-  .hud-right{display:flex;gap:12px;align-items:center}
-  .level{background:rgba(255,255,255,0.02);padding:6px 10px;border-radius:999px;color:var(--text);font-weight:800;border:1px solid rgba(255,255,255,0.03)}
-  .progressWrap{width:120px;height:18px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:999px;padding:3px;border:1px solid rgba(255,255,255,0.02);display:flex;align-items:center}
+    border-radius:12px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); flex-shrink:0; }
+  .hud-left{display:flex;gap:8px;align-items:center}
+  .logo { display:flex; align-items:center; gap:6px; font-weight:800; color:var(--accent); font-size:14px }
+  .stats { display:flex; gap:6px; align-items:center; font-size:12px; color:var(--mutedText) }
+  .stat { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:4px 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.02); font-weight:700 }
+  .hud-right{display:flex;gap:10px;align-items:center}
+  .level{background:rgba(255,255,255,0.02);padding:4px 8px;border-radius:999px;color:var(--text);font-weight:800;font-size:12px;border:1px solid rgba(255,255,255,0.03)}
+  .progressWrap{width:100px;height:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:999px;padding:2px;border:1px solid rgba(255,255,255,0.02);display:flex;align-items:center}
   .progressInner{height:100%;width:32%;background:linear-gradient(90deg,#00e0ff,#0077ff);border-radius:999px;transition:width 400ms ease}
 
   /* Board area */
-  .board-wrap{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:18px; padding:12px; box-shadow:var(--shadow); position:relative; overflow:hidden; }
-  .board { width:100%; aspect-ratio:1 / 1; display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(7,1fr); gap:6px; position:relative; }
+  .board-wrap{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:10px; box-shadow:var(--shadow); position:relative; overflow:hidden; flex:1; display:flex; flex-direction:column; }
+  .board-container { flex:1; display:flex; align-items:center; justify-content:center; min-height:0; }
+  .board { width:100%; aspect-ratio:1 / 1; display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(7,1fr); gap:5px; position:relative; }
   .cell{background:transparent;display:flex;align-items:center;justify-content:center}
-  .tile{ width:100%; height:100%; background:var(--tile); border-radius:8px; border:3px solid var(--tile-border); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--mutedText); box-shadow: 0 6px 14px rgba(0,0,0,0.5); position:relative; }
+  .tile{ width:100%; height:100%; background:var(--tile); border-radius:6px; border:2px solid var(--tile-border); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--mutedText); box-shadow: 0 4px 10px rgba(0,0,0,0.5); position:relative; }
   .tile.q { background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); color:var(--gold); font-weight:800 }
-  .tile.corner { border-radius:12px; font-weight:900; font-size:14px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:var(--gold) }
+  .tile.corner { border-radius:10px; font-weight:900; font-size:12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:var(--gold) }
 
-  .center { grid-column: 3 / span 3; grid-row: 3 / span 3; background: rgba(255,255,255,0.02); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-direction:column; border:2px dashed rgba(255,255,255,0.02); position:relative; }
-  .boss { width:92px;height:92px;border-radius:14px; background:linear-gradient(180deg,#2e3145,#45486b); display:flex;align-items:center;justify-content:center;flex-direction:column; box-shadow:0 10px 30px rgba(0,0,0,0.6); border:4px solid rgba(255,255,255,0.02); cursor:pointer }
-  .boss .boss-icon{font-size:34px}
-  .boss .lv{font-size:11px;color:var(--mutedText);margin-top:6px}
-  .center .avatarRow{display:flex;gap:18px;margin-top:12px;align-items:flex-start}
+  .center { grid-column: 3 / span 3; grid-row: 3 / span 3; background: rgba(255,255,255,0.02); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-direction:column; border:2px dashed rgba(255,255,255,0.02); position:relative; }
+  .boss { width:70px;height:70px;border-radius:12px; background:linear-gradient(180deg,#2e3145,#45486b); display:flex;align-items:center;justify-content:center;flex-direction:column; box-shadow:0 8px 20px rgba(0,0,0,0.6); border:3px solid rgba(255,255,255,0.02); cursor:pointer }
+  .boss .boss-icon{font-size:28px}
+  .boss .lv{font-size:9px;color:var(--mutedText);margin-top:4px}
+  .center .avatarRow{display:flex;gap:12px;margin-top:8px;align-items:flex-start}
 
   /* farm callout */
-  .farmCall { position:absolute; left:50%; top:6%; transform:translateX(-50%); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:8px 14px; border-radius:999px; display:flex; align-items:center; gap:10px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); }
-  .farmCall .harvestBtn { background:linear-gradient(180deg,#2dd06a,#1e9b48); color:#03160a; padding:8px 12px; border-radius:10px; font-weight:800; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(0,0,0,0.5) }
+  .farmCall { position:absolute; left:50%; top:6%; transform:translateX(-50%); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:6px 10px; border-radius:999px; display:flex; align-items:center; gap:8px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); z-index:10; }
+  .farmCall .harvestBtn { background:linear-gradient(180deg,#2dd06a,#1e9b48); color:#03160a; padding:6px 10px; border-radius:8px; font-weight:700; font-size:12px; border:none; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,0.5) }
+  .farmCall-text { font-weight:700;color:var(--text); font-size:12px; }
+  .farmCall-count { font-weight:600;color:var(--mutedText); font-size:11px; }
 
-  /* disclaimer and bottom toolbar */
-  .disclaimer { position:absolute; left:12px; right:12px; bottom:76px; text-align:center; font-size:12px; color:var(--mutedText); z-index:65; pointer-events:none }
-  .bottom-toolbar { position: absolute; left: 12px; right: 12px; bottom: 12px; display:flex; gap:8px; justify-content:space-between; align-items:center; z-index:60; pointer-events:auto }
-  .toolbar-btn { flex:1; min-width:0; height:46px; border-radius:12px; border:none; color:var(--text); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 8px 20px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.03) }
-  .toolbar-btn.small { flex:0 0 86px }
+  /* Boost button - repositioned */
+  .boost-btn-container { position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:30; display:flex; flex-direction:column; gap:6px; }
+  .boost-btn { width:50px; height:50px; border-radius:12px; background:linear-gradient(180deg,#ff9500,#ff6b1a); color:white; font-weight:800; font-size:24px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(255,107,26,0.4); border:2px solid rgba(255,255,255,0.1); transition:transform 200ms ease; }
+  .boost-btn:hover:not(:disabled) { transform:scale(1.05); }
+  .boost-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  .boost-label { font-size:10px; font-weight:700; color:var(--text); text-align:center; }
+
+  /* bottom controls */
+  .bottom-controls { display:flex; gap:6px; flex-shrink:0; justify-content:space-between; }
+  .go-btn { flex:1; height:40px; border-radius:10px; background:linear-gradient(180deg,#ff6b4a,#e84f2f); color:white; font-size:18px; font-weight:800; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(232,80,45,0.28); }
+  .mult-btn { width:50px; height:40px; border-radius:10px; background:#ffd27a; color:#2b2b2b; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; }
+
+  /* bottom toolbar */
+  .bottom-toolbar { display:flex; gap:6px; justify-content:space-between; flex-shrink:0; }
+  .toolbar-btn { flex:1; min-width:0; height:36px; border-radius:10px; border:none; color:var(--text); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 6px 16px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700; font-size:11px; cursor:pointer; border:1px solid rgba(255,255,255,0.03) }
+  .toolbar-btn.small { flex:0 0 60px; }
   .toolbar-btn:disabled { opacity:0.5; cursor:not-allowed; }
 
-  /* controls bottom-right: GO kept above toolbar */
-  .controls { position:absolute; right:12px; bottom:150px; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:70; }
-  .go-btn { width:118px;height:118px;border-radius:60px;background:linear-gradient(180deg,#ff6b4a,#e84f2f); color:white;font-size:28px;font-weight:800; display:flex;align-items:center;justify-content:center; box-shadow:0 12px 30px rgba(232,80,45,0.28), inset 0 -6px 16px rgba(255,255,255,0.12); border:6px solid rgba(255,255,255,0.06); cursor:pointer }
-  .mult-btn { width:62px;height:40px;border-radius:10px;background:#ffd27a;color:#2b2b2b;font-weight:800;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,0.03); cursor:pointer }
-
-  /* small avatar-only chat (no text) */
-  .chat { position:absolute; left:14px; bottom:150px; width:18%; max-width:68px; background:transparent; padding:6px 8px; border-radius:12px; font-size:12px; z-index:55; pointer-events:none }
-  .chat .avatar-dot{ width:36px; height:36px; border-radius:50%; background:#7b45ff; display:flex; align-items:center; justify-content:center; font-weight:700; color:white }
+  /* disclaimer */
+  .ads-disclaimer { font-size:10px; color:var(--mutedText); text-align:center; padding:4px 8px; background:rgba(255,255,255,0.01); border-radius:8px; border:1px solid rgba(255,255,255,0.02); line-height:1.3; }
 
   /* modal */
   .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000; }
-  .modal { background:linear-gradient(180deg,#0b2b2a,#073f3c); color:var(--text); padding:18px; border-radius:12px; min-width:300px; box-shadow:0 18px 50px rgba(0,0,0,0.8); border:1px solid rgba(255,255,255,0.02); }
-  .modal input, .modal select { width:100%; padding:10px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:var(--text); margin-top:8px }
+  .modal { background:linear-gradient(180deg,#0b2b2a,#073f3c); color:var(--text); padding:16px; border-radius:12px; min-width:280px; max-width:90%; box-shadow:0 18px 50px rgba(0,0,0,0.8); border:1px solid rgba(255,255,255,0.02); }
+  .modal input, .modal select { width:100%; padding:8px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:var(--text); margin-top:8px; font-size:13px; }
 
   /* toast & floating xp */
-  #toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:22px; background:#071423; color:#fff; padding:10px 14px; border-radius:10px; display:none; z-index:6000; box-shadow:0 12px 30px rgba(0,0,0,0.6) }
-  .float-xp { position:absolute; left:50%; transform:translateX(-50%); top:10%; color:#b4ffd8; font-weight:800; font-size:18px; opacity:0; transition: transform 800ms ease, opacity 800ms ease; }
+  #toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:60px; background:#071423; color:#fff; padding:8px 12px; border-radius:8px; display:none; z-index:6000; box-shadow:0 8px 20px rgba(0,0,0,0.6); font-size:12px; }
+  .float-xp { position:absolute; left:50%; transform:translateX(-50%); top:15%; color:#b4ffd8; font-weight:800; font-size:16px; opacity:0; transition: transform 800ms ease, opacity 800ms ease; }
 
-  @media (max-width:430px){ .app{width:100%;} .chat{width:72%} }
+  @media (max-width:430px){ .app{width:100%;} }
 </style>
 </head>
 <body>
   <div class="app" role="application" aria-label="Monopoly Farm - Dark demo">
 
+    <!-- HUD: Small at top -->
     <div class="hud">
       <div class="hud-left">
         <div class="logo">🌲 Farm</div>
@@ -99,7 +108,6 @@
           <div class="stat" id="gem">4455</div>
         </div>
       </div>
-
       <div class="hud-right">
         <div class="level" id="levelDisplay" aria-live="polite">Lv 1</div>
         <div class="progressWrap" title="Progress to next level">
@@ -108,58 +116,64 @@
       </div>
     </div>
 
+    <!-- Board area with game -->
     <div class="board-wrap" role="region" aria-label="Game board">
-      <div class="farmCall" role="region" aria-label="Farm controls">
-        <div style="font-weight:800;color:var(--text)">Farm</div>
-        <button class="harvestBtn" id="harvestBtn">Harvest</button>
-        <div style="font-weight:700;color:var(--mutedText)" id="harvestCount">0</div>
-      </div>
+      <div class="board-container">
+        <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center">
+          <div class="board" id="board"></div>
 
-      <div class="board" id="board"></div>
+          <!-- Farm controls floating on board -->
+          <div class="farmCall" role="region" aria-label="Farm controls">
+            <div class="farmCall-text">🌾</div>
+            <button class="harvestBtn" id="harvestBtn">Harvest</button>
+            <div class="farmCall-count" id="harvestCount">0</div>
+          </div>
 
-      <div style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none">
-        <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:60%;display:flex;align-items:center;justify-content:center;pointer-events:auto">
-          <div class="center">
-            <div class="boss" id="boss" title="Champion - click to challenge">
-              <div class="boss-icon">🏆</div>
-              <div class="lv">Lv.41 • 268.3K</div>
-              <div style="font-size:12px;color:var(--mutedText);margin-top:6px">×75</div>
-            </div>
+          <!-- Boost Button (Right side) -->
+          <div class="boost-btn-container">
+            <button class="boost-btn" id="boostBtn" title="Watch ad to boost coins">⚡</button>
+            <div class="boost-label">Boost</div>
+          </div>
 
-            <div class="avatarRow" style="pointer-events:auto">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px">
-                <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800">J</div>
+          <!-- Center: Boss/Champion -->
+          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:60%;display:flex;align-items:center;justify-content:center;pointer-events:auto">
+            <div class="center">
+              <div class="boss" id="boss" title="Champion - click to challenge">
+                <div class="boss-icon">🏆</div>
+                <div class="lv">Lv.41</div>
               </div>
-
-              <div style="display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:8px">
-                <div class="bubble" style="background:linear-gradient(180deg,#58b368,#2fa84a);width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800">C</div>
+              <div class="avatarRow" style="pointer-events:auto">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+                  <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:14px">J</div>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+                  <div class="bubble" style="background:linear-gradient(180deg,#58b368,#2fa84a);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:14px">C</div>
+                </div>
               </div>
             </div>
           </div>
+
+          <div class="float-xp" id="floatXp">+0 XP</div>
         </div>
       </div>
 
-      <div class="chat" aria-hidden="true">
-        <div class="avatar-dot">J</div>
+      <!-- Ads Disclaimer -->
+      <div class="ads-disclaimer">
+        💡 Ads are optional. Watch ads to boost your earnings and unlock rewards. Playing without ads is always free.
       </div>
+    </div>
 
-      <div class="controls">
-        <div class="mult-btn" id="mult">x1</div>
-        <button class="go-btn" id="goBtn" aria-label="Go button">GO</button>
-      </div>
+    <!-- Bottom Controls -->
+    <div class="bottom-controls">
+      <div class="mult-btn" id="mult" title="Toggle multiplier">x1</div>
+      <button class="go-btn" id="goBtn" aria-label="Go button">GO</button>
+    </div>
 
-      <div class="disclaimer">
-        This game uses optional ads for rewards. Ads are completely optional and you can enjoy the game without watching them.
-      </div>
-
-      <div class="bottom-toolbar" id="bottomToolbar" aria-label="Bottom menu">
-        <button class="toolbar-btn small" id="taskBtn"><span style="font-size:18px">🏷️</span> Task</button>
-        <button class="toolbar-btn" id="watchBtn"><span style="font-size:18px">🎬</span> Watch Ad</button>
-        <button class="toolbar-btn" id="withdrawBtn"><span style="font-size:18px">💳</span> Withdraw</button>
-        <button class="toolbar-btn small" id="refBtn"><span style="font-size:18px">👥</span> Referral</button>
-      </div>
-
-      <div class="float-xp" id="floatXp">+0 XP</div>
+    <!-- Bottom Toolbar: Small buttons -->
+    <div class="bottom-toolbar" id="bottomToolbar" aria-label="Bottom menu">
+      <button class="toolbar-btn small" id="taskBtn" title="Complete tasks for rewards"><span style="font-size:14px">🏷️</span></button>
+      <button class="toolbar-btn" id="withdrawBtn"><span style="font-size:14px">💳</span> Withdraw</button>
+      <button class="toolbar-btn small" id="refBtn" title="Invite friends"><span style="font-size:14px">👥</span></button>
     </div>
 
     <div id="toast" role="status" aria-live="polite"></div>
@@ -206,7 +220,7 @@
   const coinsEl = document.getElementById('coins');
   const gemEl = document.getElementById('gem');
   const taskBtn = document.getElementById('taskBtn');
-  const watchBtn = document.getElementById('watchBtn');
+  const boostBtn = document.getElementById('boostBtn');
   const withdrawBtn = document.getElementById('withdrawBtn');
   const refBtn = document.getElementById('refBtn');
   const modalBackdrop = document.getElementById('modalBackdrop');
@@ -282,9 +296,9 @@
     tokenIndex = index % tileElems.length;
     tileElems.forEach((t,idx)=> {
       if(!t) return;
-      t.style.boxShadow = (idx===tokenIndex) ? '0 14px 34px rgba(0,0,0,0.6), 0 0 0 6px rgba(255,215,120,0.03)' : '0 6px 14px rgba(0,0,0,0.45)';
-      t.style.transform = (idx===tokenIndex) ? 'translateY(-6px) scale(1.03)' : 'translateY(0) scale(1)';
-      t.style.transition = 'transform 220ms ease, box-shadow 220ms ease';
+      t.style.boxShadow = (idx===tokenIndex) ? '0 10px 24px rgba(0,0,0,0.6), 0 0 0 4px rgba(255,215,120,0.03)' : '0 4px 10px rgba(0,0,0,0.45)';
+      t.style.transform = (idx===tokenIndex) ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)';
+      t.style.transition = 'transform 180ms ease, box-shadow 180ms ease';
     });
   }
   placeTokenAt(0);
@@ -298,7 +312,7 @@
     showToast('Multiplier: ' + mult);
   });
 
-  async function animateSteps(steps, speed=110){
+  async function animateSteps(steps, speed=90){
     if(rolling) return;
     rolling = true;
     const start = tokenIndex;
@@ -314,13 +328,13 @@
     if(rolling) return;
     const dice = Math.floor(Math.random()*6)+1;
     const steps = dice * mult;
-    showToast('You rolled ' + dice + ' • ' + steps + ' steps', 1400);
-    await animateSteps(steps, 100);
+    showToast('You rolled ' + dice + ' • ' + steps + ' steps', 1200);
+    await animateSteps(steps, 80);
     taps += 1;
     const reward = Math.floor(5 + Math.random()*15);
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Landed on tile — +' + reward + ' XP', 1400);
+    showToast('Landed! +' + reward + ' XP', 1200);
     updateUI();
   });
 
@@ -330,7 +344,7 @@
     xp += reward;
     harvestCount += 1;
     showFloat('+' + reward + ' XP');
-    showToast('Harvested! +' + reward + ' XP', 1500);
+    showToast('Harvested! +' + reward + ' XP', 1400);
     updateUI();
   });
 
@@ -339,17 +353,16 @@
     const reward = 200;
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Task completed! +' + reward + ' XP', 1600);
+    showToast('Task completed! +' + reward + ' XP', 1500);
     updateUI();
   });
 
-  // Watch Ad (with real Adsgram integration)
-  watchBtn.addEventListener('click', async ()=> {
-    watchBtn.disabled = true;
-    showToast('Loading ad...', 1200);
+  // BOOST WITH AD - Main ad integration
+  boostBtn.addEventListener('click', async ()=> {
+    boostBtn.disabled = true;
+    showToast('Loading ad for boost...', 1200);
     
     try {
-      // Check if Adsgram is available
       if (typeof window.adsgram === 'undefined') {
         throw new Error('Adsgram SDK not loaded');
       }
@@ -357,25 +370,25 @@
       await window.adsgram.show({
         blockId: ADSGRAM_BLOCK_ID,
         onReward: () => {
-          const reward = 100;
-          xp += reward;
-          showFloat('+' + reward + ' XP');
-          showToast('Ad reward! +' + reward + ' XP', 1500);
+          const boostAmount = 500;
+          xp += boostAmount;
+          showFloat('+' + boostAmount + ' XP');
+          showToast('Boost activated! +' + boostAmount + ' XP', 1600);
           updateUI();
         },
         onError: (error) => {
           console.error('Adsgram error:', error);
-          showToast('Ad error: ' + (error.message || 'Unknown error'));
+          showToast('Ad error: ' + (error.message || 'Try again'));
         },
         onClose: () => {
           console.log('Ad closed');
         }
       });
     } catch (error) {
-      console.error('Watch ad error:', error);
+      console.error('Boost ad error:', error);
       showToast('Ad unavailable. Configure Adsgram Block ID.');
     } finally {
-      watchBtn.disabled = false;
+      boostBtn.disabled = false;
     }
   });
 
@@ -386,20 +399,19 @@
   // open referral modal
   function openReferralModal(){
     modalContent.innerHTML = `
-      <div style="font-weight:900;font-size:16px">Referral Program</div>
-      <div style="margin-top:8px;color:var(--mutedText)">Share this link to invite friends and earn rewards:</div>
+      <div style="font-weight:900;font-size:15px">Referral Program</div>
+      <div style="margin-top:8px;color:var(--mutedText);font-size:13px">Share this link to invite friends and earn 1000 XP each:</div>
       <input id="refLink" readonly value="https://t.me/YOUR_BOT_NAME?start=ref_12345" aria-label="Referral link">
       <div style="margin-top:12px;display:flex;gap:8px">
-        <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Link</button>
-        <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Close</button>
+        <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer;font-size:13px">Copy Link</button>
+        <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer;font-size:13px">Close</button>
       </div>
-      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">Refer a friend and both of you earn 1000 XP!</div>
     `;
     modalBackdrop.style.display = 'flex';
     document.getElementById('copyRef').addEventListener('click', async ()=>{
       const refLinkInput = document.getElementById('refLink');
-      try { await navigator.clipboard.writeText(refLinkInput.value); showToast('Referral link copied'); }
-      catch(e){ refLinkInput.select(); document.execCommand('copy'); showToast('Referral link copied'); }
+      try { await navigator.clipboard.writeText(refLinkInput.value); showToast('Link copied'); }
+      catch(e){ refLinkInput.select(); document.execCommand('copy'); showToast('Link copied'); }
     });
     document.getElementById('closeModal').addEventListener('click', ()=> modalBackdrop.style.display='none');
   }
@@ -407,22 +419,21 @@
   // withdraw modal
   function openWithdrawModal(){
     modalContent.innerHTML = `
-      <div style="font-weight:900;font-size:16px">Withdraw Request</div>
-      <div style="margin-top:8px;color:var(--mutedText)">Minimum withdraw: ${MIN_WITHDRAW.toLocaleString()} XP</div>
-      <div style="margin-top:8px;color:var(--text);font-weight:700">Current Balance: ${xp.toLocaleString()} XP</div>
-      <label style="margin-top:10px;color:var(--mutedText);font-size:13px">Amount (XP)</label>
+      <div style="font-weight:900;font-size:15px">Withdraw Request</div>
+      <div style="margin-top:8px;color:var(--mutedText);font-size:13px">Min: ${MIN_WITHDRAW.toLocaleString()} XP | Balance: ${xp.toLocaleString()} XP</div>
+      <label style="margin-top:10px;color:var(--mutedText);font-size:12px">Amount (XP)</label>
       <input id="wdAmount" type="number" placeholder="${MIN_WITHDRAW}" />
-      <label style="margin-top:8px;color:var(--mutedText);font-size:13px">Method</label>
+      <label style="margin-top:8px;color:var(--mutedText);font-size:12px">Payment Method</label>
       <select id="wdMethod">
         <option value="binance">Binance</option>
         <option value="litecoin">Litecoin</option>
         <option value="crypto">Crypto Wallet</option>
       </select>
-      <label style="margin-top:8px;color:var(--mutedText);font-size:13px">Wallet / Account Details</label>
-      <input id="wdDetails" placeholder="Enter wallet address or account ID" />
+      <label style="margin-top:8px;color:var(--mutedText);font-size:12px">Wallet / Account ID</label>
+      <input id="wdDetails" placeholder="Enter wallet address" />
       <div style="margin-top:12px;display:flex;gap:8px">
-        <button id="submitWd" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Submit</button>
-        <button id="cancelWd" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Cancel</button>
+        <button id="submitWd" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer;font-size:13px">Submit</button>
+        <button id="cancelWd" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer;font-size:13px">Cancel</button>
       </div>
     `;
     modalBackdrop.style.display = 'flex';
@@ -435,11 +446,11 @@
       const details = document.getElementById('wdDetails').value.trim();
 
       if(!Number.isFinite(amt) || amt <= 0){
-        showToast('Enter a valid amount');
+        showToast('Enter valid amount');
         return;
       }
       if(amt < MIN_WITHDRAW){
-        showToast(`Minimum withdraw is ${MIN_WITHDRAW.toLocaleString()} XP`);
+        showToast(`Min ${MIN_WITHDRAW.toLocaleString()} XP`);
         return;
       }
       if(amt > xp){
@@ -447,7 +458,7 @@
         return;
       }
       if(!details){
-        showToast('Enter wallet/account details');
+        showToast('Enter wallet details');
         return;
       }
 
@@ -456,7 +467,6 @@
         amount: amt,
         method,
         details,
-        player: 'local',
         xpBalance: xp - amt,
         timestamp: new Date().toISOString(),
         userId: 'user_' + Math.random().toString(36).substr(2, 9)
@@ -469,18 +479,17 @@
       xp -= amt;
       updateUI();
 
-      // Try to send via Telegram WebApp if available
       const tg = window?.Telegram?.WebApp;
       if(tg && typeof tg.sendData === 'function'){
         try{
           tg.sendData(JSON.stringify({ type: 'withdraw_request', adminId: ADMIN_CHAT_ID, payload: request }));
-          showToast('Withdraw request sent!');
+          showToast('Withdraw sent!');
         }catch(e){
-          console.warn('Telegram WebApp error:', e);
-          showToast('Request saved locally');
+          console.warn('Telegram error:', e);
+          showToast('Request saved');
         }
       } else {
-        showToast('Request saved. Contact admin to process.');
+        showToast('Request saved');
       }
 
       modalBackdrop.style.display = 'none';
@@ -492,19 +501,20 @@
     const reward = 300;
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Champion defeated! +' + reward + ' XP', 2000);
+    showToast('Champion defeated! +' + reward + ' XP', 1800);
     updateUI();
   });
 
-  // Enter key to roll
   document.addEventListener('keydown', (e)=> { if(e.key === 'Enter') goBtn.click(); });
 
   updateUI();
 
-  // Public API for debugging
   window._monopolyFarmDark = {
     getState: ()=>({xp,taps,harvestCount,level,requests: JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]')}),
-    setAdsgram: (blockId) => { ADSGRAM_BLOCK_ID = blockId; console.log('Adsgram Block ID set to:', blockId); }
+    setAdsgram: (blockId) => { 
+      ADSGRAM_BLOCK_ID = blockId; 
+      console.log('Adsgram Block ID set:', blockId); 
+    }
   };
 
 })();
