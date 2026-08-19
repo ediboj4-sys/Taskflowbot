@@ -52,7 +52,7 @@
 
   .center { grid-column: 3 / span 3; grid-row: 3 / span 3; background: rgba(255,255,255,0.02); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-direction:column; border:2px dashed rgba(255,255,255,0.02); position:relative; }
   .boss { width:92px;height:92px;border-radius:14px; background:linear-gradient(180deg,#2e3145,#45486b); display:flex;align-items:center;justify-content:center;flex-direction:column; box-shadow:0 10px 30px rgba(0,0,0,0.6); border:4px solid rgba(255,255,255,0.02); cursor:pointer }
-  .boss .skull{font-size:34px}
+  .boss .boss-icon{font-size:34px}
   .boss .lv{font-size:11px;color:var(--mutedText);margin-top:6px}
   .center .avatarRow{display:flex;gap:18px;margin-top:12px;align-items:flex-start}
 
@@ -65,6 +65,7 @@
   .bottom-toolbar { position: absolute; left: 12px; right: 12px; bottom: 12px; display:flex; gap:8px; justify-content:space-between; align-items:center; z-index:60; pointer-events:auto }
   .toolbar-btn { flex:1; min-width:0; height:46px; border-radius:12px; border:none; color:var(--text); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 8px 20px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; cursor:pointer; border:1px solid rgba(255,255,255,0.03) }
   .toolbar-btn.small { flex:0 0 86px }
+  .toolbar-btn:disabled { opacity:0.5; cursor:not-allowed; }
 
   /* controls bottom-right: GO kept above toolbar */
   .controls { position:absolute; right:12px; bottom:150px; display:flex; flex-direction:column; gap:10px; align-items:flex-end; z-index:70; }
@@ -119,8 +120,8 @@
       <div style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none">
         <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:60%;display:flex;align-items:center;justify-content:center;pointer-events:auto">
           <div class="center">
-            <div class="boss" id="boss" title="Boss - click to challenge">
-              <div class="skull">💀</div>
+            <div class="boss" id="boss" title="Champion - click to challenge">
+              <div class="boss-icon">🏆</div>
               <div class="lv">Lv.41 • 268.3K</div>
               <div style="font-size:12px;color:var(--mutedText);margin-top:6px">×75</div>
             </div>
@@ -148,12 +149,12 @@
       </div>
 
       <div class="disclaimer">
-        Ads are optional. Optional Task and Optional Watch Ad may show ads when you integrate Adsgram — ads are not required.
+        This game uses optional ads for rewards. Ads are completely optional and you can enjoy the game without watching them.
       </div>
 
       <div class="bottom-toolbar" id="bottomToolbar" aria-label="Bottom menu">
-        <button class="toolbar-btn small" id="taskBtn"><span style="font-size:18px">🏷️</span> Optional Task</button>
-        <button class="toolbar-btn" id="watchBtn"><span style="font-size:18px">🎬</span> Optional Watch Ad</button>
+        <button class="toolbar-btn small" id="taskBtn"><span style="font-size:18px">🏷️</span> Task</button>
+        <button class="toolbar-btn" id="watchBtn"><span style="font-size:18px">🎬</span> Watch Ad</button>
         <button class="toolbar-btn" id="withdrawBtn"><span style="font-size:18px">💳</span> Withdraw</button>
         <button class="toolbar-btn small" id="refBtn"><span style="font-size:18px">👥</span> Referral</button>
       </div>
@@ -172,13 +173,17 @@
     </div>
   </div>
 
+<!-- Adsgram SDK -->
+<script src="https://cdn.adsgram.ai/libs/adsgram.min.js"></script>
+
 <script>
 (function(){
   'use strict';
 
-  // === CONFIG ===
-  const ADMIN_CHAT_ID = ''; // set admin chat id if you want to send to Telegram WebApp
-  const MIN_WITHDRAW = 50000; // minimum withdraw
+  // === ADSGRAM CONFIG ===
+  const ADSGRAM_BLOCK_ID = 'YOUR_ADSGRAM_BLOCK_ID'; // Replace with your Adsgram Block ID
+  const ADMIN_CHAT_ID = 'YOUR_ADMIN_CHAT_ID'; // Replace with your admin chat ID
+  const MIN_WITHDRAW = 50000;
 
   const ns = 'monopoly_farm_dark_';
 
@@ -212,6 +217,7 @@
     clearTimeout(showToast.timer);
     showToast.timer = setTimeout(()=> toast.style.display = 'none', timeout);
   }
+
   function showFloat(msg){
     floatXp.textContent = msg;
     floatXp.style.opacity = '1';
@@ -328,7 +334,7 @@
     updateUI();
   });
 
-  // Optional Task: +200 XP
+  // Task: +200 XP
   taskBtn.addEventListener('click', ()=> {
     const reward = 200;
     xp += reward;
@@ -337,41 +343,65 @@
     updateUI();
   });
 
-  // Optional Watch Ad: +100 XP (simulated)
+  // Watch Ad (with real Adsgram integration)
   watchBtn.addEventListener('click', async ()=> {
-    showToast('Optional ad playing...', 1200);
-    await new Promise(r=>setTimeout(r, 1400)); // simulate ad time
-    const reward = 100;
-    xp += reward;
-    showFloat('+' + reward + ' XP');
-    showToast('Ad finished! +' + reward + ' XP', 1500);
-    updateUI();
+    watchBtn.disabled = true;
+    showToast('Loading ad...', 1200);
+    
+    try {
+      // Check if Adsgram is available
+      if (typeof window.adsgram === 'undefined') {
+        throw new Error('Adsgram SDK not loaded');
+      }
+
+      await window.adsgram.show({
+        blockId: ADSGRAM_BLOCK_ID,
+        onReward: () => {
+          const reward = 100;
+          xp += reward;
+          showFloat('+' + reward + ' XP');
+          showToast('Ad reward! +' + reward + ' XP', 1500);
+          updateUI();
+        },
+        onError: (error) => {
+          console.error('Adsgram error:', error);
+          showToast('Ad error: ' + (error.message || 'Unknown error'));
+        },
+        onClose: () => {
+          console.log('Ad closed');
+        }
+      });
+    } catch (error) {
+      console.error('Watch ad error:', error);
+      showToast('Ad unavailable. Configure Adsgram Block ID.');
+    } finally {
+      watchBtn.disabled = false;
+    }
   });
 
-  // Withdraw & Referral as before
+  // Withdraw & Referral
   withdrawBtn.addEventListener('click', ()=> openWithdrawModal());
   refBtn.addEventListener('click', ()=> openReferralModal());
 
   // open referral modal
   function openReferralModal(){
     modalContent.innerHTML = `
-      <div style="font-weight:900;font-size:16px">Referral Link</div>
-      <div style="margin-top:8px;color:var(--mutedText)">Share this link to invite friends:</div>
-      <input id="refLink" readonly value="https://t.me/@Taskflowbot?start=12345" aria-label="Referral link">
+      <div style="font-weight:900;font-size:16px">Referral Program</div>
+      <div style="margin-top:8px;color:var(--mutedText)">Share this link to invite friends and earn rewards:</div>
+      <input id="refLink" readonly value="https://t.me/YOUR_BOT_NAME?start=ref_12345" aria-label="Referral link">
       <div style="margin-top:12px;display:flex;gap:8px">
         <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Link</button>
         <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Close</button>
       </div>
-      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">${ADMIN_CHAT_ID ? 'Admin chat id: ' + ADMIN_CHAT_ID : 'Refer an earn 1000 XP'}</div>
+      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">Refer a friend and both of you earn 1000 XP!</div>
     `;
     modalBackdrop.style.display = 'flex';
     document.getElementById('copyRef').addEventListener('click', async ()=>{
       const refLinkInput = document.getElementById('refLink');
       try { await navigator.clipboard.writeText(refLinkInput.value); showToast('Referral link copied'); }
-      catch(e){ refLinkInput.select(); document.execCommand('copy'); showToast('Referral link copied (fallback)'); }
+      catch(e){ refLinkInput.select(); document.execCommand('copy'); showToast('Referral link copied'); }
     });
     document.getElementById('closeModal').addEventListener('click', ()=> modalBackdrop.style.display='none');
-    modalBackdrop.addEventListener('click', (e)=> { if(e.target === modalBackdrop) modalBackdrop.style.display='none'; }, { once:false });
   }
 
   // withdraw modal
@@ -379,12 +409,14 @@
     modalContent.innerHTML = `
       <div style="font-weight:900;font-size:16px">Withdraw Request</div>
       <div style="margin-top:8px;color:var(--mutedText)">Minimum withdraw: ${MIN_WITHDRAW.toLocaleString()} XP</div>
+      <div style="margin-top:8px;color:var(--text);font-weight:700">Current Balance: ${xp.toLocaleString()} XP</div>
       <label style="margin-top:10px;color:var(--mutedText);font-size:13px">Amount (XP)</label>
       <input id="wdAmount" type="number" placeholder="${MIN_WITHDRAW}" />
       <label style="margin-top:8px;color:var(--mutedText);font-size:13px">Method</label>
       <select id="wdMethod">
         <option value="binance">Binance</option>
         <option value="litecoin">Litecoin</option>
+        <option value="crypto">Crypto Wallet</option>
       </select>
       <label style="margin-top:8px;color:var(--mutedText);font-size:13px">Wallet / Account Details</label>
       <input id="wdDetails" placeholder="Enter wallet address or account ID" />
@@ -392,7 +424,6 @@
         <button id="submitWd" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Submit</button>
         <button id="cancelWd" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Cancel</button>
       </div>
-      <div style="margin-top:10px;color:var(--mutedText);font-size:13px">Admin chat id: ${ADMIN_CHAT_ID || '<not configured>'}</div>
     `;
     modalBackdrop.style.display = 'flex';
 
@@ -426,8 +457,9 @@
         method,
         details,
         player: 'local',
-        xpBalance: xp,
-        ts: new Date().toISOString()
+        xpBalance: xp - amt,
+        timestamp: new Date().toISOString(),
+        userId: 'user_' + Math.random().toString(36).substr(2, 9)
       };
 
       const saved = JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]');
@@ -437,57 +469,42 @@
       xp -= amt;
       updateUI();
 
+      // Try to send via Telegram WebApp if available
       const tg = window?.Telegram?.WebApp;
       if(tg && typeof tg.sendData === 'function'){
         try{
-          tg.sendData(JSON.stringify({ admin: ADMIN_CHAT_ID || null, payload: request }));
-          showToast('Withdraw request sent to admin (via WebApp)');
+          tg.sendData(JSON.stringify({ type: 'withdraw_request', adminId: ADMIN_CHAT_ID, payload: request }));
+          showToast('Withdraw request sent!');
         }catch(e){
-          console.warn('tg.sendData failed', e);
-          showToast('Saved — unable to send via WebApp');
+          console.warn('Telegram WebApp error:', e);
+          showToast('Request saved locally');
         }
       } else {
-        modalContent.innerHTML = `
-          <div style="font-weight:900;font-size:16px">Request Saved</div>
-          <div style="margin-top:8px;color:var(--mutedText)">Your withdraw request has been saved locally.</div>
-          <div style="margin-top:10px;color:var(--mutedText);font-size:13px">Copy this message and send to the admin chat${ADMIN_CHAT_ID ? ' ('+ADMIN_CHAT_ID+')' : ''}:</div>
-          <textarea id="adminMsg" style="width:100%;height:120px;margin-top:8px;border-radius:8px;padding:10px;background:rgba(255,255,255,0.03);color:var(--text);border:none;resize:none">
-WITHDRAW REQUEST
-Amount: ${request.amount} XP
-Method: ${request.method}
-Details: ${request.details}
-Player: ${request.player}
-Time: ${request.ts}
-          </textarea>
-          <div style="display:flex;gap:8px;margin-top:10px">
-            <button id="copyAdmin" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer">Copy Message</button>
-            <button id="closeOk" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer">Close</button>
-          </div>
-        `;
-        document.getElementById('copyAdmin').addEventListener('click', async ()=>{
-          const text = document.getElementById('adminMsg').value;
-          try{ await navigator.clipboard.writeText(text); showToast('Request copied to clipboard'); }
-          catch(e){ document.getElementById('adminMsg').select(); document.execCommand('copy'); showToast('Copied (fallback)'); }
-        });
-        document.getElementById('closeOk').addEventListener('click', ()=> modalBackdrop.style.display='none');
+        showToast('Request saved. Contact admin to process.');
       }
+
+      modalBackdrop.style.display = 'none';
     });
   }
 
+  // Boss/Champion button
   document.getElementById('boss').addEventListener('click', ()=> {
     const reward = 300;
     xp += reward;
     showFloat('+' + reward + ' XP');
-    showToast('Boss defeated! +' + reward + ' XP', 2000);
+    showToast('Champion defeated! +' + reward + ' XP', 2000);
     updateUI();
   });
 
+  // Enter key to roll
   document.addEventListener('keydown', (e)=> { if(e.key === 'Enter') goBtn.click(); });
 
   updateUI();
 
+  // Public API for debugging
   window._monopolyFarmDark = {
-    getState: ()=>({xp,taps,harvestCount,level,requests: JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]')})
+    getState: ()=>({xp,taps,harvestCount,level,requests: JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]')}),
+    setAdsgram: (blockId) => { ADSGRAM_BLOCK_ID = blockId; console.log('Adsgram Block ID set to:', blockId); }
   };
 
 })();
