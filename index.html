@@ -192,7 +192,7 @@ $('playDiceBtn').onclick=async()=>{
 
 /* MODALS */
 function modal(html){$('modalContent').innerHTML=html;$('modal').classList.add('show')}$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.remove('show')};
-$('refBtn').onclick=()=>modal('<h3>👥 Invite Friends</h3><p class="muted">Share your Telegram referral link and invite friends to play.</p><input value="https://t.me/YOUR_BOT_USERNAME?start=ref_YOUR_ID" readonly><button class="btn primary" onclick="navigator.clipboard.writeText(this.previousElementSibling.value)">Copy Link</button>');
+$('refBtn').onclick=()=>modal('<h3>👥 Invite Friends</h3><p class="muted">Share your Telegram referral link and invite friends to play.</p><input value="https://t.me/@Taskaflowbot?start=ref_YOUR_ID" readonly><button class="btn primary" onclick="navigator.clipboard.writeText(this.previousElementSibling.value)">Copy Link</button>');
 $('withdrawBtn').onclick=()=>modal('<h3>💳 Withdraw Request</h3><p class="muted">Minimum: '+MIN_WITHDRAW.toLocaleString()+' XP<br>Your balance: '+xp.toLocaleString()+' XP</p><select id="method"><option>Binance</option><option>Litecoin</option><option>Crypto Wallet</option></select><input id="wallet" placeholder="Enter wallet/account details"><button id="submitWd" class="btn green">Submit Request</button>');
 document.addEventListener('click',e=>{if(e.target.id==='submitWd'){const details=$('wallet').value.trim();if(xp<MIN_WITHDRAW){toast('Minimum withdrawal is '+MIN_WITHDRAW.toLocaleString()+' XP');return}if(!details){toast('Enter wallet details');return}toast('Withdrawal request saved for review');$('modal').classList.remove('show')}});
 
