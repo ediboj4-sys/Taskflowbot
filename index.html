@@ -1,522 +1,202 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Monopoly Farm - Dark demo (Optional Ads)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Monopoly Farm</title>
 <style>
-  :root{
-    --bg-1: #041219;
-    --bg-2: #07202b;
-    --panel:#0d2430;
-    --muted:#95a5a6;
-    --accent:#ff8533;
-    --gold:#ffd27a;
-    --tile:#0f2a2a;
-    --tile-border:#164b41;
-    --hud-bg: rgba(255,255,255,0.03);
-    --shadow: 0 10px 30px rgba(0,0,0,0.6);
-    --chat-bg: rgba(0,0,0,0.55);
-    --glass: rgba(255,255,255,0.03);
-    --text: #d6f6ea;
-    --mutedText: #9fbfb4;
-  }
-  html,body{
-    height:100%; margin:0; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-    background: linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 60%); color:var(--text);
-    display:flex; justify-content:center; padding:12px; box-sizing:border-box;
-  }
-  .app { width:412px; max-width:100%; display:flex; flex-direction:column; gap:8px; position:relative; height:100vh; }
-
-  /* HUD */
-  .hud { display:flex; justify-content:space-between; align-items:center; padding:8px 10px;
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    border-radius:12px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); flex-shrink:0; }
-  .hud-left{display:flex;gap:8px;align-items:center}
-  .logo { display:flex; align-items:center; gap:6px; font-weight:800; color:var(--accent); font-size:14px }
-  .stats { display:flex; gap:6px; align-items:center; font-size:12px; color:var(--mutedText) }
-  .stat { background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:4px 8px; border-radius:8px; border:1px solid rgba(255,255,255,0.02); font-weight:700 }
-  .hud-right{display:flex;gap:10px;align-items:center}
-  .level{background:rgba(255,255,255,0.02);padding:4px 8px;border-radius:999px;color:var(--text);font-weight:800;font-size:12px;border:1px solid rgba(255,255,255,0.03)}
-  .progressWrap{width:100px;height:14px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));border-radius:999px;padding:2px;border:1px solid rgba(255,255,255,0.02);display:flex;align-items:center}
-  .progressInner{height:100%;width:32%;background:linear-gradient(90deg,#00e0ff,#0077ff);border-radius:999px;transition:width 400ms ease}
-
-  /* Board area */
-  .board-wrap{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:14px; padding:10px; box-shadow:var(--shadow); position:relative; overflow:hidden; flex:1; display:flex; flex-direction:column; }
-  .board-container { flex:1; display:flex; align-items:center; justify-content:center; min-height:0; }
-  .board { width:100%; aspect-ratio:1 / 1; display:grid; grid-template-columns:repeat(7,1fr); grid-template-rows:repeat(7,1fr); gap:5px; position:relative; }
-  .cell{background:transparent;display:flex;align-items:center;justify-content:center}
-  .tile{ width:100%; height:100%; background:var(--tile); border-radius:6px; border:2px solid var(--tile-border); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--mutedText); box-shadow: 0 4px 10px rgba(0,0,0,0.5); position:relative; }
-  .tile.q { background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); color:var(--gold); font-weight:800 }
-  .tile.corner { border-radius:10px; font-weight:900; font-size:12px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:var(--gold) }
-
-  .center { grid-column: 3 / span 3; grid-row: 3 / span 3; background: rgba(255,255,255,0.02); border-radius:10px; display:flex; align-items:center; justify-content:center; flex-direction:column; border:2px dashed rgba(255,255,255,0.02); position:relative; }
-  .boss { width:70px;height:70px;border-radius:12px; background:linear-gradient(180deg,#2e3145,#45486b); display:flex;align-items:center;justify-content:center;flex-direction:column; box-shadow:0 8px 20px rgba(0,0,0,0.6); border:3px solid rgba(255,255,255,0.02); cursor:pointer }
-  .boss .boss-icon{font-size:28px}
-  .boss .lv{font-size:9px;color:var(--mutedText);margin-top:4px}
-  .center .avatarRow{display:flex;gap:12px;margin-top:8px;align-items:flex-start}
-
-  /* farm callout */
-  .farmCall { position:absolute; left:50%; top:6%; transform:translateX(-50%); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:6px 10px; border-radius:999px; display:flex; align-items:center; gap:8px; box-shadow:var(--shadow); border:1px solid rgba(255,255,255,0.03); z-index:10; }
-  .farmCall .harvestBtn { background:linear-gradient(180deg,#2dd06a,#1e9b48); color:#03160a; padding:6px 10px; border-radius:8px; font-weight:700; font-size:12px; border:none; cursor:pointer; box-shadow:0 6px 16px rgba(0,0,0,0.5) }
-  .farmCall-text { font-weight:700;color:var(--text); font-size:12px; }
-  .farmCall-count { font-weight:600;color:var(--mutedText); font-size:11px; }
-
-  /* Boost button - repositioned */
-  .boost-btn-container { position:absolute; right:10px; top:50%; transform:translateY(-50%); z-index:30; display:flex; flex-direction:column; gap:6px; }
-  .boost-btn { width:50px; height:50px; border-radius:12px; background:linear-gradient(180deg,#ff9500,#ff6b1a); color:white; font-weight:800; font-size:24px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(255,107,26,0.4); border:2px solid rgba(255,255,255,0.1); transition:transform 200ms ease; }
-  .boost-btn:hover:not(:disabled) { transform:scale(1.05); }
-  .boost-btn:disabled { opacity:0.6; cursor:not-allowed; }
-  .boost-label { font-size:10px; font-weight:700; color:var(--text); text-align:center; }
-
-  /* bottom controls */
-  .bottom-controls { display:flex; gap:6px; flex-shrink:0; justify-content:space-between; }
-  .go-btn { flex:1; height:40px; border-radius:10px; background:linear-gradient(180deg,#ff6b4a,#e84f2f); color:white; font-size:18px; font-weight:800; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; box-shadow:0 8px 20px rgba(232,80,45,0.28); }
-  .mult-btn { width:50px; height:40px; border-radius:10px; background:#ffd27a; color:#2b2b2b; font-weight:800; font-size:12px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; }
-
-  /* bottom toolbar */
-  .bottom-toolbar { display:flex; gap:6px; justify-content:space-between; flex-shrink:0; }
-  .toolbar-btn { flex:1; min-width:0; height:36px; border-radius:10px; border:none; color:var(--text); background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); box-shadow:0 6px 16px rgba(0,0,0,0.45); display:flex; align-items:center; justify-content:center; gap:6px; font-weight:700; font-size:11px; cursor:pointer; border:1px solid rgba(255,255,255,0.03) }
-  .toolbar-btn.small { flex:0 0 60px; }
-  .toolbar-btn:disabled { opacity:0.5; cursor:not-allowed; }
-
-  /* disclaimer */
-  .ads-disclaimer { font-size:10px; color:var(--mutedText); text-align:center; padding:4px 8px; background:rgba(255,255,255,0.01); border-radius:8px; border:1px solid rgba(255,255,255,0.02); line-height:1.3; }
-
-  /* modal */
-  .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000; }
-  .modal { background:linear-gradient(180deg,#0b2b2a,#073f3c); color:var(--text); padding:16px; border-radius:12px; min-width:280px; max-width:90%; box-shadow:0 18px 50px rgba(0,0,0,0.8); border:1px solid rgba(255,255,255,0.02); }
-  .modal input, .modal select { width:100%; padding:8px; border-radius:8px; border:none; background:rgba(255,255,255,0.03); color:var(--text); margin-top:8px; font-size:13px; }
-
-  /* toast & floating xp */
-  #toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:60px; background:#071423; color:#fff; padding:8px 12px; border-radius:8px; display:none; z-index:6000; box-shadow:0 8px 20px rgba(0,0,0,0.6); font-size:12px; }
-  .float-xp { position:absolute; left:50%; transform:translateX(-50%); top:15%; color:#b4ffd8; font-weight:800; font-size:16px; opacity:0; transition: transform 800ms ease, opacity 800ms ease; }
-
-  @media (max-width:430px){ .app{width:100%;} }
+:root{--bg:#07151d;--panel:#102832;--panel2:#0b2029;--text:#e9fff5;--muted:#9eb9b0;--accent:#ff9d2e;--green:#2dd06a;--red:#ef5c5c}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#061017,#0a2530);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial}
+.app{width:min(100%,460px);min-height:100vh;margin:auto;padding:10px;display:flex;flex-direction:column;gap:9px}
+.hud,.panel,.game-card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid rgba(255,255,255,.06);border-radius:16px;box-shadow:0 12px 30px rgba(0,0,0,.28)}
+.hud{padding:10px;display:flex;justify-content:space-between;align-items:center}.logo{font-weight:900;color:var(--accent)}.stats{display:flex;gap:7px}.stat{padding:5px 8px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px;font-weight:800}
+.tabs{display:flex;gap:6px}.tab{flex:1;border:0;border-radius:11px;padding:10px 4px;background:#10242c;color:var(--muted);font-weight:800}.tab.active{background:var(--accent);color:#17110a}
+.screen{display:none}.screen.active{display:block}.panel{padding:12px}.game-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.game-title h2{font-size:17px;margin:0}.muted{color:var(--muted);font-size:12px}
+.board{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;aspect-ratio:1}.tile{border-radius:9px;background:#123b35;border:2px solid #1c5a4e;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}.tile.token{outline:3px solid var(--accent);transform:translateY(-3px)}.tile.special{background:#27354a}.center{grid-column:3/6;grid-row:3/6;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#0b1f26;border-radius:15px;gap:8px}.center b{font-size:19px}
+.row{display:flex;gap:8px;margin-top:10px}.btn{border:0;border-radius:12px;padding:11px 12px;font-weight:900;cursor:pointer;background:#18343c;color:white}.btn.primary{background:linear-gradient(180deg,#ffad43,#ff7527);color:#231506}.btn.green{background:var(--green);color:#062211}.btn:disabled{opacity:.5}
+.notice{text-align:center;font-size:11px;color:var(--muted);margin-top:9px}
+.whot-top{display:flex;justify-content:space-between;gap:8px}.pile{height:115px;display:flex;align-items:center;justify-content:center;font-size:34px;font-weight:900;border-radius:16px;background:#17323b;border:2px dashed rgba(255,255,255,.15)}
+.cards{display:flex;gap:7px;overflow-x:auto;padding:10px 0}.card{min-width:58px;height:88px;border-radius:10px;background:#f6f2e7;color:#111;display:flex;flex-direction:column;justify-content:space-between;padding:7px;font-weight:1000;box-shadow:0 6px 12px rgba(0,0,0,.3)}.card.red{color:#d92727}.card small{font-size:10px}.card.selected{outline:4px solid var(--accent);transform:translateY(-4px)}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fun{padding:16px;text-align:center;border-radius:14px;background:#13303a;font-weight:900}.emoji{font-size:38px;display:block;margin-bottom:7px}
+.score{font-size:28px;font-weight:1000;text-align:center;padding:14px}.reaction{font-size:70px;text-align:center;padding:18px}.status{text-align:center;font-weight:800;min-height:24px}
+.bottom{display:flex;gap:7px;margin-top:auto}.bottom .btn{flex:1;font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:15px}.modal.show{display:flex}.modal-box{width:min(100%,400px);background:#102a33;border-radius:18px;padding:16px}.modal input,.modal select{width:100%;padding:11px;margin:6px 0;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#071820;color:white}
+#toast{position:fixed;left:50%;bottom:72px;transform:translateX(-50%);background:#071820;padding:9px 13px;border-radius:10px;display:none;z-index:9;font-size:12px}
 </style>
 </head>
 <body>
-  <div class="app" role="application" aria-label="Monopoly Farm - Dark demo">
-
-    <!-- HUD: Small at top -->
-    <div class="hud">
-      <div class="hud-left">
-        <div class="logo">🌲 Farm</div>
-        <div class="stats">
-          <div class="stat" id="coins">0</div>
-          <div class="stat" id="gem">4455</div>
-        </div>
-      </div>
-      <div class="hud-right">
-        <div class="level" id="levelDisplay" aria-live="polite">Lv 1</div>
-        <div class="progressWrap" title="Progress to next level">
-          <div class="progressInner" id="progressInner" style="width:0%"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Board area with game -->
-    <div class="board-wrap" role="region" aria-label="Game board">
-      <div class="board-container">
-        <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center">
-          <div class="board" id="board"></div>
-
-          <!-- Farm controls floating on board -->
-          <div class="farmCall" role="region" aria-label="Farm controls">
-            <div class="farmCall-text">🌾</div>
-            <button class="harvestBtn" id="harvestBtn">Harvest</button>
-            <div class="farmCall-count" id="harvestCount">0</div>
-          </div>
-
-          <!-- Boost Button (Right side) -->
-          <div class="boost-btn-container">
-            <button class="boost-btn" id="boostBtn" title="Watch ad to boost coins">⚡</button>
-            <div class="boost-label">Boost</div>
-          </div>
-
-          <!-- Center: Boss/Champion -->
-          <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60%;height:60%;display:flex;align-items:center;justify-content:center;pointer-events:auto">
-            <div class="center">
-              <div class="boss" id="boss" title="Champion - click to challenge">
-                <div class="boss-icon">🏆</div>
-                <div class="lv">Lv.41</div>
-              </div>
-              <div class="avatarRow" style="pointer-events:auto">
-                <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div class="bubble" style="background:linear-gradient(180deg,#7b45ff,#5b27d0);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:14px">J</div>
-                </div>
-                <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-                  <div class="bubble" style="background:linear-gradient(180deg,#58b368,#2fa84a);width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:14px">C</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="float-xp" id="floatXp">+0 XP</div>
-        </div>
-      </div>
-
-      <!-- Ads Disclaimer -->
-      <div class="ads-disclaimer">
-        💡 Ads are optional. Watch ads to boost your earnings and unlock rewards. Playing without ads is always free.
-      </div>
-    </div>
-
-    <!-- Bottom Controls -->
-    <div class="bottom-controls">
-      <div class="mult-btn" id="mult" title="Toggle multiplier">x1</div>
-      <button class="go-btn" id="goBtn" aria-label="Go button">GO</button>
-    </div>
-
-    <!-- Bottom Toolbar: Small buttons -->
-    <div class="bottom-toolbar" id="bottomToolbar" aria-label="Bottom menu">
-      <button class="toolbar-btn small" id="taskBtn" title="Complete tasks for rewards"><span style="font-size:14px">🏷️</span></button>
-      <button class="toolbar-btn" id="withdrawBtn"><span style="font-size:14px">💳</span> Withdraw</button>
-      <button class="toolbar-btn small" id="refBtn" title="Invite friends"><span style="font-size:14px">👥</span></button>
-    </div>
-
-    <div id="toast" role="status" aria-live="polite"></div>
-
+<div class="app">
+  <div class="hud">
+    <div><div class="logo">🌾 MONOPOLY FARM</div><div class="muted">Play • Compete • Have fun</div></div>
+    <div class="stats"><div class="stat">🪙 <span id="xp">0</span> XP</div><div class="stat">🔥 Lv <span id="level">1</span></div></div>
   </div>
 
-  <!-- Modal -->
-  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true">
-    <div class="modal" role="document" aria-label="Dialog">
-      <div id="modalContent"></div>
-    </div>
+  <div class="tabs">
+    <button class="tab active" data-screen="farm">🌾 Farm</button>
+    <button class="tab" data-screen="whot">🃏 Naija Whot</button>
+    <button class="tab" data-screen="funny">😂 Funny</button>
+    <button class="tab" data-screen="dice">🎲 Dice</button>
   </div>
 
-<!-- Adsgram SDK -->
+  <section id="farm" class="screen active">
+    <div class="panel">
+      <div class="game-title"><h2>🌾 Farm Adventure</h2><span class="muted">Roll and explore</span></div>
+      <div id="board" class="board"></div>
+      <div class="row"><button id="rollBtn" class="btn primary" style="flex:1">🎲 ROLL DICE</button><button id="harvestBtn" class="btn green">🌾 Harvest</button></div>
+      <div class="row"><button id="boostBtn" class="btn" style="flex:1">⚡ Optional Ad Boost</button></div>
+      <div class="notice">Ads are optional. You can enjoy all core games without watching ads.</div>
+    </div>
+  </section>
+
+  <section id="whot" class="screen">
+    <div class="panel">
+      <div class="game-title"><h2>🃏 Naija Whot</h2><span class="muted">Play against the computer</span></div>
+      <div class="whot-top"><div><div class="muted">Computer</div><div id="botCount" class="score">5 cards</div></div><div style="flex:1"><div class="muted">Current card</div><div id="currentCard" class="pile">1</div></div></div>
+      <div class="status" id="whotStatus">Choose a matching card by number or shape.</div>
+      <div class="muted">Your cards</div><div id="hand" class="cards"></div>
+      <div class="row"><button id="drawBtn" class="btn">➕ Draw Card</button><button id="newWhotBtn" class="btn primary" style="flex:1">🔄 New Game</button></div>
+    </div>
+  </section>
+
+  <section id="funny" class="screen">
+    <div class="panel">
+      <div class="game-title"><h2>😂 Funny Games</h2><span class="muted">Quick mini games</span></div>
+      <div class="choice">
+        <button class="fun btn" id="reactionStart"><span class="emoji">⚡</span>Reaction Rush</button>
+        <button class="fun btn" id="guessStart"><span class="emoji">🤪</span>Lucky Guess</button>
+      </div>
+      <div id="funnyArea" class="panel" style="margin-top:10px">
+        <div class="reaction" id="funnyEmoji">😂</div>
+        <div class="status" id="funnyStatus">Choose a funny game and start playing!</div>
+        <div class="row"><button id="funnyAction" class="btn primary" style="flex:1" disabled>Start</button></div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="dice" class="screen">
+    <div class="panel">
+      <div class="game-title"><h2>🎲 Lucky Dice Game</h2><span class="muted">Guess • Roll • Win XP</span></div>
+      <div class="score">🎯 <span id="diceTarget">?</span></div>
+      <div class="status" id="diceStatus">Pick a number from 1 to 6, then roll the dice!</div>
+      <div class="choice" id="diceChoices">
+        <button class="btn dicePick" data-number="1">1️⃣</button>
+        <button class="btn dicePick" data-number="2">2️⃣</button>
+        <button class="btn dicePick" data-number="3">3️⃣</button>
+        <button class="btn dicePick" data-number="4">4️⃣</button>
+        <button class="btn dicePick" data-number="5">5️⃣</button>
+        <button class="btn dicePick" data-number="6">6️⃣</button>
+      </div>
+      <div id="diceFace" class="reaction">🎲</div>
+      <div class="row">
+        <button id="playDiceBtn" class="btn primary" style="flex:1" disabled>🎲 ROLL DICE</button>
+      </div>
+      <div class="notice">Correct guess: +30 XP • Wrong guess: keep playing and have fun!</div>
+    </div>
+  </section>
+
+  <div class="bottom">
+    <button id="refBtn" class="btn">👥 Invite</button>
+    <button id="withdrawBtn" class="btn">💳 Withdraw</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="modal" class="modal"><div class="modal-box"><div id="modalContent"></div></div></div>
+
 <script src="https://cdn.adsgram.ai/libs/adsgram.min.js"></script>
-
 <script>
-(function(){
-  'use strict';
+(() => {
+'use strict';
+let ADSGRAM_BLOCK_ID = '43625';
+const MIN_WITHDRAW = 50000;
+const ns = 'monopoly_real_v2_';
 
-  // === ADSGRAM CONFIG ===
-  const ADSGRAM_BLOCK_ID = '43625'; // Replace with your Adsgram Block ID
-  const ADMIN_CHAT_ID = '43625372'; // Replace with your admin chat ID
-  const MIN_WITHDRAW = 50000;
+let xp = Number(localStorage.getItem(ns+'xp')||0);
+let level = Number(localStorage.getItem(ns+'level')||1);
+let harvestReady = Number(localStorage.getItem(ns+'harvestReady')||0);
+let tokenIndex = Number(localStorage.getItem(ns+'token')||0);
+let rolling = false;
 
-  const ns = 'monopoly_farm_dark_';
+const $=id=>document.getElementById(id);
+function toast(msg){const t=$('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.tt);window.tt=setTimeout(()=>t.style.display='none',1800)}
+function save(){level=Math.max(1,Math.floor(xp/1000)+1);localStorage.setItem(ns+'xp',xp);localStorage.setItem(ns+'level',level);localStorage.setItem(ns+'token',tokenIndex);$('xp').textContent=xp.toLocaleString();$('level').textContent=level}
+save();
 
-  // state
-  let xp = Number(localStorage.getItem(ns+'xp') || 0);
-  let taps = Number(localStorage.getItem(ns+'taps') || 0);
-  let harvestCount = Number(localStorage.getItem(ns+'harvest') || 0);
-  let level = Number(localStorage.getItem(ns+'level') || 1);
+/* tabs */
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));b.classList.add('active');$(b.dataset.screen).classList.add('active')});
 
-  // DOM refs
-  const board = document.getElementById('board');
-  const goBtn = document.getElementById('goBtn');
-  const multBtn = document.getElementById('mult');
-  const toast = document.getElementById('toast');
-  const floatXp = document.getElementById('floatXp');
-  const harvestBtn = document.getElementById('harvestBtn');
-  const harvestCountEl = document.getElementById('harvestCount');
-  const levelDisplay = document.getElementById('levelDisplay');
-  const progressInner = document.getElementById('progressInner');
-  const coinsEl = document.getElementById('coins');
-  const gemEl = document.getElementById('gem');
-  const taskBtn = document.getElementById('taskBtn');
-  const boostBtn = document.getElementById('boostBtn');
-  const withdrawBtn = document.getElementById('withdrawBtn');
-  const refBtn = document.getElementById('refBtn');
-  const modalBackdrop = document.getElementById('modalBackdrop');
-  const modalContent = document.getElementById('modalContent');
+/* FARM */
+const board=$('board'), size=7, path=[];
+for(let r=0;r<size;r++)for(let c=0;c<size;c++){if(r===0||r===size-1||c===0||c===size-1)path.push([r,c])}
+const cells=[];
+for(let i=0;i<49;i++){const r=Math.floor(i/7),c=i%7,d=document.createElement('div');d.className='tile';if(r===0||r===6||c===0||c===6){d.textContent=['🌾','🐔','🍅','🪙','🌳','🎁','🚜'][i%7];if(i%5===0)d.classList.add('special')}else{d.style.visibility='hidden'}board.appendChild(d);cells.push(d)}
+const center=document.createElement('div');center.className='center';center.innerHTML='<b>🏆 FARM QUEST</b><span class="muted">Reach higher levels by playing</span>';board.appendChild(center);
+function renderToken(){cells.forEach(c=>c.classList.remove('token'));const [r,c]=path[tokenIndex%path.length];cells[r*7+c].classList.add('token')}
+renderToken();
 
-  function showToast(msg, timeout=2000){
-    toast.textContent = msg; toast.style.display = 'block';
-    clearTimeout(showToast.timer);
-    showToast.timer = setTimeout(()=> toast.style.display = 'none', timeout);
-  }
+$('rollBtn').onclick=async()=>{if(rolling)return;rolling=true;const dice=Math.floor(Math.random()*6)+1;for(let i=0;i<dice;i++){tokenIndex=(tokenIndex+1)%path.length;renderToken();await new Promise(r=>setTimeout(r,180))}const reward=8+dice*3;xp+=reward;save();toast('🎲 Rolled '+dice+'! +'+reward+' XP');rolling=false};
+$('harvestBtn').onclick=()=>{const now=Date.now();if(now<harvestReady){toast('🌾 Farm is growing! Come back in '+Math.ceil((harvestReady-now)/60000)+' min');return}const reward=25+Math.floor(Math.random()*26);xp+=reward;harvestReady=now+10*60*1000;localStorage.setItem(ns+'harvestReady',harvestReady);save();toast('🌾 Harvest successful! +'+reward+' XP')};
 
-  function showFloat(msg){
-    floatXp.textContent = msg;
-    floatXp.style.opacity = '1';
-    floatXp.style.transform = 'translateX(-50%) translateY(-10px)';
-    clearTimeout(showFloat.timer);
-    showFloat.timer = setTimeout(()=> {
-      floatXp.style.opacity = '0';
-      floatXp.style.transform = 'translateX(-50%) translateY(-40px)';
-    }, 900);
-  }
+/* ADS */
+$('boostBtn').onclick=async()=>{if(typeof window.adsgram==='undefined'){toast('Ads are currently unavailable');return}try{$('boostBtn').disabled=true;toast('Loading optional boost...');await window.adsgram.show({blockId:ADSGRAM_BLOCK_ID,onReward:()=>{xp+=100;save();toast('⚡ Boost reward: +100 XP')},onError:e=>console.log(e)});}catch(e){console.log(e);toast('Ad unavailable. Try again later')}finally{$('boostBtn').disabled=false}};
 
-  function updateUI(){
-    level = Math.max(1, Math.floor(xp / 500) + 1);
-    levelDisplay.textContent = 'Lv ' + level;
-    const progressPercent = ((xp % 500) / 500) * 100;
-    progressInner.style.width = progressPercent + '%';
-    coinsEl.textContent = Number(xp).toLocaleString();
-    gemEl.textContent = '4455';
-    harvestCountEl.textContent = harvestCount;
-    localStorage.setItem(ns+'xp', String(xp));
-    localStorage.setItem(ns+'taps', String(taps));
-    localStorage.setItem(ns+'harvest', String(harvestCount));
-    localStorage.setItem(ns+'level', String(level));
-  }
+/* WHOT */
+const shapes=['★','●','▲','■'];let deck=[],hand=[],bot=[],current=null,whotOver=false;
+function makeDeck(){let a=[];for(let s of shapes)for(let n=1;n<=14;n++)a.push({n,s});return a.sort(()=>Math.random()-.5)}
+function cardLabel(c){return c.n===20?'WHOT':c.n+c.s}
+function newWhot(){deck=makeDeck();hand=deck.splice(0,5);bot=deck.splice(0,5);current=deck.pop();whotOver=false;renderWhot();$('whotStatus').textContent='Your turn: match the number or shape.'}
+function renderWhot(){$('currentCard').textContent=cardLabel(current);$('botCount').textContent=bot.length+' cards';const h=$('hand');h.innerHTML='';hand.forEach((c,i)=>{const d=document.createElement('button');d.className='card btn '+((c.s==='●'||c.s==='▲')?'red':'');d.innerHTML='<small>'+c.s+'</small><b>'+c.n+'</b><small>'+c.s+'</small>';d.onclick=()=>playCard(i);h.appendChild(d)})}
+function playCard(i){if(whotOver)return;const c=hand[i];if(c.n!==current.n&&c.s!==current.s){toast('That card does not match!');return}current=c;hand.splice(i,1);if(!hand.length){whotOver=true;xp+=80;save();$('whotStatus').textContent='🎉 YOU WON! +80 XP';renderWhot();return}botTurn();renderWhot()}
+function botTurn(){setTimeout(()=>{let i=bot.findIndex(c=>c.n===current.n||c.s===current.s);if(i<0){if(deck.length)bot.push(deck.pop());$('whotStatus').textContent='Computer drew a card. Your turn!'}else{current=bot[i];bot.splice(i,1);if(!bot.length){whotOver=true;$('whotStatus').textContent='😅 Computer won! Try again.'}else $('whotStatus').textContent='Computer played '+cardLabel(current)+'. Your turn!'}renderWhot()},450)}
+$('drawBtn').onclick=()=>{if(!whotOver&&deck.length){hand.push(deck.pop());renderWhot();toast('Card drawn')}};$('newWhotBtn').onclick=newWhot;newWhot();
 
-  // build board
-  const size = 7;
-  const total = size*size;
-  for(let i=0;i<total;i++){
-    const r = Math.floor(i/size), c = i%size;
-    const cell = document.createElement('div'); cell.className='cell';
-    if(r===0||r===size-1||c===0||c===size-1){
-      const tile = document.createElement('div'); tile.className='tile';
-      if((r===0&&c===0)||(r===0&&c===size-1)||(r===size-1&&c===0)||(r===size-1&&c===size-1)){
-        tile.classList.add('corner'); tile.textContent = '★';
-      } else {
-        const odd = ((r+c)%2===0);
-        if(odd){ tile.classList.add('q'); tile.textContent = '?'; } else { tile.classList.add('gold'); tile.textContent='□' }
-      }
-      cell.appendChild(tile);
-    } else {
-      const empty = document.createElement('div'); empty.style.width='100%'; empty.style.height='100%'; empty.style.background='transparent';
-      cell.appendChild(empty);
-    }
-    board.appendChild(cell);
-  }
+/* FUNNY */
+let reactionTimer=null, reactionStartTime=0, funnyMode='';
+$('reactionStart').onclick=()=>{funnyMode='reaction';$('funnyEmoji').textContent='😐';$('funnyStatus').textContent='Wait for GO... then tap fast!';$('funnyAction').disabled=false;$('funnyAction').textContent='WAIT...';$('funnyAction').onclick=()=>{if(reactionStartTime){const ms=Date.now()-reactionStartTime;$('funnyStatus').textContent='⚡ '+ms+' ms! '+(ms<350?'You are FAST 😂':'Not bad 😅');xp+=ms<350?15:5;save();reactionStartTime=0;return}toast('Wait for GO!')};clearTimeout(reactionTimer);reactionTimer=setTimeout(()=>{reactionStartTime=Date.now();$('funnyEmoji').textContent='🟢';$('funnyStatus').textContent='GO GO GO! TAP NOW!';$('funnyAction').textContent='TAP!'},1500+Math.random()*3000)};
+$('guessStart').onclick=()=>{funnyMode='guess';const answer=Math.ceil(Math.random()*5);$('funnyEmoji').textContent='🤔';$('funnyStatus').textContent='Guess my number from 1 to 5!';$('funnyAction').disabled=false;$('funnyAction').textContent='GUESS';$('funnyAction').onclick=()=>{const g=prompt('Enter a number from 1 to 5');if(Number(g)===answer){xp+=20;save();$('funnyEmoji').textContent='🤣';$('funnyStatus').textContent='Correct! +20 XP 😂'}else{$('funnyEmoji').textContent='😜';$('funnyStatus').textContent='Wrong! My number was '+answer+' 😜'}}};
 
-  function getPathIndices(){
-    const path = [];
-    for(let c=0;c<size;c++) path.push({r:0,c});
-    for(let r=1;r<size-1;r++) path.push({r,c:size-1});
-    for(let c=size-1;c>=0;c--) path.push({r:size-1,c});
-    for(let r=size-2;r>=1;r--) path.push({r,c:0});
-    return path.map(p=> p.r*size + p.c);
-  }
-  const pathIdx = getPathIndices();
-  const tileElems = pathIdx.map(i => board.children[i].querySelector('.tile'));
 
-  // token & movement
-  let tokenIndex = 0;
-  function placeTokenAt(index){
-    tokenIndex = index % tileElems.length;
-    tileElems.forEach((t,idx)=> {
-      if(!t) return;
-      t.style.boxShadow = (idx===tokenIndex) ? '0 10px 24px rgba(0,0,0,0.6), 0 0 0 4px rgba(255,215,120,0.03)' : '0 4px 10px rgba(0,0,0,0.45)';
-      t.style.transform = (idx===tokenIndex) ? 'translateY(-4px) scale(1.02)' : 'translateY(0) scale(1)';
-      t.style.transition = 'transform 180ms ease, box-shadow 180ms ease';
-    });
-  }
-  placeTokenAt(0);
-
-  let rolling = false;
-  let mult = 1;
-  multBtn.addEventListener('click', ()=>{
-    if(mult===1){ mult=2; multBtn.textContent='x2'; }
-    else if(mult===2){ mult=5; multBtn.textContent='x5'; }
-    else { mult=1; multBtn.textContent='x1'; }
-    showToast('Multiplier: ' + mult);
-  });
-
-  async function animateSteps(steps, speed=90){
-    if(rolling) return;
-    rolling = true;
-    const start = tokenIndex;
-    for(let i=1;i<=steps;i++){
-      const idx = (start + i) % tileElems.length;
-      placeTokenAt(idx);
-      await new Promise(r => setTimeout(r, speed));
-    }
-    rolling = false;
-  }
-
-  goBtn.addEventListener('click', async ()=> {
-    if(rolling) return;
-    const dice = Math.floor(Math.random()*6)+1;
-    const steps = dice * mult;
-    showToast('You rolled ' + dice + ' • ' + steps + ' steps', 1200);
-    await animateSteps(steps, 80);
-    taps += 1;
-    const reward = Math.floor(5 + Math.random()*15);
-    xp += reward;
-    showFloat('+' + reward + ' XP');
-    showToast('Landed! +' + reward + ' XP', 1200);
-    updateUI();
-  });
-
-  // Harvest
-  harvestBtn.addEventListener('click', ()=> {
-    const reward = 50 + Math.floor(Math.random()*51);
-    xp += reward;
-    harvestCount += 1;
-    showFloat('+' + reward + ' XP');
-    showToast('Harvested! +' + reward + ' XP', 1400);
-    updateUI();
-  });
-
-  // Task: +200 XP
-  taskBtn.addEventListener('click', ()=> {
-    const reward = 200;
-    xp += reward;
-    showFloat('+' + reward + ' XP');
-    showToast('Task completed! +' + reward + ' XP', 1500);
-    updateUI();
-  });
-
-  // BOOST WITH AD - Main ad integration
-  boostBtn.addEventListener('click', async ()=> {
-    boostBtn.disabled = true;
-    showToast('Loading ad for boost...', 1200);
-    
-    try {
-      if (typeof window.adsgram === 'undefined') {
-        throw new Error('Adsgram SDK not loaded');
-      }
-
-      await window.adsgram.show({
-        blockId: ADSGRAM_BLOCK_ID,
-        onReward: () => {
-          const boostAmount = 500;
-          xp += boostAmount;
-          showFloat('+' + boostAmount + ' XP');
-          showToast('Boost activated! +' + boostAmount + ' XP', 1600);
-          updateUI();
-        },
-        onError: (error) => {
-          console.error('Adsgram error:', error);
-          showToast('Ad error: ' + (error.message || 'Try again'));
-        },
-        onClose: () => {
-          console.log('Ad closed');
-        }
-      });
-    } catch (error) {
-      console.error('Boost ad error:', error);
-      showToast('Ad unavailable. Configure Adsgram Block ID.');
-    } finally {
-      boostBtn.disabled = false;
-    }
-  });
-
-  // Withdraw & Referral
-  withdrawBtn.addEventListener('click', ()=> openWithdrawModal());
-  refBtn.addEventListener('click', ()=> openReferralModal());
-
-  // open referral modal
-  function openReferralModal(){
-    modalContent.innerHTML = `
-      <div style="font-weight:900;font-size:15px">Referral Program</div>
-      <div style="margin-top:8px;color:var(--mutedText);font-size:13px">Share this link to invite friends and earn 1000 XP each:</div>
-      <input id="refLink" readonly value="https://t.me/taskaflowbot?start=ref_12345" aria-label="Referral link">
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button id="copyRef" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer;font-size:13px">Copy Link</button>
-        <button id="closeModal" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer;font-size:13px">Close</button>
-      </div>
-    `;
-    modalBackdrop.style.display = 'flex';
-    document.getElementById('copyRef').addEventListener('click', async ()=>{
-      const refLinkInput = document.getElementById('refLink');
-      try { await navigator.clipboard.writeText(refLinkInput.value); showToast('Link copied'); }
-      catch(e){ refLinkInput.select(); document.execCommand('copy'); showToast('Link copied'); }
-    });
-    document.getElementById('closeModal').addEventListener('click', ()=> modalBackdrop.style.display='none');
-  }
-
-  // withdraw modal
-  function openWithdrawModal(){
-    modalContent.innerHTML = `
-      <div style="font-weight:900;font-size:15px">Withdraw Request</div>
-      <div style="margin-top:8px;color:var(--mutedText);font-size:13px">Min: ${MIN_WITHDRAW.toLocaleString()} XP | Balance: ${xp.toLocaleString()} XP</div>
-      <label style="margin-top:10px;color:var(--mutedText);font-size:12px">Amount (XP)</label>
-      <input id="wdAmount" type="number" placeholder="${MIN_WITHDRAW}" />
-      <label style="margin-top:8px;color:var(--mutedText);font-size:12px">Payment Method</label>
-      <select id="wdMethod">
-        <option value="binance">Binance</option>
-        <option value="litecoin">Litecoin</option>
-        <option value="crypto">Crypto Wallet</option>
-      </select>
-      <label style="margin-top:8px;color:var(--mutedText);font-size:12px">Wallet / Account ID</label>
-      <input id="wdDetails" placeholder="Enter wallet address" />
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <button id="submitWd" style="flex:1;padding:10px;border-radius:8px;border:none;background:linear-gradient(180deg,#2dd06a,#1e9b48);color:#03160a;font-weight:800;cursor:pointer;font-size:13px">Submit</button>
-        <button id="cancelWd" style="padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.02);color:var(--text);cursor:pointer;font-size:13px">Cancel</button>
-      </div>
-    `;
-    modalBackdrop.style.display = 'flex';
-
-    document.getElementById('cancelWd').addEventListener('click', ()=> modalBackdrop.style.display='none');
-
-    document.getElementById('submitWd').addEventListener('click', async ()=>{
-      const amt = Number(document.getElementById('wdAmount').value || 0);
-      const method = document.getElementById('wdMethod').value;
-      const details = document.getElementById('wdDetails').value.trim();
-
-      if(!Number.isFinite(amt) || amt <= 0){
-        showToast('Enter valid amount');
-        return;
-      }
-      if(amt < MIN_WITHDRAW){
-        showToast(`Min ${MIN_WITHDRAW.toLocaleString()} XP`);
-        return;
-      }
-      if(amt > xp){
-        showToast('Not enough XP');
-        return;
-      }
-      if(!details){
-        showToast('Enter wallet details');
-        return;
-      }
-
-      const request = {
-        type: 'withdraw',
-        amount: amt,
-        method,
-        details,
-        xpBalance: xp - amt,
-        timestamp: new Date().toISOString(),
-        userId: 'user_' + Math.random().toString(36).substr(2, 9)
-      };
-
-      const saved = JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]');
-      saved.push(request);
-      localStorage.setItem(ns+'withdrawRequests', JSON.stringify(saved));
-
-      xp -= amt;
-      updateUI();
-
-      const tg = window?.Telegram?.WebApp;
-      if(tg && typeof tg.sendData === 'function'){
-        try{
-          tg.sendData(JSON.stringify({ type: 'withdraw_request', adminId: ADMIN_CHAT_ID, payload: request }));
-          showToast('Withdraw sent!');
-        }catch(e){
-          console.warn('Telegram error:', e);
-          showToast('Request saved');
-        }
-      } else {
-        showToast('Request saved');
-      }
-
-      modalBackdrop.style.display = 'none';
-    });
-  }
-
-  // Boss/Champion button
-  document.getElementById('boss').addEventListener('click', ()=> {
-    const reward = 300;
-    xp += reward;
-    showFloat('+' + reward + ' XP');
-    showToast('Champion defeated! +' + reward + ' XP', 1800);
-    updateUI();
-  });
-
-  document.addEventListener('keydown', (e)=> { if(e.key === 'Enter') goBtn.click(); });
-
-  updateUI();
-
-  window._monopolyFarmDark = {
-    getState: ()=>({xp,taps,harvestCount,level,requests: JSON.parse(localStorage.getItem(ns+'withdrawRequests') || '[]')}),
-    setAdsgram: (blockId) => { 
-      ADSGRAM_BLOCK_ID = blockId; 
-      console.log('Adsgram Block ID set:', blockId); 
-    }
+/* LUCKY DICE GAME */
+let selectedDiceNumber = null;
+const diceEmoji = {1:'⚀',2:'⚁',3:'⚂',4:'⚃',5:'⚄',6:'⚅'};
+document.querySelectorAll('.dicePick').forEach(btn=>{
+  btn.onclick=()=>{
+    selectedDiceNumber=Number(btn.dataset.number);
+    document.querySelectorAll('.dicePick').forEach(x=>x.classList.remove('primary'));
+    btn.classList.add('primary');
+    $('diceTarget').textContent=selectedDiceNumber;
+    $('diceStatus').textContent='You picked '+selectedDiceNumber+'. Now roll the dice!';
+    $('playDiceBtn').disabled=false;
   };
+});
+$('playDiceBtn').onclick=async()=>{
+  if(!selectedDiceNumber)return;
+  const b=$('playDiceBtn');b.disabled=true;
+  $('diceStatus').textContent='🎲 Rolling...';
+  for(let i=0;i<10;i++){
+    const n=Math.floor(Math.random()*6)+1;
+    $('diceFace').textContent=diceEmoji[n];
+    await new Promise(r=>setTimeout(r,90+i*12));
+  }
+  const result=Math.floor(Math.random()*6)+1;
+  $('diceFace').textContent=diceEmoji[result];
+  if(result===selectedDiceNumber){
+    xp+=30;save();
+    $('diceStatus').textContent='🎉 JACKPOT! You guessed '+result+' correctly. +30 XP';
+  }else{
+    $('diceStatus').textContent='😅 You picked '+selectedDiceNumber+', but the dice rolled '+result+'. Try again!';
+  }
+  b.disabled=false;
+};
 
+/* MODALS */
+function modal(html){$('modalContent').innerHTML=html;$('modal').classList.add('show')}$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.remove('show')};
+$('refBtn').onclick=()=>modal('<h3>👥 Invite Friends</h3><p class="muted">Share your Telegram referral link and invite friends to play.</p><input value="https://t.me/YOUR_BOT_USERNAME?start=ref_YOUR_ID" readonly><button class="btn primary" onclick="navigator.clipboard.writeText(this.previousElementSibling.value)">Copy Link</button>');
+$('withdrawBtn').onclick=()=>modal('<h3>💳 Withdraw Request</h3><p class="muted">Minimum: '+MIN_WITHDRAW.toLocaleString()+' XP<br>Your balance: '+xp.toLocaleString()+' XP</p><select id="method"><option>Binance</option><option>Litecoin</option><option>Crypto Wallet</option></select><input id="wallet" placeholder="Enter wallet/account details"><button id="submitWd" class="btn green">Submit Request</button>');
+document.addEventListener('click',e=>{if(e.target.id==='submitWd'){const details=$('wallet').value.trim();if(xp<MIN_WITHDRAW){toast('Minimum withdrawal is '+MIN_WITHDRAW.toLocaleString()+' XP');return}if(!details){toast('Enter wallet details');return}toast('Withdrawal request saved for review');$('modal').classList.remove('show')}});
+
+window.MonopolyFarm={setAdsgram:blockId=>{ADSGRAM_BLOCK_ID=blockId}};
 })();
 </script>
 </body>
