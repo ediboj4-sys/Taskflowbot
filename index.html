@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07151d">
 <title>Monopoly Farm</title>
+
+<!-- Telegram Mini App -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<!-- CURRENT ADSGRAM SDK -->
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
 
 <style>
 :root{
@@ -16,68 +23,51 @@
   --green:#2dd06a;
   --red:#ef5c5c;
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   background:linear-gradient(180deg,#061017,#0a2530);
   color:var(--text);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
 }
-
+button,input,select{font:inherit}
 .app{
   width:min(100%,460px);
   min-height:100vh;
   margin:auto;
-  padding:10px;
+  padding:10px 10px calc(16px + env(safe-area-inset-bottom));
   display:flex;
   flex-direction:column;
-  gap:9px
+  gap:9px;
 }
-
-.hud,
-.panel,
-.game-card{
+.hud,.panel,.game-card{
   background:linear-gradient(180deg,var(--panel),var(--panel2));
   border:1px solid rgba(255,255,255,.06);
   border-radius:16px;
-  box-shadow:0 12px 30px rgba(0,0,0,.28)
+  box-shadow:0 12px 30px rgba(0,0,0,.28);
 }
-
 .hud{
   padding:10px;
   display:flex;
   justify-content:space-between;
-  align-items:center
+  align-items:center;
+  gap:8px;
 }
-
-.logo{
-  font-weight:900;
-  color:var(--accent)
-}
-
-.stats{
-  display:flex;
-  gap:7px
-}
-
+.logo{font-weight:900;color:var(--accent)}
+.stats{display:flex;gap:7px}
 .stat{
   padding:5px 8px;
   border-radius:10px;
   background:rgba(255,255,255,.06);
   font-size:12px;
-  font-weight:800
+  font-weight:800;
+  white-space:nowrap;
 }
-
-/* MAIN MENU */
-
 .tabs{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:6px
+  gap:6px;
 }
-
 .tab{
   border:0;
   border-radius:11px;
@@ -85,52 +75,50 @@ body{
   background:#10242c;
   color:var(--muted);
   font-weight:800;
-  cursor:pointer
+  cursor:pointer;
 }
-
-.tab.active{
-  background:var(--accent);
-  color:#17110a
-}
-
-.screen{
-  display:none
-}
-
-.screen.active{
-  display:block
-}
-
-.panel{
-  padding:12px
-}
-
+.tab.active{background:var(--accent);color:#17110a}
+.screen{display:none}
+.screen.active{display:block}
+.panel{padding:12px}
 .game-title{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:10px
+  gap:8px;
+  margin-bottom:10px;
 }
-
-.game-title h2{
-  font-size:17px;
-  margin:0
+.game-title h2{font-size:17px;margin:0}
+.muted{color:var(--muted);font-size:12px}
+.row{display:flex;gap:8px;margin-top:10px}
+.btn{
+  border:0;
+  border-radius:12px;
+  padding:11px 12px;
+  font-weight:900;
+  cursor:pointer;
+  background:#18343c;
+  color:#fff;
 }
-
-.muted{
+.btn.primary{
+  background:linear-gradient(180deg,#ffad43,#ff7527);
+  color:#231506;
+}
+.btn.green{background:var(--green);color:#062211}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.notice{
+  text-align:center;
+  font-size:11px;
   color:var(--muted);
-  font-size:12px
+  margin-top:9px;
+  line-height:1.45;
 }
-
-/* FARM */
-
 .board{
   display:grid;
   grid-template-columns:repeat(7,1fr);
   gap:5px;
-  aspect-ratio:1
+  aspect-ratio:1;
 }
-
 .tile{
   border-radius:9px;
   background:#123b35;
@@ -139,18 +127,13 @@ body{
   align-items:center;
   justify-content:center;
   font-size:12px;
-  font-weight:900
+  font-weight:900;
 }
-
 .tile.token{
   outline:3px solid var(--accent);
-  transform:translateY(-3px)
+  transform:translateY(-3px);
 }
-
-.tile.special{
-  background:#27354a
-}
-
+.tile.special{background:#27354a}
 .center{
   grid-column:3/6;
   grid-row:3/6;
@@ -160,94 +143,11 @@ body{
   flex-direction:column;
   background:#0b1f26;
   border-radius:15px;
-  gap:8px
-}
-
-.center b{
-  font-size:19px
-}
-
-.row{
-  display:flex;
   gap:8px;
-  margin-top:10px
-}
-
-.btn{
-  border:0;
-  border-radius:12px;
-  padding:11px 12px;
-  font-weight:900;
-  cursor:pointer;
-  background:#18343c;
-  color:white
-}
-
-.btn.primary{
-  background:linear-gradient(180deg,#ffad43,#ff7527);
-  color:#231506
-}
-
-.btn.green{
-  background:var(--green);
-  color:#062211
-}
-
-.btn:disabled{
-  opacity:.5;
-  cursor:not-allowed
-}
-
-.notice{
   text-align:center;
-  font-size:11px;
-  color:var(--muted);
-  margin-top:9px
 }
-
-/* TASKS */
-
-.task-card{
-  background:#13303a;
-  border-radius:15px;
-  padding:18px;
-  text-align:center;
-  border:1px solid rgba(255,255,255,.06)
-}
-
-.task-icon{
-  font-size:55px;
-  margin-bottom:8px
-}
-
-.task-card h3{
-  margin:5px 0;
-  font-size:18px
-}
-
-.task-card p{
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.5
-}
-
-.task-status{
-  margin-top:12px;
-  padding:10px;
-  border-radius:10px;
-  background:rgba(255,255,255,.05);
-  color:var(--muted);
-  font-size:12px
-}
-
-/* WHOT */
-
-.whot-top{
-  display:flex;
-  justify-content:space-between;
-  gap:8px
-}
-
+.center b{font-size:19px}
+.whot-top{display:flex;justify-content:space-between;gap:8px}
 .pile{
   height:115px;
   display:flex;
@@ -257,16 +157,14 @@ body{
   font-weight:900;
   border-radius:16px;
   background:#17323b;
-  border:2px dashed rgba(255,255,255,.15)
+  border:2px dashed rgba(255,255,255,.15);
 }
-
 .cards{
   display:flex;
   gap:7px;
   overflow-x:auto;
-  padding:10px 0
+  padding:10px 0;
 }
-
 .card{
   min-width:58px;
   height:88px;
@@ -278,110 +176,64 @@ body{
   justify-content:space-between;
   padding:7px;
   font-weight:1000;
-  box-shadow:0 6px 12px rgba(0,0,0,.3)
+  box-shadow:0 6px 12px rgba(0,0,0,.3);
 }
-
-.card.red{
-  color:#d92727
-}
-
-.card small{
-  font-size:10px
-}
-
-.card.selected{
-  outline:4px solid var(--accent);
-  transform:translateY(-4px)
-}
-
-.status{
-  text-align:center;
-  font-weight:800;
-  min-height:24px
-}
-
-/* FUNNY */
-
-.choice{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px
-}
-
-.fun{
-  padding:16px;
-  text-align:center;
-  border-radius:14px;
+.card.red{color:#d92727}
+.card small{font-size:10px}
+.status{text-align:center;font-weight:800;min-height:24px;line-height:1.35}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fun{padding:16px;text-align:center;border-radius:14px;background:#13303a;font-weight:900}
+.emoji{font-size:38px;display:block;margin-bottom:7px}
+.score{font-size:28px;font-weight:1000;text-align:center;padding:14px}
+.reaction{font-size:70px;text-align:center;padding:18px}
+.task-card{
   background:#13303a;
-  font-weight:900
-}
-
-.emoji{
-  font-size:38px;
-  display:block;
-  margin-bottom:7px
-}
-
-.score{
-  font-size:28px;
-  font-weight:1000;
+  border-radius:15px;
+  padding:18px;
   text-align:center;
-  padding:14px
+  border:1px solid rgba(255,255,255,.06);
 }
-
-.reaction{
-  font-size:70px;
-  text-align:center;
-  padding:18px
+.task-icon{font-size:55px;margin-bottom:8px}
+.task-card h3{margin:5px 0;font-size:18px}
+.task-card p{color:var(--muted);font-size:12px;line-height:1.5}
+.task-status{
+  margin-top:12px;
+  padding:10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.05);
+  color:var(--muted);
+  font-size:12px;
 }
-
-/* BOTTOM */
-
-.bottom{
-  display:flex;
-  gap:7px;
-  margin-top:auto
-}
-
-.bottom .btn{
-  flex:1;
-  font-size:12px
-}
-
-/* MODAL */
-
+.bottom{display:flex;gap:7px;margin-top:auto}
+.bottom .btn{flex:1;font-size:12px}
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.7);
+  background:rgba(0,0,0,.78);
   display:none;
   align-items:center;
   justify-content:center;
-  padding:15px
+  padding:15px;
+  z-index:100;
 }
-
-.modal.show{
-  display:flex
-}
-
+.modal.show{display:flex}
 .modal-box{
   width:min(100%,400px);
+  max-height:90vh;
+  overflow:auto;
   background:#102a33;
   border-radius:18px;
-  padding:16px
+  padding:16px;
 }
-
-.modal input,
-.modal select{
+.modal input,.modal select{
   width:100%;
   padding:11px;
   margin:6px 0;
   border-radius:10px;
   border:1px solid rgba(255,255,255,.12);
   background:#071820;
-  color:white
+  color:#fff;
 }
-
 #toast{
   position:fixed;
   left:50%;
@@ -391,120 +243,89 @@ body{
   padding:9px 13px;
   border-radius:10px;
   display:none;
-  z-index:9;
-  font-size:12px
+  z-index:200;
+  font-size:12px;
+  max-width:90%;
+  text-align:center;
+}
+.ad-info{
+  margin-top:10px;
+  padding:10px;
+  border-radius:12px;
+  background:rgba(255,157,46,.08);
+  border:1px solid rgba(255,157,46,.18);
+  font-size:11px;
+  color:var(--muted);
+  text-align:center;
+  line-height:1.45;
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
-
-  <!-- HUD -->
 
   <div class="hud">
     <div>
       <div class="logo">🌾 MONOPOLY FARM</div>
       <div class="muted">Play • Compete • Have fun</div>
     </div>
-
     <div class="stats">
       <div class="stat">🪙 <span id="xp">0</span> XP</div>
       <div class="stat">🔥 Lv <span id="level">1</span></div>
     </div>
   </div>
 
-
-  <!-- MAIN MENU -->
-
   <div class="tabs">
-
-    <button class="tab active" data-screen="farm">
-      🌾 Farm
-    </button>
-
-    <button class="tab" data-screen="whot">
-      🃏 Naija Whot
-    </button>
-
-    <button class="tab" data-screen="funny">
-      😂 Funny
-    </button>
-
-    <button class="tab" data-screen="dice">
-      🎲 Dice
-    </button>
-
-    <!-- OPTIONAL TASK BUTTON -->
-    <button class="tab" data-screen="tasks">
-      🧩 Tasks
-    </button>
-
+    <button class="tab active" data-screen="farm">🌾 Farm</button>
+    <button class="tab" data-screen="whot">🃏 Whot</button>
+    <button class="tab" data-screen="funny">😂 Funny</button>
+    <button class="tab" data-screen="dice">🎲 Dice</button>
+    <button class="tab" data-screen="tasks">🧩 Tasks</button>
   </div>
 
-
-  <!-- FARM -->
-
   <section id="farm" class="screen active">
-
     <div class="panel">
-
       <div class="game-title">
         <h2>🌾 Farm Adventure</h2>
         <span class="muted">Roll and explore</span>
       </div>
-
       <div id="board" class="board"></div>
 
       <div class="row">
-        <button id="rollBtn" class="btn primary" style="flex:1">
-          🎲 ROLL DICE
-        </button>
-
-        <button id="harvestBtn" class="btn green">
-          🌾 Harvest
-        </button>
+        <button id="rollBtn" class="btn primary" style="flex:1">🎲 ROLL DICE</button>
+        <button id="harvestBtn" class="btn green">🌾 Harvest</button>
       </div>
 
       <div class="row">
         <button id="boostBtn" class="btn" style="flex:1">
-          ⚡ Optional Ad Boost
+          🎬 Watch Ad & Get +100 XP
         </button>
       </div>
 
-      <div class="notice">
-        Ads are optional. You can enjoy all core games without watching ads.
+      <div class="ad-info">
+        Optional Reward Ad • Watch the ad to completion to receive the XP bonus.
+        You can play the games without watching an ad.
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- WHOT -->
-
   <section id="whot" class="screen">
-
     <div class="panel">
-
       <div class="game-title">
         <h2>🃏 Naija Whot</h2>
         <span class="muted">Play against the computer</span>
       </div>
 
       <div class="whot-top">
-
         <div>
           <div class="muted">Computer</div>
           <div id="botCount" class="score">5 cards</div>
         </div>
-
         <div style="flex:1">
           <div class="muted">Current card</div>
           <div id="currentCard" class="pile">1</div>
         </div>
-
       </div>
 
       <div class="status" id="whotStatus">
@@ -512,194 +333,106 @@ body{
       </div>
 
       <div class="muted">Your cards</div>
-
       <div id="hand" class="cards"></div>
 
       <div class="row">
-
-        <button id="drawBtn" class="btn">
-          ➕ Draw Card
-        </button>
-
-        <button id="newWhotBtn" class="btn primary" style="flex:1">
-          🔄 New Game
-        </button>
-
+        <button id="drawBtn" class="btn">➕ Draw Card</button>
+        <button id="newWhotBtn" class="btn primary" style="flex:1">🔄 New Game</button>
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- FUNNY -->
-
   <section id="funny" class="screen">
-
     <div class="panel">
-
       <div class="game-title">
         <h2>😂 Funny Games</h2>
         <span class="muted">Quick mini games</span>
       </div>
 
       <div class="choice">
-
         <button class="fun btn" id="reactionStart">
-          <span class="emoji">⚡</span>
-          Reaction Rush
+          <span class="emoji">⚡</span>Reaction Rush
         </button>
-
         <button class="fun btn" id="guessStart">
-          <span class="emoji">🤪</span>
-          Lucky Guess
+          <span class="emoji">🤪</span>Lucky Guess
         </button>
-
       </div>
 
       <div id="funnyArea" class="panel" style="margin-top:10px">
-
-        <div class="reaction" id="funnyEmoji">
-          😂
-        </div>
-
+        <div class="reaction" id="funnyEmoji">😂</div>
         <div class="status" id="funnyStatus">
           Choose a funny game and start playing!
         </div>
-
         <div class="row">
-
-          <button id="funnyAction"
-                  class="btn primary"
-                  style="flex:1"
-                  disabled>
-            Start
-          </button>
-
+          <button id="funnyAction" class="btn primary" style="flex:1" disabled>Start</button>
         </div>
-
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- DICE -->
-
   <section id="dice" class="screen">
-
     <div class="panel">
-
       <div class="game-title">
         <h2>🎲 Lucky Dice Game</h2>
         <span class="muted">Guess • Roll • Win XP</span>
       </div>
 
-      <div class="score">
-        🎯 <span id="diceTarget">?</span>
-      </div>
-
+      <div class="score">🎯 <span id="diceTarget">?</span></div>
       <div class="status" id="diceStatus">
         Pick a number from 1 to 6, then roll the dice!
       </div>
 
       <div class="choice" id="diceChoices">
-
         <button class="btn dicePick" data-number="1">1️⃣</button>
         <button class="btn dicePick" data-number="2">2️⃣</button>
         <button class="btn dicePick" data-number="3">3️⃣</button>
         <button class="btn dicePick" data-number="4">4️⃣</button>
         <button class="btn dicePick" data-number="5">5️⃣</button>
         <button class="btn dicePick" data-number="6">6️⃣</button>
-
       </div>
 
-      <div id="diceFace" class="reaction">
-        🎲
-      </div>
+      <div id="diceFace" class="reaction">🎲</div>
 
       <div class="row">
-
-        <button id="playDiceBtn"
-                class="btn primary"
-                style="flex:1"
-                disabled>
-          🎲 ROLL DICE
-        </button>
-
+        <button id="playDiceBtn" class="btn primary" style="flex:1" disabled>🎲 ROLL DICE</button>
       </div>
 
       <div class="notice">
         Correct guess: +30 XP • Wrong guess: keep playing and have fun!
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- OPTIONAL TASK SCREEN -->
-
   <section id="tasks" class="screen">
-
     <div class="panel">
-
       <div class="game-title">
         <h2>🧩 Tasks</h2>
         <span class="muted">Optional</span>
       </div>
 
       <div class="task-card">
-
-        <div class="task-icon">
-          🧩
-        </div>
-
-        <h3>Tasks & Offers</h3>
-
+        <div class="task-icon">🧩</div>
+        <h3>Optional Tasks</h3>
         <p>
-          Complete optional tasks and offers to earn extra rewards.
-          Your games remain available even if you don't complete tasks.
+          Tasks can be added here later. They are not required to play
+          Monopoly Farm or to use the optional Reward Ad.
         </p>
-
-        <button id="taskBtn"
-                class="btn primary"
-                style="width:100%;margin-top:8px">
-          🚀 View Tasks
-        </button>
-
         <div id="taskStatus" class="task-status">
-          Tasks are currently being prepared.
+          🛠️ Tasks are coming soon.
         </div>
-
       </div>
 
       <div class="notice">
         Task participation is optional and is not required to play the games.
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- BOTTOM BUTTONS -->
-
   <div class="bottom">
-
-    <button id="refBtn" class="btn">
-      👥 Invite
-    </button>
-
-    <button id="withdrawBtn" class="btn">
-      💳 Withdraw
-    </button>
-
+    <button id="refBtn" class="btn">👥 Invite</button>
+    <button id="withdrawBtn" class="btn">💳 Withdraw</button>
   </div>
-
 </div>
-
 
 <div id="toast"></div>
 
@@ -709,1327 +442,910 @@ body{
   </div>
 </div>
 
-
-<!-- ADSGRAM -->
-
-<script src="https://cdn.adsgram.ai/libs/adsgram.min.js"></script>
-
 <script>
-
 (() => {
-
-'use strict';
-
-
-/* =========================================================
-   CONFIGURATION
-========================================================= */
-
-let ADSGRAM_BLOCK_ID = '43625';
-
-/*
-   FUTURE ADSGRAM TASK BLOCK
-
-   Put your AdsGram Task Block ID here later.
-
-   Example:
-   let ADSGRAM_TASK_BLOCK_ID = 'YOUR_TASK_BLOCK_ID';
-*/
-
-let ADSGRAM_TASK_BLOCK_ID = '';
-
-
-const MIN_WITHDRAW = 50000;
-
-const ns = 'monopoly_real_v3_';
-
-
-/* =========================================================
-   USER DATA
-========================================================= */
-
-let xp = Number(
-  localStorage.getItem(ns+'xp') || 0
-);
-
-let level = Number(
-  localStorage.getItem(ns+'level') || 1
-);
-
-let harvestReady = Number(
-  localStorage.getItem(ns+'harvestReady') || 0
-);
-
-let tokenIndex = Number(
-  localStorage.getItem(ns+'token') || 0
-);
-
-let rolling = false;
-
-
-const $ = id => document.getElementById(id);
-
-
-function toast(msg){
-
-  const t = $('toast');
-
-  t.textContent = msg;
-
-  t.style.display = 'block';
-
-  clearTimeout(window.tt);
-
-  window.tt = setTimeout(() => {
-
-    t.style.display = 'none';
-
-  },1800);
-
-}
-
-
-function save(){
-
-  level = Math.max(
-    1,
-    Math.floor(xp / 1000) + 1
-  );
-
-  localStorage.setItem(
-    ns+'xp',
-    xp
-  );
-
-  localStorage.setItem(
-    ns+'level',
-    level
-  );
-
-  localStorage.setItem(
-    ns+'token',
-    tokenIndex
-  );
-
-  $('xp').textContent =
-    xp.toLocaleString();
-
-  $('level').textContent =
-    level;
-
-}
-
-
-save();
-
-
-/* =========================================================
-   MAIN MENU / TABS
-========================================================= */
-
-document
-  .querySelectorAll('.tab')
-  .forEach(button => {
-
-    button.onclick = () => {
-
-      document
-        .querySelectorAll('.tab')
-        .forEach(x =>
-          x.classList.remove('active')
-        );
-
-      document
-        .querySelectorAll('.screen')
-        .forEach(x =>
-          x.classList.remove('active')
-        );
-
-      button.classList.add('active');
-
-      $(button.dataset.screen)
-        .classList.add('active');
-
-    };
-
-  });
-
-
-/* =========================================================
-   FARM
-========================================================= */
-
-const board = $('board');
-
-const size = 7;
-
-const path = [];
-
-
-for(let r=0;r<size;r++){
-
-  for(let c=0;c<size;c++){
-
-    if(
-      r===0 ||
-      r===size-1 ||
-      c===0 ||
-      c===size-1
-    ){
-
-      path.push([r,c]);
-
-    }
-
-  }
-
-}
-
-
-const cells = [];
-
-
-for(let i=0;i<49;i++){
-
-  const r =
-    Math.floor(i/7);
-
-  const c =
-    i%7;
-
-  const d =
-    document.createElement('div');
-
-  d.className = 'tile';
-
-
-  if(
-    r===0 ||
-    r===6 ||
-    c===0 ||
-    c===6
-  ){
-
-    d.textContent =
-      ['🌾','🐔','🍅','🪙','🌳','🎁','🚜'][i%7];
-
-    if(i%5===0){
-
-      d.classList.add('special');
-
-    }
-
-  }else{
-
-    d.style.visibility =
-      'hidden';
-
-  }
-
-
-  board.appendChild(d);
-
-  cells.push(d);
-
-}
-
-
-const center =
-  document.createElement('div');
-
-center.className =
-  'center';
-
-center.innerHTML =
-  '<b>🏆 FARM QUEST</b>' +
-  '<span class="muted">' +
-  'Reach higher levels by playing' +
-  '</span>';
-
-board.appendChild(center);
-
-
-function renderToken(){
-
-  cells.forEach(c =>
-    c.classList.remove('token')
-  );
-
-  const [
-    r,
-    c
-  ] =
-    path[
-      tokenIndex % path.length
-    ];
-
-  cells[
-    r*7+c
-  ].classList.add('token');
-
-}
-
-
-renderToken();
-
-
-$('rollBtn').onclick =
-async () => {
-
-  if(rolling)return;
-
-  rolling = true;
-
-  const dice =
-    Math.floor(
-      Math.random()*6
-    )+1;
-
-
-  for(
-    let i=0;
-    i<dice;
-    i++
-  ){
-
-    tokenIndex =
-      (tokenIndex+1)
-      % path.length;
-
-    renderToken();
-
-    await new Promise(
-      r=>setTimeout(r,180)
-    );
-
-  }
-
-
-  const reward =
-    8+dice*3;
-
-  xp += reward;
-
-  save();
-
-  toast(
-    '🎲 Rolled '+
-    dice+
-    '! +'+
-    reward+
-    ' XP'
-  );
-
-  rolling = false;
-
-};
-
-
-$('harvestBtn').onclick =
-() => {
-
-  const now =
-    Date.now();
-
-
-  if(now < harvestReady){
-
-    toast(
-      '🌾 Farm is growing! Come back in '+
-      Math.ceil(
-        (harvestReady-now)/60000
-      )+
-      ' min'
-    );
-
-    return;
-
-  }
-
-
-  const reward =
-    25+
-    Math.floor(
-      Math.random()*26
-    );
-
-  xp += reward;
-
-  harvestReady =
-    now+
-    10*60*1000;
-
-
-  localStorage.setItem(
-    ns+'harvestReady',
-    harvestReady
-  );
-
-  save();
-
-  toast(
-    '🌾 Harvest successful! +'+
-    reward+
-    ' XP'
-  );
-
-};
-
-
-/* =========================================================
-   ADSGRAM OPTIONAL REWARD AD
-========================================================= */
-
-$('boostBtn').onclick =
-async () => {
-
-  if(
-    typeof window.adsgram ===
-    'undefined'
-  ){
-
-    toast(
-      'Ads are currently unavailable'
-    );
-
-    return;
-
-  }
-
-
-  try{
-
-    $('boostBtn').disabled =
-      true;
-
-    toast(
-      'Loading optional boost...'
-    );
-
-
-    await window.adsgram.show({
-
-      blockId:
-        ADSGRAM_BLOCK_ID,
-
-
-      onReward: () => {
-
-        xp += 100;
-
-        save();
-
-        toast(
-          '⚡ Boost reward: +100 XP'
-        );
-
-      },
-
-
-      onError: e => {
-
-        console.log(
-          'AdsGram error:',
-          e
-        );
-
-      }
-
-    });
-
-
-  }catch(e){
-
-    console.log(e);
-
-    toast(
-      'Ad unavailable. Try again later'
-    );
-
-
-  }finally{
-
-    $('boostBtn').disabled =
-      false;
-
-  }
-
-};
-
-
-/* =========================================================
-   TASK SYSTEM
-========================================================= */
-
-/*
-   This is intentionally optional.
-
-   When you receive the AdsGram Task Block ID,
-   set:
-
-   ADSGRAM_TASK_BLOCK_ID = 'YOUR_BLOCK_ID';
-
-   Then the button can be connected here.
-
-*/
-
-$('taskBtn').onclick =
-async () => {
+  'use strict';
 
   /*
-     FUTURE ADSGRAM TASK INTEGRATION
+   * =========================================================
+   * MONOPOLY FARM CONFIG
+   * =========================================================
+   *
+   * IMPORTANT:
+   * ADSGRAM_BLOCK_ID must be the Reward block ID created
+   * for the exact Telegram Mini App URL being moderated.
+   *
+   * Your existing block ID was 43625, so it is kept here.
+   */
+  let ADSGRAM_BLOCK_ID = '43625';
 
-     This section is intentionally left separate
-     from the games.
+  /*
+   * Change this only if your actual Telegram bot username
+   * is different. Do not submit the app with a fake/placeholder
+   * referral URL.
+   */
+  const TELEGRAM_BOT_USERNAME = 'Taskaflowbot';
 
-     Do not make tasks mandatory.
-  */
+  /*
+   * WITHDRAWAL CONFIGURATION
+   *
+   * Requests are saved in localStorage first.
+   * Telegram WebApp.sendData() then sends the request to
+   * your bot, where your backend/bot can forward it to
+   * ADMIN_CHAT_ID = 465324.
+   *
+   * IMPORTANT: a Telegram bot token must NEVER be placed
+   * in this HTML file.
+   */
+  const ADMIN_CHAT_ID = '465324';
+  const MIN_WITHDRAW = 50000;
+  const WITHDRAW_STORAGE_KEY = STORAGE_NS + 'withdrawals';
 
+  const XP_PER_REWARDED_AD = 100;
+  const STORAGE_NS = 'monopoly_real_v4_';
 
-  if(!ADSGRAM_TASK_BLOCK_ID){
+  let xp = Number(localStorage.getItem(STORAGE_NS + 'xp') || 0);
+  let level = Number(localStorage.getItem(STORAGE_NS + 'level') || 1);
+  let harvestReady = Number(localStorage.getItem(STORAGE_NS + 'harvestReady') || 0);
+  let tokenIndex = Number(localStorage.getItem(STORAGE_NS + 'token') || 0);
 
-    $('taskStatus').textContent =
-      '🛠️ Tasks are coming soon. Check back later!';
+  let rolling = false;
+  let adController = null;
 
-    toast(
-      '🧩 Tasks are not available yet'
-    );
+  const $ = id => document.getElementById(id);
 
-    return;
-
+  function toast(message) {
+    const t = $('toast');
+    t.textContent = message;
+    t.style.display = 'block';
+    clearTimeout(window.__monopolyToastTimer);
+    window.__monopolyToastTimer = setTimeout(() => {
+      t.style.display = 'none';
+    }, 2200);
   }
 
+  function save() {
+    level = Math.max(1, Math.floor(xp / 1000) + 1);
 
-  try{
+    localStorage.setItem(STORAGE_NS + 'xp', String(xp));
+    localStorage.setItem(STORAGE_NS + 'level', String(level));
+    localStorage.setItem(STORAGE_NS + 'token', String(tokenIndex));
 
-    $('taskBtn').disabled =
-      true;
+    $('xp').textContent = xp.toLocaleString();
+    $('level').textContent = String(level);
+  }
 
-    $('taskStatus').textContent =
-      '⏳ Loading available tasks...';
+  save();
 
+  /* =========================================================
+     TELEGRAM
+  ========================================================= */
+  const tg = window.Telegram && window.Telegram.WebApp;
+
+  if (tg) {
+    try {
+      tg.ready();
+      tg.expand();
+    } catch (e) {
+      console.log('Telegram WebApp setup:', e);
+    }
+  }
+
+  /* =========================================================
+     ADSGRAM - CURRENT INTEGRATION
+  ========================================================= */
+  function initAdsgram() {
+    if (!window.Adsgram) {
+      console.warn('AdsGram SDK is not available.');
+      return false;
+    }
+
+    if (!ADSGRAM_BLOCK_ID) {
+      console.warn('AdsGram Reward block ID is empty.');
+      return false;
+    }
+
+    try {
+      adController = window.Adsgram.init({
+        blockId: ADSGRAM_BLOCK_ID,
+        debug: false
+      });
+      return true;
+    } catch (error) {
+      console.error('AdsGram initialization error:', error);
+      adController = null;
+      return false;
+    }
+  }
+
+  function showRewardedAd() {
+    if (!adController) {
+      if (!initAdsgram()) {
+        toast('Reward Ad is temporarily unavailable.');
+        return;
+      }
+    }
+
+    const button = $('boostBtn');
+
+    if (button.disabled) return;
+
+    button.disabled = true;
+    button.textContent = '⏳ Loading Ad...';
 
     /*
-       AdsGram Task Block integration
-       can be inserted here when the
-       correct Task Block SDK/API is available.
-    */
-
-
-    $('taskStatus').textContent =
-      '✅ Task system is ready for integration.';
-
-  }catch(error){
-
-    console.error(error);
-
-    $('taskStatus').textContent =
-      'Tasks are temporarily unavailable.';
-
-  }finally{
-
-    $('taskBtn').disabled =
-      false;
-
-  }
-
-};
-
-
-/* =========================================================
-   WHOT
-========================================================= */
-
-const shapes =
-  ['★','●','▲','■'];
-
-let deck = [];
-
-let hand = [];
-
-let bot = [];
-
-let current = null;
-
-let whotOver = false;
-
-
-function makeDeck(){
-
-  let a = [];
-
-  for(
-    let s of shapes
-  ){
-
-    for(
-      let n=1;
-      n<=14;
-      n++
-    ){
-
-      a.push({
-        n,
-        s
+     * AdsGram Reward format:
+     * show() resolves when the Reward ad is completed.
+     * Only then do we add the XP reward.
+     */
+    adController.show()
+      .then(() => {
+        xp += XP_PER_REWARDED_AD;
+        save();
+        toast('🎉 Ad completed! +' + XP_PER_REWARDED_AD + ' XP');
+      })
+      .catch(error => {
+        console.log('AdsGram Reward Ad error:', error);
+        toast('Ad was not completed or is unavailable.');
+      })
+      .finally(() => {
+        button.disabled = false;
+        button.textContent = '🎬 Watch Ad & Get +100 XP';
       });
-
-    }
-
   }
 
-  return a.sort(
-    ()=>Math.random()-.5
-  );
-
-}
-
-
-function cardLabel(c){
-
-  return c.n===20
-    ? 'WHOT'
-    : c.n+c.s;
-
-}
-
-
-function newWhot(){
-
-  deck =
-    makeDeck();
-
-  hand =
-    deck.splice(0,5);
-
-  bot =
-    deck.splice(0,5);
-
-  current =
-    deck.pop();
-
-  whotOver =
-    false;
-
-  renderWhot();
-
-  $('whotStatus').textContent =
-    'Your turn: match the number or shape.';
-
-}
-
-
-function renderWhot(){
-
-  $('currentCard').textContent =
-    cardLabel(current);
-
-  $('botCount').textContent =
-    bot.length+
-    ' cards';
-
-
-  const h =
-    $('hand');
-
-  h.innerHTML = '';
-
-
-  hand.forEach(
-    (c,i) => {
-
-      const d =
-        document.createElement(
-          'button'
-        );
-
-      d.className =
-        'card btn '+
-        (
-          c.s==='●' ||
-          c.s==='▲'
-          ? 'red'
-          : ''
-        );
-
-
-      d.innerHTML =
-        '<small>'+c.s+'</small>'+
-        '<b>'+c.n+'</b>'+
-        '<small>'+c.s+'</small>';
-
-
-      d.onclick =
-        () => playCard(i);
-
-
-      h.appendChild(d);
-
-    }
-  );
-
-}
-
-
-function playCard(i){
-
-  if(whotOver)return;
-
-  const c =
-    hand[i];
-
-
-  if(
-    c.n!==current.n &&
-    c.s!==current.s
-  ){
-
-    toast(
-      'That card does not match!'
-    );
-
-    return;
-
-  }
-
-
-  current = c;
-
-  hand.splice(i,1);
-
-
-  if(!hand.length){
-
-    whotOver = true;
-
-    xp += 80;
-
-    save();
-
-    $('whotStatus').textContent =
-      '🎉 YOU WON! +80 XP';
-
-    renderWhot();
-
-    return;
-
-  }
-
-
-  botTurn();
-
-  renderWhot();
-
-}
-
-
-function botTurn(){
-
-  setTimeout(
-    () => {
-
-      let i =
-        bot.findIndex(
-          c =>
-            c.n===current.n ||
-            c.s===current.s
-        );
-
-
-      if(i<0){
-
-        if(deck.length){
-
-          bot.push(
-            deck.pop()
-          );
-
-        }
-
-        $('whotStatus').textContent =
-          'Computer drew a card. Your turn!';
-
-      }else{
-
-        current =
-          bot[i];
-
-        bot.splice(i,1);
-
-
-        if(!bot.length){
-
-          whotOver = true;
-
-          $('whotStatus').textContent =
-            '😅 Computer won! Try again.';
-
-        }else{
-
-          $('whotStatus').textContent =
-            'Computer played '+
-            cardLabel(current)+
-            '. Your turn!';
-
-        }
-
-      }
-
-
-      renderWhot();
-
-    },
-    450
-  );
-
-}
-
-
-$('drawBtn').onclick =
-() => {
-
-  if(
-    !whotOver &&
-    deck.length
-  ){
-
-    hand.push(
-      deck.pop()
-    );
-
-    renderWhot();
-
-    toast(
-      'Card drawn'
-    );
-
-  }
-
-};
-
-
-$('newWhotBtn').onclick =
-newWhot;
-
-newWhot();
-
-
-/* =========================================================
-   FUNNY GAMES
-========================================================= */
-
-let reactionTimer = null;
-
-let reactionStartTime = 0;
-
-let funnyMode = '';
-
-
-$('reactionStart').onclick =
-() => {
-
-  funnyMode =
-    'reaction';
-
-
-  $('funnyEmoji').textContent =
-    '😐';
-
-
-  $('funnyStatus').textContent =
-    'Wait for GO... then tap fast!';
-
-
-  $('funnyAction').disabled =
-    false;
-
-
-  $('funnyAction').textContent =
-    'WAIT...';
-
-
-  $('funnyAction').onclick =
-  () => {
-
-    if(reactionStartTime){
-
-      const ms =
-        Date.now() -
-        reactionStartTime;
-
-
-      $('funnyStatus').textContent =
-        '⚡ '+
-        ms+
-        ' ms! '+
-        (
-          ms<350
-          ? 'You are FAST 😂'
-          : 'Not bad 😅'
-        );
-
-
-      xp +=
-        ms<350
-        ? 15
-        : 5;
-
-
-      save();
-
-      reactionStartTime = 0;
-
-      return;
-
-    }
-
-
-    toast(
-      'Wait for GO!'
-    );
-
-  };
-
-
-  clearTimeout(
-    reactionTimer
-  );
-
-
-  reactionTimer =
-    setTimeout(
-      () => {
-
-        reactionStartTime =
-          Date.now();
-
-        $('funnyEmoji').textContent =
-          '🟢';
-
-        $('funnyStatus').textContent =
-          'GO GO GO! TAP NOW!';
-
-        $('funnyAction').textContent =
-          'TAP!';
-
-      },
-      1500+
-      Math.random()*3000
-    );
-
-};
-
-
-$('guessStart').onclick =
-() => {
-
-  funnyMode =
-    'guess';
-
-
-  const answer =
-    Math.ceil(
-      Math.random()*5
-    );
-
-
-  $('funnyEmoji').textContent =
-    '🤔';
-
-
-  $('funnyStatus').textContent =
-    'Guess my number from 1 to 5!';
-
-
-  $('funnyAction').disabled =
-    false;
-
-
-  $('funnyAction').textContent =
-    'GUESS';
-
-
-  $('funnyAction').onclick =
-  () => {
-
-    const g =
-      prompt(
-        'Enter a number from 1 to 5'
-      );
-
-
-    if(
-      Number(g)===answer
-    ){
-
-      xp += 20;
-
-      save();
-
-      $('funnyEmoji').textContent =
-        '🤣';
-
-      $('funnyStatus').textContent =
-        'Correct! +20 XP 😂';
-
-    }else{
-
-      $('funnyEmoji').textContent =
-        '😜';
-
-      $('funnyStatus').textContent =
-        'Wrong! My number was '+
-        answer+
-        ' 😜';
-
-    }
-
-  };
-
-};
-
-
-/* =========================================================
-   LUCKY DICE
-========================================================= */
-
-let selectedDiceNumber = null;
-
-
-const diceEmoji = {
-
-  1:'⚀',
-  2:'⚁',
-  3:'⚂',
-  4:'⚃',
-  5:'⚄',
-  6:'⚅'
-
-};
-
-
-document
-  .querySelectorAll('.dicePick')
-  .forEach(btn => {
-
-    btn.onclick =
-    () => {
-
-      selectedDiceNumber =
-        Number(
-          btn.dataset.number
-        );
-
-
-      document
-        .querySelectorAll('.dicePick')
-        .forEach(x =>
-          x.classList.remove(
-            'primary'
-          )
-        );
-
-
-      btn.classList.add(
-        'primary'
-      );
-
-
-      $('diceTarget').textContent =
-        selectedDiceNumber;
-
-
-      $('diceStatus').textContent =
-        'You picked '+
-        selectedDiceNumber+
-        '. Now roll the dice!';
-
-
-      $('playDiceBtn').disabled =
-        false;
-
-    };
-
-  });
-
-
-$('playDiceBtn').onclick =
-async () => {
-
-  if(!selectedDiceNumber)return;
-
-
-  const b =
-    $('playDiceBtn');
-
-
-  b.disabled =
-    true;
-
-
-  $('diceStatus').textContent =
-    '🎲 Rolling...';
-
-
-  for(
-    let i=0;
-    i<10;
-    i++
-  ){
-
-    const n =
-      Math.floor(
-        Math.random()*6
-      )+1;
-
-
-    $('diceFace').textContent =
-      diceEmoji[n];
-
-
-    await new Promise(
-      r =>
-        setTimeout(
-          r,
-          90+i*12
-        )
-    );
-
-  }
-
-
-  const result =
-    Math.floor(
-      Math.random()*6
-    )+1;
-
-
-  $('diceFace').textContent =
-    diceEmoji[result];
-
-
-  if(
-    result===
-    selectedDiceNumber
-  ){
-
-    xp += 30;
-
-    save();
-
-
-    $('diceStatus').textContent =
-      '🎉 JACKPOT! You guessed '+
-      result+
-      ' correctly. +30 XP';
-
-  }else{
-
-    $('diceStatus').textContent =
-      '😅 You picked '+
-      selectedDiceNumber+
-      ', but the dice rolled '+
-      result+
-      '. Try again!';
-
-  }
-
-
-  b.disabled =
-    false;
-
-};
-
-
-/* =========================================================
-   MODALS
-========================================================= */
-
-function modal(html){
-
-  $('modalContent').innerHTML =
-    html;
-
-  $('modal')
-    .classList
-    .add('show');
-
-}
-
-
-$('modal').onclick =
-e => {
-
-  if(
-    e.target===
-    $('modal')
-  ){
-
-    $('modal')
-      .classList
-      .remove('show');
-
-  }
-
-};
-
-
-/* =========================================================
-   REFERRAL
-========================================================= */
-
-$('refBtn').onclick =
-() => {
-
-  modal(
-    '<h3>👥 Invite Friends</h3>'+
-    '<p class="muted">'+
-    'Share your Telegram referral link and invite friends to play.'+
-    '</p>'+
-    '<input value="https://t.me/Taskaflowbot?start=ref_YOUR_ID" readonly>'+
-    '<button class="btn primary" onclick="navigator.clipboard.writeText(this.previousElementSibling.value)">'+
-    'Copy Link'+
-    '</button>'
-  );
-
-};
-
-
-/* =========================================================
-   WITHDRAW
-========================================================= */
-
-$('withdrawBtn').onclick =
-() => {
-
-  modal(
-
-    '<h3>💳 Withdraw Request</h3>'+
-
-    '<p class="muted">'+
-
-    'Minimum: '+
-    MIN_WITHDRAW.toLocaleString()+
-    ' XP<br>'+
-
-    'Your balance: '+
-    xp.toLocaleString()+
-    ' XP'+
-
-    '</p>'+
-
-    '<select id="method">'+
-      '<option>Binance</option>'+
-      '<option>Litecoin</option>'+
-      '<option>Crypto Wallet</option>'+
-    '</select>'+
-
-    '<input id="wallet" placeholder="Enter wallet/account details">'+
-
-    '<button id="submitWd" class="btn green">'+
-      'Submit Request'+
-    '</button>'
-
-  );
-
-};
-
-
-document.addEventListener(
-  'click',
-  e => {
-
-    if(
-      e.target.id===
-      'submitWd'
-    ){
-
-      const details =
-        $('wallet')
-        .value
-        .trim();
-
-
-      if(
-        xp<MIN_WITHDRAW
-      ){
-
-        toast(
-          'Minimum withdrawal is '+
-          MIN_WITHDRAW.toLocaleString()+
-          ' XP'
-        );
-
-        return;
-
-      }
-
-
-      if(!details){
-
-        toast(
-          'Enter wallet details'
-        );
-
-        return;
-
-      }
-
-
-      toast(
-        'Withdrawal request saved for review'
-      );
-
-
-      $('modal')
-        .classList
-        .remove('show');
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   EXTERNAL CONFIGURATION
-========================================================= */
-
-window.MonopolyFarm = {
-
-  setAdsgram:
-    blockId => {
-
-      ADSGRAM_BLOCK_ID =
-        blockId;
-
-    },
-
+  $('boostBtn').addEventListener('click', showRewardedAd);
 
   /*
-     Future Task Block setter.
+   * Initialize once after the SDK has loaded.
+   */
+  initAdsgram();
 
-     Example:
+  /* =========================================================
+     TABS
+  ========================================================= */
+  document.querySelectorAll('.tab').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.screen').forEach(x => x.classList.remove('active'));
 
-     MonopolyFarm.setTaskBlock('12345');
-  */
+      button.classList.add('active');
+      $(button.dataset.screen).classList.add('active');
+    });
+  });
 
-  setTaskBlock:
-    blockId => {
+  /* =========================================================
+     FARM
+  ========================================================= */
+  const board = $('board');
+  const size = 7;
+  const path = [];
 
-      ADSGRAM_TASK_BLOCK_ID =
-        blockId;
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (r === 0 || r === size - 1 || c === 0 || c === size - 1) {
+        path.push([r, c]);
+      }
+    }
+  }
 
-      $('taskStatus').textContent =
-        '🧩 Task system configured.';
+  const cells = [];
 
+  for (let i = 0; i < 49; i++) {
+    const r = Math.floor(i / 7);
+    const c = i % 7;
+    const d = document.createElement('div');
+
+    d.className = 'tile';
+
+    if (r === 0 || r === 6 || c === 0 || c === 6) {
+      d.textContent = ['🌾','🐔','🍅','🪙','🌳','🎁','🚜'][i % 7];
+      if (i % 5 === 0) d.classList.add('special');
+    } else {
+      d.style.visibility = 'hidden';
     }
 
-};
+    board.appendChild(d);
+    cells.push(d);
+  }
 
+  const center = document.createElement('div');
+  center.className = 'center';
+  center.innerHTML =
+    '<b>🏆 FARM QUEST</b>' +
+    '<span class="muted">Reach higher levels by playing</span>';
+  board.appendChild(center);
+
+  function renderToken() {
+    cells.forEach(c => c.classList.remove('token'));
+    const [r, c] = path[tokenIndex % path.length];
+    cells[r * 7 + c].classList.add('token');
+  }
+
+  renderToken();
+
+  $('rollBtn').addEventListener('click', async () => {
+    if (rolling) return;
+
+    rolling = true;
+    const dice = Math.floor(Math.random() * 6) + 1;
+
+    for (let i = 0; i < dice; i++) {
+      tokenIndex = (tokenIndex + 1) % path.length;
+      renderToken();
+      await new Promise(resolve => setTimeout(resolve, 180));
+    }
+
+    const reward = 8 + dice * 3;
+    xp += reward;
+    save();
+
+    toast('🎲 Rolled ' + dice + '! +' + reward + ' XP');
+    rolling = false;
+  });
+
+  $('harvestBtn').addEventListener('click', () => {
+    const now = Date.now();
+
+    if (now < harvestReady) {
+      toast(
+        '🌾 Farm is growing! Come back in ' +
+        Math.ceil((harvestReady - now) / 60000) +
+        ' min'
+      );
+      return;
+    }
+
+    const reward = 25 + Math.floor(Math.random() * 26);
+    xp += reward;
+
+    harvestReady = now + 10 * 60 * 1000;
+    localStorage.setItem(STORAGE_NS + 'harvestReady', String(harvestReady));
+
+    save();
+    toast('🌾 Harvest successful! +' + reward + ' XP');
+  });
+
+  /* =========================================================
+     TASK SCREEN
+  ========================================================= */
+  $('taskStatus').textContent =
+    '🛠️ Tasks are coming soon. You can play all games without tasks.';
+
+  /* =========================================================
+     WHOT
+  ========================================================= */
+  const shapes = ['★','●','▲','■'];
+  let deck = [];
+  let hand = [];
+  let bot = [];
+  let current = null;
+  let whotOver = false;
+
+  function makeDeck() {
+    const a = [];
+
+    for (const s of shapes) {
+      for (let n = 1; n <= 14; n++) {
+        a.push({ n, s });
+      }
+    }
+
+    return a.sort(() => Math.random() - 0.5);
+  }
+
+  function cardLabel(c) {
+    return c.n === 20 ? 'WHOT' : c.n + c.s;
+  }
+
+  function newWhot() {
+    deck = makeDeck();
+    hand = deck.splice(0, 5);
+    bot = deck.splice(0, 5);
+    current = deck.pop();
+    whotOver = false;
+
+    renderWhot();
+    $('whotStatus').textContent =
+      'Your turn: match the number or shape.';
+  }
+
+  function renderWhot() {
+    $('currentCard').textContent = cardLabel(current);
+    $('botCount').textContent = bot.length + ' cards';
+
+    const h = $('hand');
+    h.innerHTML = '';
+
+    hand.forEach((c, i) => {
+      const d = document.createElement('button');
+
+      d.className =
+        'card btn ' +
+        ((c.s === '●' || c.s === '▲') ? 'red' : '');
+
+      d.innerHTML =
+        '<small>' + c.s + '</small>' +
+        '<b>' + c.n + '</b>' +
+        '<small>' + c.s + '</small>';
+
+      d.addEventListener('click', () => playCard(i));
+      h.appendChild(d);
+    });
+  }
+
+  function playCard(i) {
+    if (whotOver) return;
+
+    const c = hand[i];
+
+    if (c.n !== current.n && c.s !== current.s) {
+      toast('That card does not match!');
+      return;
+    }
+
+    current = c;
+    hand.splice(i, 1);
+
+    if (!hand.length) {
+      whotOver = true;
+      xp += 80;
+      save();
+
+      $('whotStatus').textContent = '🎉 YOU WON! +80 XP';
+      renderWhot();
+      return;
+    }
+
+    botTurn();
+    renderWhot();
+  }
+
+  function botTurn() {
+    setTimeout(() => {
+      if (whotOver) return;
+
+      const i = bot.findIndex(
+        c => c.n === current.n || c.s === current.s
+      );
+
+      if (i < 0) {
+        if (deck.length) bot.push(deck.pop());
+        $('whotStatus').textContent =
+          'Computer drew a card. Your turn!';
+      } else {
+        current = bot[i];
+        bot.splice(i, 1);
+
+        if (!bot.length) {
+          whotOver = true;
+          $('whotStatus').textContent =
+            '😅 Computer won! Try again.';
+        } else {
+          $('whotStatus').textContent =
+            'Computer played ' + cardLabel(current) +
+            '. Your turn!';
+        }
+      }
+
+      renderWhot();
+    }, 450);
+  }
+
+  $('drawBtn').addEventListener('click', () => {
+    if (!whotOver && deck.length) {
+      hand.push(deck.pop());
+      renderWhot();
+      toast('Card drawn');
+    }
+  });
+
+  $('newWhotBtn').addEventListener('click', newWhot);
+  newWhot();
+
+  /* =========================================================
+     FUNNY GAMES
+  ========================================================= */
+  let reactionTimer = null;
+  let reactionStartTime = 0;
+
+  $('reactionStart').addEventListener('click', () => {
+    $('funnyEmoji').textContent = '😐';
+    $('funnyStatus').textContent = 'Wait for GO... then tap fast!';
+    $('funnyAction').disabled = false;
+    $('funnyAction').textContent = 'WAIT...';
+
+    clearTimeout(reactionTimer);
+    reactionStartTime = 0;
+
+    $('funnyAction').onclick = () => {
+      if (reactionStartTime) {
+        const ms = Date.now() - reactionStartTime;
+
+        $('funnyStatus').textContent =
+          '⚡ ' + ms + ' ms! ' +
+          (ms < 350 ? 'You are FAST 😂' : 'Not bad 😅');
+
+        xp += ms < 350 ? 15 : 5;
+        save();
+
+        reactionStartTime = 0;
+        return;
+      }
+
+      toast('Wait for GO!');
+    };
+
+    reactionTimer = setTimeout(() => {
+      reactionStartTime = Date.now();
+      $('funnyEmoji').textContent = '🟢';
+      $('funnyStatus').textContent = 'GO GO GO! TAP NOW!';
+      $('funnyAction').textContent = 'TAP!';
+    }, 1500 + Math.random() * 3000);
+  });
+
+  $('guessStart').addEventListener('click', () => {
+    const answer = Math.ceil(Math.random() * 5);
+
+    $('funnyEmoji').textContent = '🤔';
+    $('funnyStatus').textContent = 'Guess my number from 1 to 5!';
+    $('funnyAction').disabled = false;
+    $('funnyAction').textContent = 'GUESS';
+
+    $('funnyAction').onclick = () => {
+      const g = prompt('Enter a number from 1 to 5');
+
+      if (Number(g) === answer) {
+        xp += 20;
+        save();
+
+        $('funnyEmoji').textContent = '🤣';
+        $('funnyStatus').textContent = 'Correct! +20 XP 😂';
+      } else {
+        $('funnyEmoji').textContent = '😜';
+        $('funnyStatus').textContent =
+          'Wrong! My number was ' + answer + ' 😜';
+      }
+    };
+  });
+
+  /* =========================================================
+     LUCKY DICE
+  ========================================================= */
+  let selectedDiceNumber = null;
+
+  const diceEmoji = {
+    1:'⚀', 2:'⚁', 3:'⚂',
+    4:'⚃', 5:'⚄', 6:'⚅'
+  };
+
+  document.querySelectorAll('.dicePick').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedDiceNumber = Number(btn.dataset.number);
+
+      document.querySelectorAll('.dicePick')
+        .forEach(x => x.classList.remove('primary'));
+
+      btn.classList.add('primary');
+
+      $('diceTarget').textContent = String(selectedDiceNumber);
+      $('diceStatus').textContent =
+        'You picked ' + selectedDiceNumber +
+        '. Now roll the dice!';
+
+      $('playDiceBtn').disabled = false;
+    });
+  });
+
+  $('playDiceBtn').addEventListener('click', async () => {
+    if (!selectedDiceNumber) return;
+
+    const b = $('playDiceBtn');
+    b.disabled = true;
+
+    $('diceStatus').textContent = '🎲 Rolling...';
+
+    for (let i = 0; i < 10; i++) {
+      const n = Math.floor(Math.random() * 6) + 1;
+      $('diceFace').textContent = diceEmoji[n];
+
+      await new Promise(resolve =>
+        setTimeout(resolve, 90 + i * 12)
+      );
+    }
+
+    const result = Math.floor(Math.random() * 6) + 1;
+    $('diceFace').textContent = diceEmoji[result];
+
+    if (result === selectedDiceNumber) {
+      xp += 30;
+      save();
+
+      $('diceStatus').textContent =
+        '🎉 JACKPOT! You guessed ' + result +
+        ' correctly. +30 XP';
+    } else {
+      $('diceStatus').textContent =
+        '😅 You picked ' + selectedDiceNumber +
+        ', but the dice rolled ' + result + '. Try again!';
+    }
+
+    b.disabled = false;
+  });
+
+  /* =========================================================
+     MODALS
+  ========================================================= */
+  function modal(html) {
+    $('modalContent').innerHTML = html;
+    $('modal').classList.add('show');
+  }
+
+  $('modal').addEventListener('click', e => {
+    if (e.target === $('modal')) {
+      $('modal').classList.remove('show');
+    }
+  });
+
+  /* =========================================================
+     REFERRAL
+  ========================================================= */
+  function getTelegramUserId() {
+    try {
+      return tg &&
+        tg.initDataUnsafe &&
+        tg.initDataUnsafe.user &&
+        tg.initDataUnsafe.user.id
+        ? String(tg.initDataUnsafe.user.id)
+        : '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  $('refBtn').addEventListener('click', () => {
+    const userId = getTelegramUserId();
+
+    if (!TELEGRAM_BOT_USERNAME || !userId) {
+      modal(
+        '<h3>👥 Invite Friends</h3>' +
+        '<p class="muted">' +
+        'Open Monopoly Farm from Telegram to generate your personal referral link.' +
+        '</p>' +
+        '<button class="btn primary" style="width:100%" onclick="' +
+        "document.getElementById('modal').classList.remove('show')" +
+        '">Close</button>'
+      );
+      return;
+    }
+
+    const link =
+      'https://t.me/' +
+      TELEGRAM_BOT_USERNAME +
+      '?start=ref_' +
+      userId;
+
+    modal(
+      '<h3>👥 Invite Friends</h3>' +
+      '<p class="muted">Share your personal Telegram referral link.</p>' +
+      '<input id="refLink" value="' + link + '" readonly>' +
+      '<button id="copyRef" class="btn primary" style="width:100%">📋 Copy Link</button>'
+    );
+
+    $('copyRef').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(link);
+        toast('Referral link copied!');
+      } catch (e) {
+        $('refLink').select();
+        document.execCommand('copy');
+        toast('Referral link copied!');
+      }
+    });
+  });
+
+  /* =========================================================
+     WITHDRAWAL SYSTEM
+     =========================================================
+     - Saves every request in localStorage.
+     - Prevents duplicate pending requests.
+     - Shows the user a Pending status.
+     - Sends the request through Telegram WebApp.sendData().
+     - Your bot/backend should receive the data and forward it
+       to ADMIN_CHAT_ID 465324.
+
+     IMPORTANT:
+     Telegram WebApp.sendData() does NOT directly send a
+     message to an arbitrary chat. Your bot must receive the
+     web-app data and then call Telegram Bot API server-side.
+  ========================================================= */
+
+  function getWithdrawals() {
+    try {
+      const value = localStorage.getItem(WITHDRAW_STORAGE_KEY);
+      const parsed = value ? JSON.parse(value) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function saveWithdrawals(list) {
+    localStorage.setItem(
+      WITHDRAW_STORAGE_KEY,
+      JSON.stringify(list)
+    );
+  }
+
+  function getTelegramUser() {
+    try {
+      return tg && tg.initDataUnsafe && tg.initDataUnsafe.user
+        ? tg.initDataUnsafe.user
+        : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function getPendingWithdrawal() {
+    return getWithdrawals().find(
+      item => item.status === 'pending'
+    );
+  }
+
+  function withdrawalStatusLabel(status) {
+    if (status === 'approved') return '✅ Approved';
+    if (status === 'declined') return '❌ Declined';
+    return '⏳ Pending admin approval';
+  }
+
+  function showWithdrawalHistory() {
+    const list = getWithdrawals();
+
+    let history = '';
+
+    if (!list.length) {
+      history =
+        '<div class="task-status">No withdrawal requests yet.</div>';
+    } else {
+      history = list.slice().reverse().map(item => {
+        return (
+          '<div class="task-status" style="margin-top:8px">' +
+          '<b>' + withdrawalStatusLabel(item.status) + '</b><br>' +
+          '<span class="muted">' +
+          'Amount: ' + Number(item.amount).toLocaleString() + ' XP<br>' +
+          'Method: ' + item.method + '<br>' +
+          'Request ID: ' + item.id + '<br>' +
+          new Date(item.createdAt).toLocaleString() +
+          '</span>' +
+          '</div>'
+        );
+      }).join('');
+    }
+
+    modal(
+      '<h3>💳 Withdraw</h3>' +
+      '<p class="muted">Minimum withdrawal: ' +
+      MIN_WITHDRAW.toLocaleString() + ' XP</p>' +
+      '<div>' + history + '</div>' +
+      '<button id="newWithdrawBtn" class="btn primary" style="width:100%;margin-top:10px">' +
+      '➕ New Withdrawal' +
+      '</button>' +
+      '<button class="btn" style="width:100%;margin-top:7px" onclick="' +
+      "document.getElementById('modal').classList.remove('show')" +
+      '">Close</button>'
+    );
+
+    $('newWithdrawBtn').addEventListener('click', showWithdrawalForm);
+  }
+
+  function showWithdrawalForm() {
+    const pending = getPendingWithdrawal();
+
+    if (pending) {
+      modal(
+        '<h3>⏳ Withdrawal Pending</h3>' +
+        '<p class="muted">' +
+        'You already have a withdrawal request waiting for admin approval.' +
+        '</p>' +
+        '<div class="task-status">' +
+        '<b>Request ID:</b> ' + pending.id + '<br>' +
+        '<b>Amount:</b> ' + Number(pending.amount).toLocaleString() + ' XP<br>' +
+        '<b>Method:</b> ' + pending.method + '<br>' +
+        '<b>Status:</b> ⏳ Pending admin approval' +
+        '</div>' +
+        '<button class="btn primary" style="width:100%;margin-top:10px" onclick="' +
+        "document.getElementById('modal').classList.remove('show')" +
+        '">Close</button>'
+      );
+      return;
+    }
+
+    modal(
+      '<h3>💳 Withdraw Request</h3>' +
+      '<p class="muted">' +
+      'Balance: <b>' + xp.toLocaleString() + ' XP</b><br>' +
+      'Minimum: ' + MIN_WITHDRAW.toLocaleString() + ' XP' +
+      '</p>' +
+      '<select id="method">' +
+        '<option value="Binance">Binance</option>' +
+        '<option value="Litecoin">Litecoin</option>' +
+        '<option value="Crypto Wallet">Crypto Wallet</option>' +
+      '</select>' +
+      '<input id="wallet" placeholder="Enter wallet/account details">' +
+      '<button id="submitWd" class="btn green" style="width:100%;margin-top:7px">' +
+      '📤 Submit Withdrawal' +
+      '</button>' +
+      '<button class="btn" style="width:100%;margin-top:7px" id="viewWdBtn">' +
+      '📋 View Requests' +
+      '</button>' +
+      '<div class="notice">Your request will be saved on this device and sent to the Telegram bot for admin review.</div>'
+    );
+
+    $('viewWdBtn').addEventListener('click', showWithdrawalHistory);
+
+    $('submitWd').addEventListener('click', submitWithdrawal);
+  }
+
+  function submitWithdrawal() {
+    if (xp < MIN_WITHDRAW) {
+      toast(
+        'Minimum withdrawal is ' +
+        MIN_WITHDRAW.toLocaleString() +
+        ' XP'
+      );
+      return;
+    }
+
+    const method = $('method').value;
+    const wallet = $('wallet').value.trim();
+
+    if (!wallet) {
+      toast('Enter your wallet/account details');
+      return;
+    }
+
+    const user = getTelegramUser();
+
+    if (!user) {
+      toast('Please open the Mini App inside Telegram');
+      return;
+    }
+
+    const pending = getPendingWithdrawal();
+
+    if (pending) {
+      toast('You already have a pending withdrawal');
+      showWithdrawalHistory();
+      return;
+    }
+
+    const requestId =
+      'WD-' +
+      Date.now().toString(36).toUpperCase() +
+      '-' +
+      Math.random().toString(36).slice(2, 7).toUpperCase();
+
+    const request = {
+      id: requestId,
+      chatId: String(user.id),
+      adminChatId: ADMIN_CHAT_ID,
+      username: user.username || '',
+      firstName: user.first_name || '',
+      lastName: user.last_name || '',
+      amount: xp,
+      method: method,
+      wallet: wallet,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    };
+
+    const withdrawals = getWithdrawals();
+    withdrawals.push(request);
+    saveWithdrawals(withdrawals);
+
+    /*
+     * Keep the XP reserved locally while the request is pending.
+     * This prevents the same balance being used for another request.
+     */
+    xp = 0;
+    save();
+
+    /*
+     * Send structured data to the Telegram bot.
+     * The bot/backend must verify Telegram initData and then
+     * forward the request to ADMIN_CHAT_ID = 465324.
+     */
+    const telegramPayload = {
+      type: 'withdraw_request',
+      requestId: request.id,
+      adminChatId: ADMIN_CHAT_ID,
+      userId: request.chatId,
+      username: request.username,
+      firstName: request.firstName,
+      lastName: request.lastName,
+      amount: request.amount,
+      method: request.method,
+      wallet: request.wallet,
+      status: request.status,
+      createdAt: request.createdAt
+    };
+
+    let sentToTelegram = false;
+
+    try {
+      if (tg && typeof tg.sendData === 'function') {
+        tg.sendData(JSON.stringify(telegramPayload));
+        sentToTelegram = true;
+      }
+    } catch (error) {
+      console.error('Telegram sendData error:', error);
+    }
+
+    modal(
+      '<h3>⏳ Withdrawal Submitted</h3>' +
+      '<p class="muted">' +
+      'Your withdrawal request has been saved and is waiting for admin approval.' +
+      '</p>' +
+      '<div class="task-status">' +
+      '<b>Request ID:</b> ' + request.id + '<br>' +
+      '<b>Amount:</b> ' + request.amount.toLocaleString() + ' XP<br>' +
+      '<b>Method:</b> ' + request.method + '<br>' +
+      '<b>Status:</b> ⏳ Pending admin approval<br>' +
+      '<b>Admin:</b> ' + ADMIN_CHAT_ID +
+      '</div>' +
+      '<div class="notice">' +
+      (sentToTelegram
+        ? 'The request was sent to the Telegram bot for processing.'
+        : 'The request was saved locally, but Telegram could not receive it. Please reopen the Mini App in Telegram.') +
+      '</div>' +
+      '<button class="btn primary" style="width:100%;margin-top:10px" id="closeWd">' +
+      'Done' +
+      '</button>'
+    );
+
+    $('closeWd').addEventListener('click', () => {
+      $('modal').classList.remove('show');
+    });
+  }
+
+  $('withdrawBtn').addEventListener('click', showWithdrawalHistory);
+
+  /*
+   * Optional status update helper.
+   *
+   * When your backend/bot approves or declines a request, it can
+   * later call a secure API that updates the request status.
+   * The frontend can then replace the local pending record.
+   *
+   * This frontend intentionally does NOT trust URL/query parameters
+   * as proof of approval.
+   */
+
+  /* =========================================================
+     EXTERNAL CONFIGURATION
+  ========================================================= */
+  window.MonopolyFarm = {
+    setAdsgram(blockId) {
+      ADSGRAM_BLOCK_ID = String(blockId || '').trim();
+      adController = null;
+      initAdsgram();
+    },
+    getAdsgramBlockId() {
+      return ADSGRAM_BLOCK_ID;
+    },
+    getTelegramUserId() {
+      return getTelegramUserId();
+    },
+    getAdminChatId() {
+      return ADMIN_CHAT_ID;
+    },
+    getWithdrawalRequests() {
+      return getWithdrawals();
+    }
+  };
 
 })();
-
 </script>
-
 </body>
 </html>
